@@ -1,0 +1,48 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE log4j:configuration SYSTEM
+        "http://logging.apache.org/log4j/1.2/apidocs/org/apache/log4j/xml/doc-files/log4j.dtd">
+<log4j:configuration xmlns:log4j="http://jakarta.apache.org/log4j/" debug="false">
+
+    <!--org.apache.log4j.ConsoleAppender(控制台)-->
+    <!--org.apache.log4j.FileAppender(文件)-->
+    <!--org.apache.log4j.DailyRollingFileAppener(每天产生一个日志文件)-->
+    <!--org.apache.log4j.AsyncAppender(文件大小到达指定尺寸的时候产生一个新的文件)-->
+    <!--org.apache.log4j.WriterAppender(将日志讯息以串流格式发送到任意指定的地方)-->
+    <!--org.apache.log4j.JdbcAppender(将日志讯息保存到数据库中)-->
+
+    <!--输出至控制台-->
+    <appender name="appender_console" class="org.apache.log4j.ConsoleAppender">
+       <!--  <param name="Threshold" value="ERROR"/> -->
+        <param name="Target" value="System.out"/>
+        <param name="ImmediateFlush" value="true"/>
+        <layout class="org.apache.log4j.PatternLayout">
+            <param name="ConversionPattern" value="[%-5p] %d{yyyy-MM-dd HH:mm:ss,SSS} method:%l%n%m%n"/>
+        </layout>
+        <filter class="org.apache.log4j.varia.LevelRangeFilter">
+            <param name="LevelMax" value="ERROR"/>
+            <param name="LevelMin" value="ERROR"/>
+        </filter>
+    </appender>
+
+    <!--输出至文件-->
+    <appender name="appender_daily_file" class="org.apache.log4j.DailyRollingFileAppender">
+<!--         <param name="Threshold" value="debug"/> -->
+        <param name="File" value="D:\log.log"/>
+        <param name="Append" value="true"/>
+        <param name="ImmediateFlush" value="false"/>
+<!--         <param name="BufferedIO" value="true"/>
+        <param name="BufferSize" value="${demo.bufferSize}"/> -->
+        <param name="Encoding" value="UTF-8"/>
+        <layout class="org.apache.log4j.PatternLayout">
+            <param name="ConversionPattern" value="[%d{yyyy-MM-dd HH:mm:ss,SSS}]-[%t]-[%X{ip}]-[%l]-[%p] %m%n"/>
+        </layout>
+    </appender>
+
+    <!-- 设置最低输出等级 -->
+    <root>
+        <level value="debug"/>
+        <appender-ref ref="appender_console"/>
+        <appender-ref ref="appender_daily_file"/>
+    </root>
+
+</log4j:configuration>

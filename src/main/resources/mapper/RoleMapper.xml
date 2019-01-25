@@ -1,0 +1,111 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="cn.edu.swust.mapper.RoleMapper">
+    <!-- 返回结果 -->
+	<resultMap id="BaseResultMap" type="cn.edu.swust.entity.Role">
+		<result column="roleId" property="roleId" jdbcType="INTEGER" />
+		<result column="rolename" property="roleName" jdbcType="VARCHAR" />
+		<result column="createTime" property="createTime" jdbcType="TIMESTAMP" />
+		<result column="lastUpdateTime" property="lastUpdateTime" jdbcType="TIMESTAMP" />
+		<result column="createUId" property="createUId" jdbcType="VARCHAR" />
+		<result column="desc" property="desc" jdbcType="VARCHAR" />
+	</resultMap>
+	<!-- 查询字段集 -->
+    <sql id="defualt_fields">
+        <trim suffixOverrides=",">
+        roleId,
+        rolename,
+        createTime,
+        lastUpdateTime,
+        createUId,
+        role.desc,
+        </trim>
+    </sql>
+    <!-- 查询条件 -->
+	<sql id="condition">
+		<where>
+			<if test="roleIds != null">
+                <if test="roleIds.length > 0">
+                role.roleId in
+                    <foreach collection="roleIds" item="item" open="("
+                             separator="," close=")">
+                    #{item}
+                    </foreach>
+                </if>
+                <if test="roleIds.length == 0">
+                    1 = 0
+                </if>
+            </if>
+			<if test="roleId != null and roleId != 0">and role.roleId = #{roleId} </if>
+			<if test="roleName != null">and role.rolename = #{roleName}</if>
+			
+		</where>
+	</sql>
+	<!-- orderby sql-->
+    <sql id="orderby">
+    </sql>
+    <!-- 分页 sql-->
+    <sql id="page">
+    </sql>
+    
+    <!-- 查询语句 -->
+	<select id="queryList" resultMap="BaseResultMap" parameterType="cn.edu.swust.query.UserQuery">
+		select
+		<include refid="defualt_fields" />
+		from role
+		<include refid="condition" />
+		<include refid="orderby" />
+	</select>
+	<!--角色下的所有权限 -->
+	<select id="queryPmsList"  parameterType="cn.edu.swust.query.RoleQuery">
+		select distinct permission.* from( role join role_permission on role.roleId =
+		role_permission.roleId join permission on permission.permissionId =
+		role_permission.permissionId )
+		<include refid="condition"></include>
+	</select>
+
+	<!-- 查最大主键ID -->
+	<select id="getMaxRoleId" resultType="java.lang.Integer">
+		select max(roleID) from role 
+	</select>
+	
+	<!-- 选择性插入 单条 -->
+	<insert id="insertOne" parameterType="cn.edu.swust.entity.Role">
+		insert into role
+		<trim prefix="(" suffix=")" suffixOverrides="," >
+			<if test="roleId != null and roleId != 0 " >roleId,</if>
+      		<if test="roleName != null" >rolename,</if>
+			<if test="createTime != null"> createTime,</if>
+			<if test="lastUpdateTime != null"> lastUpdateTime,</if>
+			<if test="createUId != null"> createUId,</if>
+			<if test="desc != null"> role.desc,</if>
+   		</trim>
+   		<trim prefix="values (" suffix=")" suffixOverrides="," >
+   			<if test="roleId != null and roleId != 0 " >#{roleId},</if>
+			<if test="roleName != null" >#{roleName},</if>
+			<if test="createTime != null"> #{createTime},</if>
+			<if test="lastUpdateTime != null"> #{lastUpdateTime},</if>
+			<if test="createUId != null"> #{createUId},</if>
+			<if test="desc != null"> #{desc},</if>
+    	</trim>
+	</insert>
+
+	<delete id="delete" parameterType="cn.edu.swust.query.RoleQuery">
+		delete from role
+		<include refid="condition" />
+	</delete>
+  
+	<update id="updateByPrimaryKeySelective" parameterType="cn.edu.swust.entity.Role">
+		update role
+		<set>
+			<if test="roleName != null"> rolename = #{roleName,jdbcType=VARCHAR},
+			</if>
+			<if test="desc != null"> role.desc = #{desc,jdbcType=VARCHAR},
+			</if>
+			<if test="lastUpdateTime != null"> lastUpdateTime = #{lastUpdateTime,jdbcType=TIMESTAMP},
+			</if>
+		</set>
+		where roleId = #{roleId,jdbcType=INTEGER}
+	</update>
+    
+</mapper>

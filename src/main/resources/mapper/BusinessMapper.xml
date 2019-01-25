@@ -1,0 +1,91 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="cn.edu.swust.mapper.BusinessMapper">
+    <!-- 返回结果 -->
+	<resultMap id="BaseResultMap" type="cn.edu.swust.entity.Business">
+		<result column="businessId" property="businessId" jdbcType="INTEGER" />
+		<result column="businessName" property="businessName" jdbcType="VARCHAR" />
+		<result column="businessDesc" property="businessDesc" jdbcType="VARCHAR" />
+		<result column="createTime" property="createTime" jdbcType="TIMESTAMP" />
+		<result column="updateTime" property="updateTime" jdbcType="TIMESTAMP" />
+		<result column="createUserId" property="createUserId" jdbcType="VARCHAR" />
+	</resultMap>
+	<!-- 查询字段集 -->
+    <sql id="defualt_fields">
+        <trim suffixOverrides=",">
+        businessId,
+        businessName,
+        businessDesc,
+        createTime,
+        updateTime,
+        createUserId,
+        </trim>
+    </sql>
+    <!-- 查询条件 -->
+	<sql id="condition">
+		<where>
+			<if test="businessIds != null and businessIds.length>0">
+				and business.businessId in
+                <foreach collection="businessIds" item="item" open="(" separator="," close=")">
+                    #{item}
+                </foreach>
+			</if>
+			<if test="businessId != 0 ">and business.businessId=#{businessId}</if>
+		</where>
+	</sql>
+	<!-- orderby sql-->
+    <sql id="orderby">
+    </sql>
+    <!-- 分页 sql-->
+    <sql id="page">
+    </sql>
+    
+    <select id="queryList" parameterType="cn.edu.swust.query.BusinessQuery" resultMap="BaseResultMap">
+    	select <include refid="defualt_fields"></include>
+    	from business
+    	<include refid="condition"></include>
+    </select>
+    
+    <select id="getMaxBsnID" resultType="java.lang.Integer">
+    	select max(businessId) from business
+    </select>
+    
+    <insert id="insertOneSelective" parameterType="cn.edu.swust.entity.Business">
+    	insert into business
+    	<trim prefix="(" suffix=")" suffixOverrides="," >
+			<if test="businessId != 0 " >businessId,</if>
+      		<if test="businessName != null" >businessName,</if>
+			<if test="businessDesc != null"> businessDesc,</if>
+			<if test="createTime != null"> createTime,</if>
+			<if test="updateTime != null"> updateTime,</if>
+			<if test="createUserId != null"> createUserId,</if>
+   		</trim>
+   		<trim prefix="values (" suffix=")" suffixOverrides="," >
+   			<if test="businessId != 0 " >#{businessId},</if>
+      		<if test="businessName != null" >#{businessName},</if>
+			<if test="businessDesc != null"> #{businessDesc},</if>
+			<if test="createTime != null"> #{createTime},</if>
+			<if test="updateTime != null"> #{updateTime},</if>
+			<if test="createUserId != null"> #{createUserId},</if>
+    	</trim>
+    </insert>
+    
+    <delete id="delete" parameterType="cn.edu.swust.query.BusinessQuery">
+    	delete from business
+    	<include refid="condition"></include>
+    </delete>
+    
+    <update id="updateByPrimaryKeySelective" parameterType="cn.edu.swust.entity.Business">
+		update business
+		<set>
+			<if test="businessName != null"> business.businessName = #{businessName,jdbcType=VARCHAR},
+			</if>
+			<if test="businessDesc != null"> business.businessDesc = #{businessDesc,jdbcType=VARCHAR},
+			</if>
+			<if test="updateTime != null"> business.updateTime = #{updateTime,jdbcType=TIMESTAMP},
+			</if>
+		</set>
+		where business.businessId = #{businessId,jdbcType=INTEGER}
+	</update>
+    
+</mapper>

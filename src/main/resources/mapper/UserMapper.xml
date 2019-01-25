@@ -1,0 +1,67 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="cn.edu.swust.mapper.UserMapper">
+    <!-- 返回结果 -->
+	<resultMap id="BaseResultMap" type="cn.edu.swust.entity.User">
+		<result column="userId" property="userId" jdbcType="VARCHAR" />
+		<result column="username" property="username" jdbcType="VARCHAR" />
+		<result column="password" property="password" jdbcType="VARCHAR" />
+		<result column="role" property="role" jdbcType="INTEGER" />
+	</resultMap>
+	
+	<resultMap id="PermissionResultMap" type="cn.edu.swust.entity.Permission">
+		<result column="permissionId" property="permissionId" jdbcType="INTEGER" />
+		<result column="permissionName" property="permissionName" jdbcType="VARCHAR" />
+		<result column="permissionDesc" property="permissionDesc" jdbcType="VARCHAR" />
+		<result column="fatherId" property="fatherId" jdbcType="INTEGER" />
+	</resultMap>
+	<!-- 查询字段集 -->
+    <sql id="defualt_fields">
+        <trim suffixOverrides=",">
+        userId,
+        username,
+        </trim>
+    </sql>
+    <!-- 查询条件 -->
+	<sql id="condition">
+		<where>
+			<if test="userId != null">and user.userId = #{userId} </if>
+			<if test="username != null">and user.username = #{username}</if>
+			<if test="password != null">and user.password = #{password}</if>
+			<if test="roleId != null and roleId != 0">and user_role.roleId = #{roleId}</if>
+		</where>
+	</sql>
+	<!-- orderby sql-->
+    <sql id="orderby">
+    </sql>
+    <!-- 分页 sql-->
+    <sql id="page">
+    </sql>
+    
+    <!-- 查询语句 -->
+    
+	<select id="query" resultMap="BaseResultMap" parameterType="cn.edu.swust.query.UserQuery">
+		select
+		<include refid="defualt_fields" />
+		from user
+		<include refid="condition" />
+		<include refid="orderby" />
+	</select>
+	
+	<select id="count" resultType="int" parameterType="cn.edu.swust.query.UserQuery">
+	   select count(userId) from user
+	   <include refid="condition" />
+	</select>
+	
+	<insert id="insert" parameterType="cn.edu.swust.entity.User">
+	   insert into user (userId,username,password)
+	   values(#{userId},#{username},#{password})
+	</insert>
+	<!-- 查询角色下的用户 -->
+	<select id="getUserListByRole" resultMap="BaseResultMap" parameterType="cn.edu.swust.query.UserQuery">
+		select distinct user.* from(user join user_role on user.userId =
+		user_role.userId )
+		<include refid="condition"></include>
+	</select>
+
+</mapper>

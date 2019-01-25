@@ -1,0 +1,61 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="cn.edu.swust.mapper.PermissionMapper">
+    <!-- 返回结果 -->
+	<resultMap id="BaseResultMap" type="cn.edu.swust.entity.Permission">
+		<result column="permissionId" property="permissionId" jdbcType="INTEGER" />
+		<result column="permissionName" property="permissionName" jdbcType="VARCHAR" />
+		<result column="permissionDesc" property="permissionDesc" jdbcType="VARCHAR" />
+		<result column="fatherId" property="fatherId" jdbcType="INTEGER" />
+	</resultMap>
+	<!-- 查询字段集 -->
+    <sql id="defualt_fields">
+        <trim suffixOverrides=",">
+        permissionId,
+        permissionName,
+        permissionDesc,
+        fatherId,
+        </trim>
+    </sql>
+    <!-- 查询条件 -->
+	<sql id="condition">
+		<where>
+			<if test="roleId != null and roleId != 0">and role.roleId = #{roleId} </if>
+			<if test="roleName != null">and role.rolename = #{roleName}</if>
+			<if test="userId != null">and user.userId = #{userId}</if>
+			<if test="username != null">and user.username = #{username}</if>
+		</where>
+	</sql>
+	<!-- orderby sql-->
+    <sql id="orderby">
+    </sql>
+    <!-- 分页 sql-->
+    <sql id="page">
+    </sql>
+    
+    <!-- 查询语句 -->
+	<select id="queryList" resultMap="BaseResultMap" parameterType="cn.edu.swust.query.UserQuery">
+		select
+		<include refid="defualt_fields" />
+		from permission
+		<include refid="condition" />
+		<include refid="orderby" />
+	</select>
+	<!--角色下的所有权限 -->
+	<select id="queryPmsListByRole"  resultMap="BaseResultMap" parameterType="cn.edu.swust.query.PermissionQuery">
+		select distinct permission.* from( role join role_permission on role.roleId =
+		role_permission.roleId join permission on permission.permissionId =
+		role_permission.permissionId )
+		<include refid="condition"></include>
+	</select>
+	<!--用户下的所有权限 -->
+	<select id="queryPmsListByUser"  resultMap="BaseResultMap" parameterType="cn.edu.swust.query.PermissionQuery">
+		select distinct permission.* from( user join user_role on user.userId =
+		user_role.userId join role_permission on user_role.roleId =
+		role_permission.roleId join permission on role_permission.permissionId =
+		permission.permissionId )
+		<include refid="condition"></include>
+	</select>
+
+    
+</mapper>
