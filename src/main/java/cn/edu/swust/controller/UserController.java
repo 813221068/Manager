@@ -48,7 +48,7 @@ public class UserController {
 	public String toIndexPage(HttpSession session) {
 //		//测试代码 
 		UserQuery query = new UserQuery();
-		query.setUsername("admin");;
+		query.setUsername("admin");
 //		
 		User user = userService.queryUser(query);
 		return "index";
