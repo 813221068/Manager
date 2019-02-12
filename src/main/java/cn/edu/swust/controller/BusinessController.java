@@ -43,7 +43,8 @@ public class BusinessController {
 	@ResponseBody
 	@RequestMapping(value="/addBusiness",method=RequestMethod.POST)
 	public int addBusiness(@RequestBody Business business) {
-		return businessService.insertBusiness(business);
+	//	return businessService.insertBusiness(business);
+		return 0;
 	}
 	
 	@ResponseBody
@@ -56,6 +57,7 @@ public class BusinessController {
 	@ResponseBody
 	@RequestMapping(value="/updateBusiness")
 	public int updateBusiness(@RequestBody Business business) {
-		return businessService.update(business);
+//		return businessService.update(business);
+		return 0;
 	}
 }

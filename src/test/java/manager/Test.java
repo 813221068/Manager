@@ -12,14 +12,7 @@ public class Test {
 	}
 	
 	public static void main(String[] args) {
-		HashMap<String, String> map = new HashMap<>();
-		map.put("1", "1");
-		Scanner scanner = new Scanner(System.in);
-		while(scanner.hasNext()) {
-			String string = scanner.nextLine();
-			System.out.println(test(string));
-			
-		}
+	System.out.println("123"+"\r\n123");
 		
 	}
 

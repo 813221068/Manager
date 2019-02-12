@@ -41,7 +41,6 @@ public class UserRoleDaoImpl implements UserRoleDao {
 			res = sqlSession.selectOne(getNameSpace() + ".query", query);
 		}
 		catch (Exception ex) {
-			// TODO: handle exception
 			LogHelper.logError(ex);
 		}
 		

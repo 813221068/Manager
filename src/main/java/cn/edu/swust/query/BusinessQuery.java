@@ -6,15 +6,12 @@ import lombok.NoArgsConstructor;
 @Data
 @NoArgsConstructor
 public class BusinessQuery extends BaseQuery {
-	
+	/***
+	 * 批量删除项目ids
+	 */
 	private int[] businessIds;
-	
+	/***
+	 * 项目id
+	 */
 	private int businessId;
-	
-	public boolean isNull() {
-		if(businessId!=0 || (businessIds!=null && businessIds.length>0)) {
-			return false;
-		}
-		return true;
-	}
 }

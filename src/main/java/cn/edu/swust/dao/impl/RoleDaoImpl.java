@@ -51,7 +51,6 @@ public class RoleDaoImpl implements RoleDao {
 		try {
 			list = sqlSession.selectList(getNameSpace()+".queryPmsList",query);
 		} catch (Exception e) {
-			// TODO: handle exception
 			LogHelper.logError(e.getMessage()+"\nsql为:"+getNameSpace()+".queryPmsList");
 			
 		}
@@ -60,7 +59,6 @@ public class RoleDaoImpl implements RoleDao {
 
 	@Override
 	public int getMaxRoleId() {
-		// TODO 自动生成的方法存根
 		int maxId = 0;
 		try {
 			maxId = sqlSession.selectOne(getNameSpace()+".getMaxRoleId");
@@ -72,7 +70,6 @@ public class RoleDaoImpl implements RoleDao {
 
 	@Override
 	public int delete(RoleQuery query) {
-		// TODO 自动生成的方法存根
 		try {
 			int row = sqlSession.delete(getNameSpace()+".delete", query);
 			return row;
@@ -88,7 +85,6 @@ public class RoleDaoImpl implements RoleDao {
 		try {
 			row = sqlSession.update(getNameSpace()+".updateByPrimaryKeySelective", role);
 		} catch (Exception e) {
-			// TODO: handle exception
 			LogHelper.logError(e.getMessage()+"\nsql为:"+getNameSpace()+".updateByPrimaryKeySelective");
 		}
 		return row;

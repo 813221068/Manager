@@ -24,12 +24,10 @@ public class RolePermissionDaoImpl implements RolePermissionDao {
 	
 	@Override
 	public int insertOne(RolePermission rolePermission) {
-		// TODO 自动生成的方法存根
 		int ret = 0;
 		try {
 			ret = sqlSession.insert(getNameSpace()+".insertOne",rolePermission);
 		} catch (Exception e) {
-			// TODO: handle exception
 			LogHelper.logError(e.getMessage()+"\nsql为:"+getNameSpace()+".insertOne");
 		}
 		return ret;
@@ -41,7 +39,6 @@ public class RolePermissionDaoImpl implements RolePermissionDao {
 		try {
 			ret = sqlSession.selectOne(getNameSpace()+".getMaxId");
 		} catch (Exception e) {
-			// TODO: handle exception
 			LogHelper.logError(e.getMessage()+"\nsql为:"+getNameSpace()+".getMaxId");
 		}
 		return ret;

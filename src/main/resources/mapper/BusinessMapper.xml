@@ -46,8 +46,9 @@
     	<include refid="condition"></include>
     </select>
     
-    <select id="getMaxBsnID" resultType="java.lang.Integer">
-    	select max(businessId) from business
+   	<!-- 设置主键自增值   执行时num会和已有的max+1比较 取大值-->
+    <select id="setPrimaryValue" parameterType="int">
+        alter table business  AUTO_INCREMENT=#{num};
     </select>
     
     <insert id="insertOneSelective" parameterType="cn.edu.swust.entity.Business">

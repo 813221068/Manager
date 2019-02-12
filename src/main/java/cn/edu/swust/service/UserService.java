@@ -118,7 +118,6 @@ public class UserService {
 		try {
 			
 		}catch (Exception e) {
-			// TODO: handle exception
 		}
 		return list;
 	}

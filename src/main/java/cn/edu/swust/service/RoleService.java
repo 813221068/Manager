@@ -111,7 +111,6 @@ public class RoleService {
 			}
 			return row;
 		} catch (Exception e) {
-			// TODO: handle exception
 			LogHelper.logError(e);
 		}
 		return 0;
@@ -141,7 +140,6 @@ public class RoleService {
 			}
 			return row;
 		} catch (Exception e) {
-			// TODO: handle exception
 			LogHelper.logError(e);
 		}
 		return 0;

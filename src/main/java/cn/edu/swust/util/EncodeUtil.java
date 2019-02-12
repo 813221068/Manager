@@ -19,11 +19,9 @@ public class EncodeUtil {
 			md5.update(str.getBytes("utf-8"));
 			bytes =  md5.digest(str.getBytes("utf-8"));
 		} catch (NoSuchAlgorithmException e) {
-			// TODO 自动生成的 catch 块
 			e.printStackTrace();
 			LogHelper.logError(e); //log4j日志输出，可注释
 		} catch (UnsupportedEncodingException e) {
-			// TODO 自动生成的 catch 块
 			e.printStackTrace();
 		}
 		return bytesTo16BString(bytes);

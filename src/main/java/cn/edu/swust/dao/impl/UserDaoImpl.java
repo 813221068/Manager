@@ -31,7 +31,6 @@ public class UserDaoImpl implements UserDao{
 			res = sqlSession.selectOne(getNameSpace() + ".query", query);
 		}
 		catch (Exception ex) {
-			// TODO: handle exception
 			LogHelper.logError(ex);
 		}
 		
@@ -40,12 +39,10 @@ public class UserDaoImpl implements UserDao{
 
 	@Override
 	public int count(UserQuery query) {
-		// TODO 自动生成的方法存根
 		int res = 0;
 		try {
 			res = sqlSession.selectOne(getNameSpace()+".count", query);
 		} catch (Exception ex) {
-			// TODO: handle exception
 			LogHelper.logError(ex);
 		}
 		

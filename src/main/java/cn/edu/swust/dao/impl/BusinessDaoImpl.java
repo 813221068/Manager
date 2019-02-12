@@ -26,56 +26,29 @@ public class BusinessDaoImpl implements BusinessDao{
 		try {
 			list = sqlSession.selectList(getNameSpace()+".queryList", query);
 		} catch (Exception e) {
-			// TODO: handle exception
 			LogHelper.logError(e.getMessage()+"\nsql为："+getNameSpace()+".queryList");
 		}
 		return list;
 	}
 
 	@Override
-	public int getMaxBsnID() {
-		try {
-			return sqlSession.selectOne(getNameSpace()+".getMaxBsnID");
-		} catch (Exception e) {
-			// TODO: handle exception
-			LogHelper.logError(e.getMessage()+"\nsql为："+getNameSpace()+".getMaxBsnID");
-		}
-		return 0;
+	public void setPrimaryValue(int value) {
+		sqlSession.selectOne(getNameSpace()+".setPrimaryValue",value);
 	}
 
 	@Override
 	public int insertOneSelective(Business business) {
-		int row = 0;
-		try {
-			row = sqlSession.insert(getNameSpace()+".insertOneSelective", business);
-		} catch (Exception e) {
-			// TODO: handle exception
-			LogHelper.logError(e.getMessage()+"\nsql为："+getNameSpace()+"."+Thread.currentThread().getStackTrace()[1].getMethodName());
-		}
-		return row;
+		return sqlSession.insert(getNameSpace()+".insertOneSelective", business);
 	}
 
 	@Override
 	public int delete(BusinessQuery query) {
-		// TODO 自动生成的方法存根
-		try {
-			int row = sqlSession.delete(getNameSpace()+".delete", query);
-			return row;
-		} catch (Exception e) {
-			LogHelper.logError(e.getMessage()+"\nsql为:"+getNameSpace()+".delete");
-		}
-		return 0;
+		return sqlSession.delete(getNameSpace()+".delete", query);
 	}
 
 	@Override
 	public int updateByPrimaryKeySelective(Business business) {
-		int row = 0;
-		try {
-			row = sqlSession.update(getNameSpace()+".updateByPrimaryKeySelective", business);
-		} catch (Exception e) {
-			LogHelper.logError(e.getMessage()+"\nsql为:"+getNameSpace()+".updateByPrimaryKeySelective");
-		}
-		return row;
+		return sqlSession.update(getNameSpace()+".updateByPrimaryKeySelective", business);
 	}
 
 }

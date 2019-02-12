@@ -60,9 +60,14 @@
                                        placeholder="请输入项目描述">
                             </div>
                         </div>
-                        <div>
-                        </div>
-                        <input type="hidden" id="createTime" name="createTime">
+						<div class="form-group">
+							<label for="desc" class="col-sm-3 control-label">审批</label>
+							<div class="col-sm-9">
+								<input type="text" class="form-control" name="businessDesc"
+									id="businessDesc" placeholder="请输入项目描述">
+							</div>
+						</div>
+						<input type="hidden" id="createTime" name="createTime">
                         <input type="hidden" id="updateTime" name="updateTime">
                         <input type="hidden" id="createUId" name="createUId">
                         <input type="reset" name="reset" style="display: none;" />
@@ -188,14 +193,14 @@ $(document).ready(function(){
                 return str+moment(date).format("YYYY-MM-D  HH:mm:ss");
             }
         },
-        {
-            field:'button',
-            title: '操作',
-            align: 'center',
-            valign: 'middle',
-            formatter: actionFormatter,
-            events:operateEvents
-        }, 
+//         {
+//             field:'button',
+//             title: '操作',
+//             align: 'center',
+//             valign: 'middle',
+//             formatter: actionFormatter,
+//             events:operateEvents
+//         },  
         ],
         onPostBody:function(){
             //引入icheck样式  todo 修改dropmenu的checkbox

@@ -9,7 +9,7 @@ public interface BusinessDao {
 
 	public List<Business> queryList(BusinessQuery query);
 	
-	public int getMaxBsnID();
+	public void setPrimaryValue(int value);
 	/**
 	 * 可选择性插入单条 
 	 * @param business
