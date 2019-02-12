@@ -22,7 +22,7 @@
 					<i class="fa arrow" aria-hidden="true"></i>
 				</a>
 				<ul class="nav nav-second-level">
-					<li><a href="business" data-index="0">业务信息</a></li>
+					<li><a href="business" data-index="0">项目管理</a></li>
 					<li><a href="declareBusiness">申报状态</a></li>
 				</ul>
 			</li>

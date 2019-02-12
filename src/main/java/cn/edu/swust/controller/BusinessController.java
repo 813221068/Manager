@@ -13,6 +13,7 @@ import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONArray;
 
 import cn.edu.swust.entity.Business;
+import cn.edu.swust.entity.Deal;
 import cn.edu.swust.query.BusinessQuery;
 import cn.edu.swust.service.BusinessService;
 
@@ -39,12 +40,16 @@ public class BusinessController {
 		JSONArray jsonArray = JSONArray.parseArray(JSON.toJSONString(list));
 		return jsonArray;
 	}
-	
+	/***
+	 * 添加项目
+	 * @param business
+	 * @param deals
+	 * @return
+	 */
 	@ResponseBody
 	@RequestMapping(value="/addBusiness",method=RequestMethod.POST)
-	public int addBusiness(@RequestBody Business business) {
-	//	return businessService.insertBusiness(business);
-		return 0;
+	public int addBusiness(@RequestBody Business business,@RequestBody List<Deal> deals) {
+		return businessService.insertBusiness(business, deals);
 	}
 	
 	@ResponseBody

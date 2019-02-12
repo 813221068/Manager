@@ -18,6 +18,10 @@ public class LogHelper {
 		logger.error(msg);
 	}
 	
+	public static void logError(Exception e , String msg) {
+		logger.error(msg, e);
+	}
+	
 	public static void logInfo(String msg) {
 		logger.info(msg);
 	}

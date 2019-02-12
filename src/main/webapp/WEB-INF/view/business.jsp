@@ -60,8 +60,8 @@
                                        placeholder="请输入项目描述">
                             </div>
                         </div>
-						<div class="form-group">
-							<label for="desc" class="col-sm-3 control-label">审批</label>
+						<div class="form-group required">
+							<label for="desc" class="col-sm-3 control-label">审批流程</label>
 							<div class="col-sm-9">
 								<input type="text" class="form-control" name="businessDesc"
 									id="businessDesc" placeholder="请输入项目描述">
