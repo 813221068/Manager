@@ -25,8 +25,56 @@
                 </button>
             </div>
 			<div class = "table">
-				<table id="businessTable" >
-				</table>	
+			<!-- 	<table id="businessTable" >
+				</table> -->
+				<div id="bsnsTable">
+					<el-table :data="bsnslist" border>
+						<el-table-column label="项目ID" align='center'>
+							<template slot-scope="scope">
+								<span style="margin-left: 10px">{{ scope.row.businessId }}</span>
+							</template>
+						</el-table-column>
+						<el-table-column label="项目名称">
+							<template slot-scope="scope">
+								<span style="margin-left: 10px">{{ scope.row.businessName }}</span>
+							</template>
+						</el-table-column>
+						<el-table-column label="项目描述">
+							<template slot-scope="scope">
+								<span style="margin-left: 10px">{{ scope.row.businessDesc }}</span>
+							</template>
+						</el-table-column>
+						<el-table-column label="创建人">
+							<template slot-scope="scope">
+								<el-popover trigger="hover" placement="top">
+									<p>用户ID: {{ scope.row.createUser.userId }}</p>
+									<p>用户名: {{ scope.row.createUser.username}}</p>
+									<div slot="reference" class="name-wrapper">
+										<el-tag size="medium">{{ scope.row.createUser.username }}</el-tag>
+									</div>
+								</el-popover>
+							</template>
+						</el-table-column>
+						<el-table-column label="创建时间">
+							<template slot-scope="scope">
+								<i class="el-icon-time"></i>
+								<span style="margin-left: 10px">{{ scope.row.createTime }}</span>
+							</template>
+						</el-table-column>
+						<el-table-column label="更新时间">
+							<template slot-scope="scope">
+								<i class="el-icon-time"></i>
+								<span style="margin-left: 10px">{{ scope.row.updateTime }}</span>
+							</template>
+						</el-table-column>
+						<el-table-column label="操作">
+							<template slot-scope="scope">
+								<el-button size="mini" @click="handleEdit(scope.$index, scope.row)">编辑</el-button>
+								<el-button size="mini" type="danger" @click="handleDelete(scope.$index, scope.row)">删除</el-button>
+							</template>
+						</el-table-column>
+					</el-table>
+				</div>
 			</div>
 		</div>
 	</div>
@@ -119,127 +167,156 @@ $(document).ready(function(){
         });
     }
 };
-	//加载table数据
-	$('#businessTable').bootstrapTable({
-		url:'businessList',
-		method:'get',
-		toolbar: '#toolbar',
-		striped: true,
-		cache: false,
-		pagination: true,                  
-        sortable: true,                   
-        // sortOrder: "asc",                   
-        sidePagination: "client",          
-        pageNumber: 1,                    
-        pageSize: 10,                     
-        pageList: [ 5,10, 20, 50],       
-        search: false,                      
-        strictSearch: true,
-        showColumns: true,                  
-        showRefresh: true,                 
-        minimumCountColumns: 2,           
-        clickToSelect: false,             
-        uniqueId: "businessId",                   
-        showToggle: true,                   
-        cardView: false,                 
-        detailView: false,
-        columns: [
-        {
-        	checkbox: true,  
-            visible: true 
-        },
-        {
-        	field: 'businessId',
-            title: "项目ID",
-            sortable: true
-        },
-        {
-        	field: 'businessName',
-            title: "项目名称",
-        },
-         {
-        	field: 'businessDesc',
-            title: "项目描述",
-        },
-        {
-        	field: 'createUser',
-            title: "创建人",
-            formatter: function (value, row, index) {
-                if(isnull(value)){
-                    return value;
-                }
-                var str = '<div class="table-td">'+value.username+'<span class="tooltiptext">'
-                    +'用户ID:'+value.userId+'<br>用户名:'+value.username+'</span></div>';
-                return str;
-            }
-        },
-        {
-        	field: 'createTime',
-            title: "创建时间",
-            sortable: true,
-            formatter: function (value, row, index) {
-                var date = moment(value);
-                var str = '<i class="fa fa-clock-o" aria-hidden="true"></i><span> </span>';
-                return str+moment(date).format("YYYY-MM-D  HH:mm:ss");
-            }
-        },
-        {
-        	field: 'updateTime',
-            title: "更新时间",
-            sortable: true,
-            formatter: function (value, row, index) {
-                var date = moment(value);
-                var str = '<i class="fa fa-clock-o" aria-hidden="true"></i><span> </span>';
-                return str+moment(date).format("YYYY-MM-D  HH:mm:ss");
-            }
-        },
+//加载table数据
+var vue = new Vue({
+	el: '#bsnsTable',
+	data() {
+		return {
+			bsnslist: []
+		}
+	},
+	mounted:function(){
+		$.ajax({
+			url:"businessList",
+			type:"get",
+        	traditional: true,//传递数组
+        	success:function(data){
+        		var list = [];
+        		for(var bsns of data){
+        			bsns.createTime = moment(data.createTime).format("YYYY-MM-D  HH:mm:ss");
+        			bsns.updateTime = moment(data.updateTime).format("YYYY-MM-D  HH:mm:ss");
+        			list.push(bsns);
+        		}
+        		vue.bsnslist = list;
+        		console.log(vue.bsnslist);
+        	},
+        	error:function(){
+        		toastr.error("请求失败");
+        	},
+   		 });
+	}
+});
+// 	//加载table数据  bootstap-table
+// 	$('#businessTable').bootstrapTable({
+// 		url:'businessList',
+// 		method:'get',
+// 		toolbar: '#toolbar',
+// 		striped: true,
+// 		cache: false,
+// 		pagination: true,                  
+//         sortable: true,                   
+//         // sortOrder: "asc",                   
+//         sidePagination: "client",          
+//         pageNumber: 1,                    
+//         pageSize: 10,                     
+//         pageList: [ 5,10, 20, 50],       
+//         search: false,                      
+//         strictSearch: true,
+//         showColumns: true,                  
+//         showRefresh: true,                 
+//         minimumCountColumns: 2,           
+//         clickToSelect: false,             
+//         uniqueId: "businessId",                   
+//         showToggle: true,                   
+//         cardView: false,                 
+//         detailView: false,
+//         columns: [
 //         {
-//             field:'button',
-//             title: '操作',
-//             align: 'center',
-//             valign: 'middle',
-//             formatter: actionFormatter,
-//             events:operateEvents
-//         },  
-        ],
-        onPostBody:function(){
-            //引入icheck样式  todo 修改dropmenu的checkbox
-            $('.bs-checkbox').iCheck({
-                checkboxClass : 'icheckbox_square-green',
-                radioClass : 'iradio_square-green',
-            });
-            $('.card-view').iCheck({
-                checkboxClass : 'icheckbox_square-green',
-                radioClass : 'iradio_square-green',
-            });
-            //全选
-             $("th.bs-checkbox").on('ifChecked',function(event){
-                 $('.bs-checkbox').iCheck('check');
-             });
-             //反选
-            $("th.bs-checkbox").on('ifUnchecked',function(event){
-                $('.bs-checkbox').iCheck('uncheck');
-            });
-            //table模式下批量删除按钮
-            $('.bs-checkbox').on('ifChanged',function(){
-                if($('.bs-checkbox input:checked').length>0){
-                    document.getElementById('batchDelete').style.display = "inline";
-                }else{
-                    document.getElementById('batchDelete').style.display = "none";
-                }
-            });
-            //card模式下批量删除
-            $('.card-view').on('ifChanged',function(){
-                 if($('.card-view input:checked').length>0){
-                    document.getElementById('batchDelete').style.display = "inline";
-                }else{
-                    document.getElementById('batchDelete').style.display = "none";
-                }
-            });
+//         	checkbox: true,  
+//             visible: true 
+//         },
+//         {
+//         	field: 'businessId',
+//             title: "项目ID",
+//             sortable: true
+//         },
+//         {
+//         	field: 'businessName',
+//             title: "项目名称",
+//         },
+//          {
+//         	field: 'businessDesc',
+//             title: "项目描述",
+//         },
+//         {
+//         	field: 'createUser',
+//             title: "创建人",
+//             formatter: function (value, row, index) {
+//                 if(isnull(value)){
+//                     return value;
+//                 }
+//                 var str = '<div class="table-td">'+value.username+'<span class="tooltiptext">'
+//                     +'用户ID:'+value.userId+'<br>用户名:'+value.username+'</span></div>';
+//                 return str;
+//             }
+//         },
+//         {
+//         	field: 'createTime',
+//             title: "创建时间",
+//             sortable: true,
+//             formatter: function (value, row, index) {
+//                 var date = moment(value);
+//                 var str = '<i class="fa fa-clock-o" aria-hidden="true"></i><span> </span>';
+//                 return str+moment(date).format("YYYY-MM-D  HH:mm:ss");
+//             }
+//         },
+//         {
+//         	field: 'updateTime',
+//             title: "更新时间",
+//             sortable: true,
+//             formatter: function (value, row, index) {
+//                 var date = moment(value);
+//                 var str = '<i class="fa fa-clock-o" aria-hidden="true"></i><span> </span>';
+//                 return str+moment(date).format("YYYY-MM-D  HH:mm:ss");
+//             }
+//         },
+// //         {
+// //             field:'button',
+// //             title: '操作',
+// //             align: 'center',
+// //             valign: 'middle',
+// //             formatter: actionFormatter,
+// //             events:operateEvents
+// //         },  
+//         ],
+//         onPostBody:function(){
+//             //引入icheck样式  todo 修改dropmenu的checkbox
+//             $('.bs-checkbox').iCheck({
+//                 checkboxClass : 'icheckbox_square-green',
+//                 radioClass : 'iradio_square-green',
+//             });
+//             $('.card-view').iCheck({
+//                 checkboxClass : 'icheckbox_square-green',
+//                 radioClass : 'iradio_square-green',
+//             });
+//             //全选
+//              $("th.bs-checkbox").on('ifChecked',function(event){
+//                  $('.bs-checkbox').iCheck('check');
+//              });
+//              //反选
+//             $("th.bs-checkbox").on('ifUnchecked',function(event){
+//                 $('.bs-checkbox').iCheck('uncheck');
+//             });
+//             //table模式下批量删除按钮
+//             $('.bs-checkbox').on('ifChanged',function(){
+//                 if($('.bs-checkbox input:checked').length>0){
+//                     document.getElementById('batchDelete').style.display = "inline";
+//                 }else{
+//                     document.getElementById('batchDelete').style.display = "none";
+//                 }
+//             });
+//             //card模式下批量删除
+//             $('.card-view').on('ifChanged',function(){
+//                  if($('.card-view input:checked').length>0){
+//                     document.getElementById('batchDelete').style.display = "inline";
+//                 }else{
+//                     document.getElementById('batchDelete').style.display = "none";
+//                 }
+//             });
             
 
-        },
-	});
+//         },
+// 	});
 
 });
 //批量删除

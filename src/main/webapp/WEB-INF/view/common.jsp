@@ -31,6 +31,11 @@
  	<script src="js/bootstrap-select.js"></script>
     <script src="js/hplus.js"></script>
 
+	<!-- element -->
+	<link rel="stylesheet" href="https://unpkg.com/element-ui/lib/theme-chalk/index.css">
+ 	<script src="https://unpkg.com/vue/dist/vue.js"></script>
+  	<script src="https://unpkg.com/element-ui/lib/index.js"></script>
+  
 
 </head>
 <body>
