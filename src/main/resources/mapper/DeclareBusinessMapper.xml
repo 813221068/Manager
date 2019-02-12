@@ -1,0 +1,50 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="cn.edu.swust.mapper.DeclareBusinessMapper">
+    <!-- 返回结果 -->
+	<resultMap id="BaseResultMap" type="cn.edu.swust.entity.DeclareBusiness">
+		<result column="connId" property="connId" jdbcType="INTEGER" />
+		<result column="businessId" property="businessId" jdbcType="INTEGER" />
+		<result column="declareUserId" property="declareUserId" jdbcType="VARCHAR" />
+		<result column="startTime" property="startTime" jdbcType="TIMESTAMP" />
+		<result column="status" property="status" jdbcType="INTEGER" />
+	</resultMap>
+	<!-- 查询字段集 -->
+    <sql id="defualt_fields">
+        <trim suffixOverrides=",">
+        connId,
+        businessId,
+        declareUserId,
+        startTime,
+        status,
+        </trim>
+    </sql>
+    <!-- 查询条件 -->
+	<sql id="condition">
+		<where>
+			<if test="businessIds != null and businessIds.length>0">
+				and declare_business.businessId in 
+				<foreach collection="businessIds" item="item" open="(" separator="," close=")">#{item}</foreach>
+			</if>
+			<if test="businessId !=0">and businessId=#{businessId}</if>
+		</where>
+	</sql>
+	<!-- orderby sql-->
+    <sql id="orderby">
+    </sql>
+    <!-- 分页 sql-->
+    <sql id="page">
+    </sql>
+    <!-- 查询多条 -->
+    <select id="queryList" parameterType="cn.edu.swust.query.DeclareBusinessQuery" resultMap="BaseResultMap">
+    	select
+    	<include refid="defualt_fields"></include>
+    	from declare_business
+    	<include refid="condition"></include>
+    </select>
+    <!-- 删除 -->
+    <delete id="delete" parameterType="cn.edu.swust.query.DeclareBusinessQuery">
+    	delete from declare_business
+    	<include refid="condition"></include>
+    </delete>
+</mapper>

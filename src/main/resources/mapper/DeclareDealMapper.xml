@@ -1,0 +1,41 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="cn.edu.swust.mapper.DeclareDealMapper">
+    <!-- 返回结果 -->
+	<resultMap id="BaseResultMap" type="cn.edu.swust.entity.DeclareDeal">
+		<result column="connId" property="connId" jdbcType="INTEGER" />
+		<result column="declareBusinessId" property="declareBusinessId" jdbcType="INTEGER" />
+		<result column="dealId" property="dealId" jdbcType="INTEGER" />
+		<result column="status" property="status" jdbcType="INTEGER" />
+	</resultMap>
+	<!-- 查询字段集 -->
+    <sql id="defualt_fields">
+        <trim suffixOverrides=",">
+        connId,
+        declareBusinessId,
+        dealId,
+        status,
+        </trim>
+    </sql>
+    <!-- 查询条件 -->
+	<sql id="condition">
+		<where>
+			<if test="declareBusinessIds != null and declareBusinessIds.length>0">
+				and declare_deal.declareBusinessId in
+				<foreach collection="declareBusinessId" item="item" open="(" separator="," close=")">#{item}</foreach>
+			</if>
+			<if test="declareBusinessId != 0">and declareBusinessId=#{declareBusinessId}</if>
+		</where>
+	</sql>
+	<!-- orderby sql-->
+    <sql id="orderby">
+    </sql>
+    <!-- 分页 sql-->
+    <sql id="page">
+    </sql>
+    <!-- 删除 -->
+    <delete id="delete" parameterType="cn.edu.swust.query.DeclareDealQuery">
+    	delete from declare_deal
+    	<include refid="condition"></include>
+    </delete>
+</mapper>

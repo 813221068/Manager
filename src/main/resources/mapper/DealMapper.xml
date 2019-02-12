@@ -1,0 +1,108 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="cn.edu.swust.mapper.DealMapper">
+    <!-- 返回结果 -->
+	<resultMap id="BaseResultMap" type="cn.edu.swust.entity.Deal">
+		<result column="dealId" property="dealId" jdbcType="INTEGER" />
+		<result column="businessId" property="businessId" jdbcType="INTEGER" />
+		<result column="dealName" property="dealName" jdbcType="VARCHAR" />
+		<result column="dealDesc" property="dealDesc" jdbcType="VARCHAR" />
+		<result column="approvalUserId" property="approvalUserId" jdbcType="VARCHAR" />
+		<result column="approvalRoleId" property="approvalRoleId" jdbcType="INTEGER" />
+		<result column="priority" property="priority" jdbcType="INTEGER" />
+	</resultMap>
+	<!-- 查询字段集 -->
+    <sql id="defualt_fields">
+        <trim suffixOverrides=",">
+        dealId,
+        businessId,
+        dealDesc,
+        dealName,
+        approvalUserId,
+        approvalRoleId,
+        priority,
+        </trim>
+    </sql>
+    <!-- 查询条件 -->
+	<sql id="condition">
+		<where>
+			<if test="businessIds!=null and businessIds.length>0">
+				and deal.businessId in
+				<foreach collection="businessIds" item="item" open="(" separator="," close=")">#{item}</foreach>
+			</if>
+			<if test="businessId !=0">and deal.businessId=#{businessId}</if>
+		</where>
+	</sql>
+	<!-- orderby sql-->
+    <sql id="orderby">
+    </sql>
+    <!-- 分页 sql-->
+    <sql id="page">
+    </sql>
+    <!-- 删除 -->
+    <delete id="delete" parameterType="cn.edu.swust.query.DealQuery">
+    	delete from deal
+    	<include refid="condition"></include>
+    </delete>
+    <!-- 单条插入 -->
+    <insert id="insertOneSelective" parameterType="cn.edu.swust.entity.Deal">
+    	insert into deal
+    	<trim prefix="(" suffix=")" suffixOverrides="," >
+			<if test="dealId != 0 " >dealId,</if>
+      		<if test="businessId != null" >businessId,</if>
+      		<if test="dealName != null"> dealName,</if>
+			<if test="dealDesc != null"> dealDesc,</if>
+			<if test="approvalUserId != null"> approvalUserId,</if>
+			<if test="approvalRoleId != null"> approvalRoleId,</if>
+			<if test="priority != null"> priority,</if>
+   		</trim>
+   		<trim prefix="values (" suffix=")" suffixOverrides="," >
+   			<if test="dealId != 0 " >#{dealId},</if>
+      		<if test="businessId != null" >#{businessId},</if>
+      		<if test="dealName != null"> #{dealName},</if>
+			<if test="dealDesc != null"> #{dealDesc},</if>
+			<if test="approvalUserId != null"> #{approvalUserId},</if>
+			<if test="approvalRoleId != null"> #{approvalRoleId},</if>
+			<if test="priority != null"> #{priority},</if>
+    	</trim>
+    </insert>
+   	<!-- 设置主键自增值   执行时num会和已有的max+1比较 取大值-->
+    <select id="setPrimaryValue" parameterType="int">
+        alter table deal  AUTO_INCREMENT=#{num};
+    </select>
+    <!-- 批量添加 -->
+    <insert id="batchInsert" parameterType="java.util.List">
+        insert into deal
+        <trim prefix="(" suffix=")" suffixOverrides=",">
+	        dealId,
+	        businessId,
+	        dealName,
+	        dealDesc,
+	        priority,
+        	approvalUserId,
+        	approvalRoleId,
+        </trim>
+        value
+        <foreach item="item" index="index" collection="list" separator=",">
+            <trim prefix="(" suffix=")" suffixOverrides=",">
+                #{item.dealId},
+                #{item.businessId},
+                #{item.dealName},
+                #{item.dealDesc},
+                #{item.priority},
+                <choose>
+    				<when test="item.approvalUserId != null">#{approvalUserId},</when>
+    				<otherwise>0,</otherwise>
+				</choose>
+                #{item.approvalRoleId},
+            </trim>
+        </foreach>
+    </insert>
+    <!-- 查询多个 -->
+    <select id="queryList" parameterType="cn.edu.swust.query.DealQuery" resultMap="BaseResultMap">
+    	select
+    	<include refid="defualt_fields"></include>
+    	from deal
+    	<include refid="condition"></include>
+    </select>
+</mapper>
