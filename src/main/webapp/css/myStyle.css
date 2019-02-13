@@ -305,11 +305,16 @@
 	background-color: white;
 /*	font-family: "楷体";*/
 }
+.table-tool{
+    margin-top:20px;
+    margin-left: 20px;
+}
 /* table*/
 .table{
 	width: calc(100% - 40px);
 	margin: 0 auto;
     margin-top: 20px;
+    margin-bottom: 20px;
 }
 .table-td:hover .tooltiptext{
 	display:  inline;

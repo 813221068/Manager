@@ -15,20 +15,25 @@
 		<div>
 			<h2>项目信息</h2>
 		</div>
-		<div class="table-bg">
-            <div id="toolbar" class="btn-group">
-                <button type="button" class="btn btn-primary m-r" data-toggle="modal" data-target="#businessModal" data-backdrop="static" id="addButton">
+		<div class="table-bg" id="app">
+            <div id="toolbar" class="btn-group table-tool">
+                <!-- <button type="button" class="btn btn-primary m-r" data-toggle="modal" data-target="#businessModal" data-backdrop="static" id="addButton">
                     <span class="glyphicon glyphicon-plus" aria-hidden="true"></span>添加项目
-                </button>
-                <button id="batchDelete" type="button" class="ant-btn display" onclick="batchDelete()">
+                </button> -->
+                <el-button type="primary" icon="el-icon-plus" size="medium">添加</el-button>
+                <span class="display" id="batchBtn">
+					<el-button icon="el-icon-delete" size="medium">批量删除</el-button>
+                </span>
+               <!--  <button id="batchDelete" type="button" class="ant-btn display" onclick="batchDelete()">
                     <span><i class="fa fa-trash-o" aria-hidden="true"></i></span>批量删除
-                </button>
+                </button> -->
             </div>
 			<div class = "table">
 			<!-- 	<table id="businessTable" >
 				</table> -->
-				<div id="bsnsTable">
-					<el-table :data="bsnslist" border>
+				<el-table :data="bsnslist" border stripe @selection-change="checkBoxChange">
+						<el-table-column type="selection" >
+						</el-table-column>
 						<el-table-column label="项目ID" align='center'>
 							<template slot-scope="scope">
 								<span style="margin-left: 10px">{{ scope.row.businessId }}</span>
@@ -74,7 +79,6 @@
 							</template>
 						</el-table-column>
 					</el-table>
-				</div>
 			</div>
 		</div>
 	</div>
@@ -169,8 +173,8 @@ $(document).ready(function(){
 };
 //加载table数据
 var vue = new Vue({
-	el: '#bsnsTable',
-	data() {
+	el: '#app',
+	data:function() {
 		return {
 			bsnslist: []
 		}
@@ -188,12 +192,24 @@ var vue = new Vue({
         			list.push(bsns);
         		}
         		vue.bsnslist = list;
-        		console.log(vue.bsnslist);
+        	//	console.log(vue.bsnslist);
         	},
         	error:function(){
         		toastr.error("请求失败");
         	},
    		 });
+	},
+	methods:{
+		checkBoxChange:function(){
+			console.log($('.table input:checked'));
+			var batchBtn = document.getElementById('batchBtn');
+			if($('.table input:checked').length>0){
+				batchBtn.style.display = "inline";
+			}else{
+				batchBtn.style.display = "none";
+			}
+			
+		}
 	}
 });
 // 	//加载table数据  bootstap-table
