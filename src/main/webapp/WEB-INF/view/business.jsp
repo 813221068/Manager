@@ -20,7 +20,7 @@
                 <!-- <button type="button" class="btn btn-primary m-r" data-toggle="modal" data-target="#businessModal" data-backdrop="static" id="addButton">
                     <span class="glyphicon glyphicon-plus" aria-hidden="true"></span>添加项目
                 </button> -->
-                <el-button type="primary" icon="el-icon-plus" size="medium">添加</el-button>
+                <el-button type="primary" icon="el-icon-plus" size="medium"  onclick="clickAddBtn()">添加</el-button>
                 <span class="display" id="batchBtn">
 					<el-button icon="el-icon-delete" size="medium">批量删除</el-button>
                 </span>
@@ -31,7 +31,7 @@
 			<div class = "table">
 			<!-- 	<table id="businessTable" >
 				</table> -->
-				<el-table :data="bsnslist" border stripe @selection-change="checkBoxChange">
+				<el-table :data="bsnsList" border stripe @selection-change="checkBoxChange">
 						<el-table-column type="selection" >
 						</el-table-column>
 						<el-table-column label="项目ID" align='center'>
@@ -52,8 +52,8 @@
 						<el-table-column label="创建人">
 							<template slot-scope="scope">
 								<el-popover trigger="hover" placement="top">
-									<p>用户ID: {{ scope.row.createUser.userId }}</p>
-									<p>用户名: {{ scope.row.createUser.username}}</p>
+									<p>用户ID: {{ scope.row.createUser.userId}}</p>
+									<p>用户名:{{ scope.row.createUser.username}}</p>
 									<div slot="reference" class="name-wrapper">
 										<el-tag size="medium">{{ scope.row.createUser.username }}</el-tag>
 									</div>
@@ -75,7 +75,13 @@
 						<el-table-column label="操作">
 							<template slot-scope="scope">
 								<el-button size="mini" @click="handleEdit(scope.$index, scope.row)">编辑</el-button>
-								<el-button size="mini" type="danger" @click="handleDelete(scope.$index, scope.row)">删除</el-button>
+<!-- 								<el-button size="mini" type="danger" @click="handleDelete(scope.$index, scope.row)">删除</el-button>  -->
+								<el-popover placement="top" width="160" v-model="cfmVisible" trigger="click">
+									<p>这是一段内容这是一段内容确定删除吗？</p>
+									<el-button size="mini" type="text" @click="cfmVisible = false">取消</el-button>
+									<el-button type="primary" size="mini" @click="deleteBsns">确定</el-button>
+									<el-button size="mini" type="danger" slot="reference">删除</el-button> 
+								</el-popover>
 							</template>
 						</el-table-column>
 					</el-table>
@@ -176,7 +182,8 @@ var vue = new Vue({
 	el: '#app',
 	data:function() {
 		return {
-			bsnslist: []
+			bsnsList: [],
+			cfmVisible: false,
 		}
 	},
 	mounted:function(){
@@ -191,7 +198,7 @@ var vue = new Vue({
         			bsns.updateTime = moment(data.updateTime).format("YYYY-MM-D  HH:mm:ss");
         			list.push(bsns);
         		}
-        		vue.bsnslist = list;
+        		vue.bsnsList = list;
         	//	console.log(vue.bsnslist);
         	},
         	error:function(){
@@ -209,9 +216,17 @@ var vue = new Vue({
 				batchBtn.style.display = "none";
 			}
 			
+		},
+		deleteBsns:function(){
+			console.log("delete");
+		},
+		handleDelete:function(index,row){
+			console.log(index);
+			console.log(row);
 		}
 	}
 });
+
 // 	//加载table数据  bootstap-table
 // 	$('#businessTable').bootstrapTable({
 // 		url:'businessList',
@@ -335,6 +350,13 @@ var vue = new Vue({
 // 	});
 
 });
+//添加按钮点击事件
+function clickAddBtn(){
+	$('#businessModal').modal('show');
+	console.log('addBtn');
+
+	
+}
 //批量删除
 function batchDelete(){
     var table = $('#businessTable').bootstrapTable('getData');

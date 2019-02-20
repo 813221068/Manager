@@ -103,11 +103,12 @@
 		function checkPsw(){
 			var psw = document.getElementById("psw").value;
 			var patt = new RegExp("^[A-Za-z0-9]*$");
-			if( psw.length<=16 && psw.length<6 && patt.test(psw)){
+			if( psw.length<=16 && psw.length>=6 && patt.test(psw)){
 				return true;
 			}
 			var txt= "输入不合法，密码为6-16位字母和数字组合";
 			window.wxc.xcConfirm(txt, window.wxc.xcConfirm.typeEnum.info);
+			return false;
 		};
 		function checkConfirmPsw(){
 			var confirmPsw = document.getElementById("confirmPsw").value;

@@ -51,6 +51,7 @@ public class UserController {
 		query.setUsername("admin");
 //		
 		User user = userService.queryUser(query);
+		session.setAttribute("user", user);
 		return "index";
 	}
 	
