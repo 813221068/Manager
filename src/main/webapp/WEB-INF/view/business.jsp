@@ -17,12 +17,9 @@
 		</div>
 		<div class="table-bg" id="app">
             <div id="toolbar" class="btn-group table-tool">
-                <!-- <button type="button" class="btn btn-primary m-r" data-toggle="modal" data-target="#businessModal" data-backdrop="static" id="addButton">
-                    <span class="glyphicon glyphicon-plus" aria-hidden="true"></span>添加项目
-                </button> -->
                 <el-button type="primary" icon="el-icon-plus" size="medium"  onclick="clickAddBtn()">添加</el-button>
                 <span class="display" id="batchBtn">
-					<el-button icon="el-icon-delete" size="medium">批量删除</el-button>
+					<el-button icon="el-icon-delete" size="medium"  @click="batchDelete()">批量删除</el-button>
                 </span>
                <!--  <button id="batchDelete" type="button" class="ant-btn display" onclick="batchDelete()">
                     <span><i class="fa fa-trash-o" aria-hidden="true"></i></span>批量删除
@@ -75,13 +72,14 @@
 						<el-table-column label="操作">
 							<template slot-scope="scope">
 								<el-button size="mini" @click="handleEdit(scope.$index, scope.row)">编辑</el-button>
-<!-- 								<el-button size="mini" type="danger" @click="handleDelete(scope.$index, scope.row)">删除</el-button>  -->
-								<el-popover placement="top" width="160" v-model="cfmVisible" trigger="click">
-									<p>这是一段内容这是一段内容确定删除吗？</p>
-									<el-button size="mini" type="text" @click="cfmVisible = false">取消</el-button>
-									<el-button type="primary" size="mini" @click="deleteBsns">确定</el-button>
-									<el-button size="mini" type="danger" slot="reference">删除</el-button> 
-								</el-popover>
+								<el-popover placement="top" width="160" v-model="scope.row.cfmVisible" trigger="click">
+									<div class="text-center">
+										<p>确定删除该项目吗</p>
+										<el-button size="mini" type="text" @click="scope.row.cfmVisible = false">取消</el-button>
+										<el-button type="primary" size="mini" @click="deleteBsns(scope.$index, scope.row)">确定</el-button>
+									</div>
+									<el-button size="mini" type="danger" slot="reference" >删除</el-button>
+								</el-popover> 
 							</template>
 						</el-table-column>
 					</el-table>
@@ -146,247 +144,101 @@
 var modalOperating = 0; //0是添加   1是修改
 var sltBusiness;
 $(document).ready(function(){
-	//table操作事件
-	window.operateEvents = {
-	//修改操作
-    'click #tableEdit':function(e,value,row,index){
-        $('#businessModal').modal('show');
-        document.getElementById('businessName').value = row.businessName;
-        document.getElementById('businessDesc').value = row.businessDesc;
-        modalOperating = 1;
-        sltBusiness = row;
-    },
-    //删除操作
-    'click #tableDelete':function(e,value,row,index){
-        $.ajax({
-            url:"deleteBusiness",
-            data:{"businessId":row.businessId},
-            type:"get",
-            success:function(data){
-                if(data==0){
-                    toastr.error("删除失败");
-                }else{
-                    toastr.success("删除成功");
-                }
-                $('#businessTable').bootstrapTable('refresh');
-                
-            },
-            error:function(){
-                toastr.error("删除失败");
-            },
-        });
-    }
-};
+	function deleteBsnsFunc(args){
+		$.ajax({
+			url:"deleteBusiness",
+			data:args,
+			type:"get",
+			traditional: true,//传递数组
+			success:function(data){
+				if(data==0){
+					toastr.error("删除失败");
+				}else{
+					toastr.success("删除成功");
+				}
+				loadTableData();
+			},
+			error:function(){
+				toastr.error("请求失败");
+			},
+		});
+	};
 //加载table数据
 var vue = new Vue({
 	el: '#app',
 	data:function() {
 		return {
 			bsnsList: [],
-			cfmVisible: false,
 		}
 	},
 	mounted:function(){
-		$.ajax({
-			url:"businessList",
-			type:"get",
-        	traditional: true,//传递数组
-        	success:function(data){
-        		var list = [];
-        		for(var bsns of data){
-        			bsns.createTime = moment(data.createTime).format("YYYY-MM-D  HH:mm:ss");
-        			bsns.updateTime = moment(data.updateTime).format("YYYY-MM-D  HH:mm:ss");
-        			list.push(bsns);
-        		}
-        		vue.bsnsList = list;
-        	//	console.log(vue.bsnslist);
-        	},
-        	error:function(){
-        		toastr.error("请求失败");
-        	},
-   		 });
+		loadTableData();
 	},
 	methods:{
-		checkBoxChange:function(){
-			console.log($('.table input:checked'));
+		checkBoxChange:function(val){
+			this.multipleSelection = val;
 			var batchBtn = document.getElementById('batchBtn');
-			if($('.table input:checked').length>0){
+			if(val.length>0){
 				batchBtn.style.display = "inline";
 			}else{
 				batchBtn.style.display = "none";
 			}
 			
 		},
-		deleteBsns:function(){
-			console.log("delete");
+		handleEdit:function(index,row){
+			$('#businessModal').modal('show');
+			document.getElementById('businessName').value = row.businessName;
+			document.getElementById('businessDesc').value = row.businessDesc;
+			modalOperating = 1;
+			sltBusiness = row;
 		},
-		handleDelete:function(index,row){
-			console.log(index);
-			console.log(row);
+		deleteBsns:function(index,row){
+			row.cfmVisible = false;
+			var data = {"businessId":row.businessId};
+			deleteBsnsFunc(data);
+		},
+		batchDelete:function(){
+			var ids = new Array;
+			for(var row of this.multipleSelection){
+				ids.push(row.businessId);
+			}
+			var data = {"businessIds":ids};
+			deleteBsnsFunc(data);
 		}
 	}
 });
-
-// 	//加载table数据  bootstap-table
-// 	$('#businessTable').bootstrapTable({
-// 		url:'businessList',
-// 		method:'get',
-// 		toolbar: '#toolbar',
-// 		striped: true,
-// 		cache: false,
-// 		pagination: true,                  
-//         sortable: true,                   
-//         // sortOrder: "asc",                   
-//         sidePagination: "client",          
-//         pageNumber: 1,                    
-//         pageSize: 10,                     
-//         pageList: [ 5,10, 20, 50],       
-//         search: false,                      
-//         strictSearch: true,
-//         showColumns: true,                  
-//         showRefresh: true,                 
-//         minimumCountColumns: 2,           
-//         clickToSelect: false,             
-//         uniqueId: "businessId",                   
-//         showToggle: true,                   
-//         cardView: false,                 
-//         detailView: false,
-//         columns: [
-//         {
-//         	checkbox: true,  
-//             visible: true 
-//         },
-//         {
-//         	field: 'businessId',
-//             title: "项目ID",
-//             sortable: true
-//         },
-//         {
-//         	field: 'businessName',
-//             title: "项目名称",
-//         },
-//          {
-//         	field: 'businessDesc',
-//             title: "项目描述",
-//         },
-//         {
-//         	field: 'createUser',
-//             title: "创建人",
-//             formatter: function (value, row, index) {
-//                 if(isnull(value)){
-//                     return value;
-//                 }
-//                 var str = '<div class="table-td">'+value.username+'<span class="tooltiptext">'
-//                     +'用户ID:'+value.userId+'<br>用户名:'+value.username+'</span></div>';
-//                 return str;
-//             }
-//         },
-//         {
-//         	field: 'createTime',
-//             title: "创建时间",
-//             sortable: true,
-//             formatter: function (value, row, index) {
-//                 var date = moment(value);
-//                 var str = '<i class="fa fa-clock-o" aria-hidden="true"></i><span> </span>';
-//                 return str+moment(date).format("YYYY-MM-D  HH:mm:ss");
-//             }
-//         },
-//         {
-//         	field: 'updateTime',
-//             title: "更新时间",
-//             sortable: true,
-//             formatter: function (value, row, index) {
-//                 var date = moment(value);
-//                 var str = '<i class="fa fa-clock-o" aria-hidden="true"></i><span> </span>';
-//                 return str+moment(date).format("YYYY-MM-D  HH:mm:ss");
-//             }
-//         },
-// //         {
-// //             field:'button',
-// //             title: '操作',
-// //             align: 'center',
-// //             valign: 'middle',
-// //             formatter: actionFormatter,
-// //             events:operateEvents
-// //         },  
-//         ],
-//         onPostBody:function(){
-//             //引入icheck样式  todo 修改dropmenu的checkbox
-//             $('.bs-checkbox').iCheck({
-//                 checkboxClass : 'icheckbox_square-green',
-//                 radioClass : 'iradio_square-green',
-//             });
-//             $('.card-view').iCheck({
-//                 checkboxClass : 'icheckbox_square-green',
-//                 radioClass : 'iradio_square-green',
-//             });
-//             //全选
-//              $("th.bs-checkbox").on('ifChecked',function(event){
-//                  $('.bs-checkbox').iCheck('check');
-//              });
-//              //反选
-//             $("th.bs-checkbox").on('ifUnchecked',function(event){
-//                 $('.bs-checkbox').iCheck('uncheck');
-//             });
-//             //table模式下批量删除按钮
-//             $('.bs-checkbox').on('ifChanged',function(){
-//                 if($('.bs-checkbox input:checked').length>0){
-//                     document.getElementById('batchDelete').style.display = "inline";
-//                 }else{
-//                     document.getElementById('batchDelete').style.display = "none";
-//                 }
-//             });
-//             //card模式下批量删除
-//             $('.card-view').on('ifChanged',function(){
-//                  if($('.card-view input:checked').length>0){
-//                     document.getElementById('batchDelete').style.display = "inline";
-//                 }else{
-//                     document.getElementById('batchDelete').style.display = "none";
-//                 }
-//             });
-            
-
-//         },
-// 	});
-
+//刷新table数据
+function loadTableData(){
+	$.ajax({
+			url:"businessList",
+			type:"get",
+        	traditional: true,//传递数组
+        	success:function(data){
+        		//todo 修改modal 替换成kong
+        		var list = [];
+        		var visibleList = [];
+        		var i = 0;
+        		for(var bsns of data){
+        			bsns.createTime = moment(data.createTime).format("YYYY-MM-D  HH:mm:ss");
+        			bsns.updateTime = moment(data.updateTime).format("YYYY-MM-D  HH:mm:ss");
+        			if(isnull(bsns.businessDesc)){
+        				bsns.businessDesc = "暂无数据";
+        			}
+        			list.push(bsns);
+        			bsns.cfmVisible = false;
+        		}
+        		vue.bsnsList = list;
+        	},
+        	error:function(){
+        		toastr.error("请求失败");
+        	},
+   		 });
+};
 });
 //添加按钮点击事件
 function clickAddBtn(){
 	$('#businessModal').modal('show');
-	console.log('addBtn');
-
-	
-}
-//批量删除
-function batchDelete(){
-    var table = $('#businessTable').bootstrapTable('getData');
-    var rows = document.getElementById('businessTable').rows;
-    var ids = new Array;
-    for(var i=1;i<=rows.length;i++){
-        if($(rows[i]).find('input:checked').length>0){
-            ids.push(table[i-1].businessId);
-        }
-    }
-    $.ajax({
-        url:"deleteBusiness",
-        data:{"businessIds":ids},
-        type:"get",
-        traditional: true,//传递数组
-        success:function(data){
-            if(data==0){
-                toastr.error("删除失败");
-            }else{
-                toastr.success("删除成功");
-            }
-            $('#businessTable').bootstrapTable('refresh');
-            
-        },
-        error:function(){
-            toastr.error("删除失败");
-        },
-    });
-    
-    document.getElementById('batchDelete').style.display = 'none';
+	modalOperating = 0;
 };
 function addBusiness(data) {
     var addResult = 0;
@@ -494,9 +346,6 @@ function modalOnclick(){
     }
 };
 //modal关闭 刷新
-$('#businessModal').on('hide.bs.modal', function () {
-	
-});
 $('#businessModal').on('hidden.bs.modal',function(){
 	$("input[type=reset]").trigger("click");
 });

@@ -55,7 +55,7 @@ public class BusinessController {
 	@ResponseBody
 	@RequestMapping(value="/deleteBusiness")
 	public int deleteBusiness(BusinessQuery query) {
-//		System.out.println(query);
+		System.out.println(query);
 		return businessService.delete(query);
 	}
 	

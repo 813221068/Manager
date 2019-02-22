@@ -79,7 +79,7 @@ public class BusinessService {
 		return ret;
 	}
 	/**
-	 * 删除项目信息
+	 * 删除项目信息 
 	 * @param query
 	 * @return 影响行数
 	 */
@@ -87,23 +87,24 @@ public class BusinessService {
 	public int delete(BusinessQuery query) {
 		int ret = 0;
 		try {
-			
+			//todo 批量删除bug  修改删除项目的逻辑
+			//逻辑：删除business表数据、删除deal表数据、已经申报的项目不能删除
 			DealQuery dealQuery = new DealQuery();
 			DeclareBusinessQuery dclrBsnsQuery = new DeclareBusinessQuery();
 			DeclareDealQuery dclrDlQuery = new DeclareDealQuery();
 			if(query.getBusinessId()!=0) {
 				dealQuery.setBusinessId(query.getBusinessId());
-				dclrBsnsQuery.setBusinessId(query.getBusinessId());
-				dclrDlQuery.setDeclareBusinessId(query.getBusinessId());
+//				dclrBsnsQuery.setBusinessId(query.getBusinessId());
+//				dclrDlQuery.setDeclareBusinessId(query.getBusinessId());
 			}
 			if(query.getBusinessIds()!=null && query.getBusinessIds().length>0) {
 				dealQuery.setBusinessIds(query.getBusinessIds());
-				dclrBsnsQuery.setBusinessIds(query.getBusinessIds());
-				dclrDlQuery.setDeclareBusinessIds(query.getBusinessIds());
+//				dclrBsnsQuery.setBusinessIds(query.getBusinessIds());
+//				dclrDlQuery.setDeclareBusinessIds(query.getBusinessIds());
 			}
 			
-			declareDealDao.delete(dclrDlQuery);
-			declareBusinessDao.delete(dclrBsnsQuery);
+//			declareDealDao.delete(dclrDlQuery);
+//			declareBusinessDao.delete(dclrBsnsQuery);
 			dealDao.delete(dealQuery);
 			
 			ret = businessDao.delete(query);
