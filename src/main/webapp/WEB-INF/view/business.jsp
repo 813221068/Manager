@@ -120,9 +120,11 @@
 							<div class="col-sm-9">
 								<div class="steps">
 									<el-steps  :active="0" >
-										<el-step title="审批开始"></el-step>
+										<!-- <el-step title="审批开始"></el-step>
 										<el-step title="进行中"></el-step>
-										<el-step title="步骤 3"></el-step>
+										<el-step title="步骤 3"></el-step> -->
+										<!-- step初始化 -->
+										<!-- https://blog.csdn.net/qq_31122833/article/details/80269794-->
 									</el-steps>
 								</div>
 							</div>
@@ -219,6 +221,7 @@ var modalVue = new Vue({
 	el:'#addForm',
 	data:function() {
 		return {
+
 		}
 	},
 	mounted:function(){

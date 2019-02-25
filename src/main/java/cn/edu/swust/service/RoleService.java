@@ -108,6 +108,7 @@ public class RoleService {
 					rolePmsQuery.setRoleId(query.getRoleId());
 					rolePmsDao.delete(rolePmsQuery);
 				}
+				//todo 该用户下的用户
 			}
 			return row;
 		} catch (Exception e) {
