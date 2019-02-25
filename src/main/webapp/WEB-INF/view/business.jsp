@@ -86,8 +86,7 @@
 			</div>
 		</div>
 	</div>
-	<jsp:include page="footer.jsp"></jsp:include>
-    <form class="form-horizontal" role="form" id="addForm">
+	<form class="form-horizontal" role="form" id="addForm">
     <div class="modal fade" id="businessModal" tabindex="-1" role="dialog" aria-hidden="true" data-backdrop="static">
         <div class="modal-dialog">
             <div class="modal-content">
@@ -102,7 +101,7 @@
                 <div class="modal-body">
                     <form class="form-horizontal" role="form" id="roleForm">
                         <div class="form-group required text-center">
-                            <label for="roleName" class="col-sm-3 control-label">项目名</label>
+                            <label for="roleName" class="col-sm-3 control-label">项目名 :</label>
                             <div class="col-sm-9">
                                 <input type="text" class="form-control" id="businessName" name="businessName" 
                                 placeholder="请输入项目名" oninput="checkBsnName()">
@@ -110,18 +109,24 @@
                             <div class="display msg" id="msgBsnName">请输入长度至少为3的项目名</div>
                         </div>
                         <div class="form-group">
-                            <label for="desc" class="col-sm-3 control-label">项目描述</label>
+                            <label for="desc" class="col-sm-3 control-label">项目描述 :</label>
                             <div class="col-sm-9">
                                 <input type="text" class="form-control" name="businessDesc" id="businessDesc"
                                        placeholder="请输入项目描述">
                             </div>
                         </div>
 						<div class="form-group required">
-							<label for="desc" class="col-sm-3 control-label">审批流程</label>
+							<label for="desc" class="col-sm-3 control-label">审批流程 :</label>
 							<div class="col-sm-9">
-								<input type="text" class="form-control" name="businessDesc"
-									id="businessDesc" placeholder="请输入项目描述">
+								<div class="steps">
+									<el-steps  :active="0" >
+										<el-step title="审批开始"></el-step>
+										<el-step title="进行中"></el-step>
+										<el-step title="步骤 3"></el-step>
+									</el-steps>
+								</div>
 							</div>
+							<el-button type="primary" size="mini" icon="el-icon-plus" @click="addDeal()"></el-button>
 						</div>
 						<input type="hidden" id="createTime" name="createTime">
                         <input type="hidden" id="updateTime" name="updateTime">
@@ -139,6 +144,8 @@
         </div>/.modal
     </div>
     </form>
+	<jsp:include page="footer.jsp"></jsp:include>
+
 </body>
 <script type="text/javascript">
 var modalOperating = 0; //0是添加   1是修改
@@ -205,6 +212,21 @@ var vue = new Vue({
 			var data = {"businessIds":ids};
 			deleteBsnsFunc(data);
 		}
+	}
+});
+//modal加载
+var modalVue = new Vue({
+	el:'#addForm',
+	data:function() {
+		return {
+		}
+	},
+	mounted:function(){
+	},
+	methods:{
+		addDeal:function(){
+			console.log('add');
+		},
 	}
 });
 //刷新table数据
