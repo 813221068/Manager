@@ -88,7 +88,10 @@
 	</div>
 	<form class="form-horizontal" role="form" id="addForm">
     <div class="modal fade" id="businessModal" tabindex="-1" role="dialog" aria-hidden="true" data-backdrop="static">
-    	<el-dialog width="30%" title="选择所添加的审批流程" :visible.sync="stepModalVisible" append-to-body>
+    	<el-dialog title="选择所添加的审批流程" :visible.sync="stepModalVisible" append-to-body>
+    		<el-select v-model="value" placeholder="请选择">
+    			<el-option v-for="role in roles" :key="role.roleId" :value="role.roleName"></el-option>
+    		</el-select>
     		<el-button @click="stepModalVisible = false">取 消</el-button>
     		<el-button type="primary" @click="addStep()">确 认</el-button>
   		</el-dialog>
@@ -228,14 +231,39 @@ var modalVue = new Vue({
 		return {
 			stepModalVisible:false,
 			steps:[],
+			// roles:[{
+			// 	"roleName": '默认角色',
+   //        		"roleId": '1'
+			// }],
+			roles:[],
+			value: ''
 		}
 	},
 	mounted:function(){
+		//获取roleList
+		$.ajax({
+			url:"getRoleList",
+			// data:,
+			type:"get",
+			traditional: true,//传递数组
+			success:function(data){
+				this.roles = data;
+				// if(data!=null && data.length!=0){
+					
+				// 	console.log(this.roles);
+				// }else{
+				// 	toastr.error("查询失败");
+				// }
+			},
+			error:function(){
+				toastr.error("请求失败");
+			},
+		});
 	},
 	methods:{
 		addStep:function(){
 			this.stepModalVisible = false;
-			//todo 增加审批流程实现
+			//todo 增加审批流程  实现
 			if(this.steps.length<stepMaxCount){
 				var step = {"title":"审批流程"};
 				this.steps.push(step);
