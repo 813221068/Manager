@@ -88,6 +88,10 @@
 	</div>
 	<form class="form-horizontal" role="form" id="addForm">
     <div class="modal fade" id="businessModal" tabindex="-1" role="dialog" aria-hidden="true" data-backdrop="static">
+    	<el-dialog width="30%" title="选择所添加的审批流程" :visible.sync="stepModalVisible" append-to-body>
+    		<el-button @click="stepModalVisible = false">取 消</el-button>
+    		<el-button type="primary" @click="addStep()">确 认</el-button>
+  		</el-dialog>
         <div class="modal-dialog">
             <div class="modal-content">
                 <div class="modal-header">
@@ -120,15 +124,13 @@
 							<div class="col-sm-9">
 								<div class="steps">
 									<el-steps  :active="0" >
-										<!-- <el-step title="审批开始"></el-step>
-										<el-step title="进行中"></el-step>
+										<el-step :title="step.title" v-for="step in steps"></el-step>
+										<!-- <el-step title="进行中"></el-step>
 										<el-step title="步骤 3"></el-step> -->
-										<!-- step初始化 -->
-										<!-- https://blog.csdn.net/qq_31122833/article/details/80269794-->
 									</el-steps>
 								</div>
 							</div>
-							<el-button type="primary" size="mini" icon="el-icon-plus" @click="addDeal()"></el-button>
+							<el-button type="primary" size="mini" icon="el-icon-plus" @click="stepModalVisible = true"></el-button>
 						</div>
 						<input type="hidden" id="createTime" name="createTime">
                         <input type="hidden" id="updateTime" name="updateTime">
@@ -150,7 +152,10 @@
 
 </body>
 <script type="text/javascript">
-var modalOperating = 0; //0是添加   1是修改
+//modal标志位  0是添加   1是修改
+var modalOperating = 0;
+//流程数最大值
+var stepMaxCount = 3; 
 var sltBusiness;
 $(document).ready(function(){
 	function deleteBsnsFunc(args){
@@ -221,14 +226,23 @@ var modalVue = new Vue({
 	el:'#addForm',
 	data:function() {
 		return {
-
+			stepModalVisible:false,
+			steps:[],
 		}
 	},
 	mounted:function(){
 	},
 	methods:{
-		addDeal:function(){
-			console.log('add');
+		addStep:function(){
+			this.stepModalVisible = false;
+			//todo 增加审批流程实现
+			if(this.steps.length<stepMaxCount){
+				var step = {"title":"审批流程"};
+				this.steps.push(step);
+				loadTableData();
+			}else{
+				toastr.error("添加失败，超过最大值");
+			}
 		},
 	}
 });

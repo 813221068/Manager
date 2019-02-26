@@ -60,7 +60,7 @@ public class BusinessService {
 	/***
 	 * 添加项目
 	 * @param business  项目信息
-	 * @param deals   项目审批过程
+	 * @param deals   项目审批过程 list
 	 * @return
 	 */
 	@Transactional
