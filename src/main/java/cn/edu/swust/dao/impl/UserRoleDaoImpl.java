@@ -58,4 +58,15 @@ public class UserRoleDaoImpl implements UserRoleDao {
 		
 		return list;
 	}
+
+	@Override
+	public List<String> getUserIds(UserRoleQuery query) {
+		List<String> userIds = new ArrayList<>();
+		try {
+			userIds = sqlSession.selectList(getNameSpace()+".getUserIds", query);
+		} catch (Exception e) {
+			LogHelper.logError(e," sql:"+getNameSpace()+".getUserIds");
+		}
+		return userIds;
+	}
 }

@@ -6,6 +6,11 @@ import java.security.NoSuchAlgorithmException;
 import java.io.UnsupportedEncodingException;
 
 import sun.misc.BASE64Decoder;
+/**
+ * 加密类
+ * @author user
+ *
+ */
 public class EncodeUtil {
 	/**
 	 * 将字符串以md5加密

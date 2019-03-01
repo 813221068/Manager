@@ -17,8 +17,10 @@ import cn.edu.swust.entity.enumEntity.UserRoleEnum;
 import cn.edu.swust.query.PermissionQuery;
 import cn.edu.swust.query.UserQuery;
 import cn.edu.swust.query.UserRoleQuery;
+import cn.edu.swust.util.ArrayUtil;
 import cn.edu.swust.util.EncodeUtil;
 import cn.edu.swust.util.LogHelper;
+import cn.edu.swust.util.ObjectConvert;
 import cn.edu.swust.util.StringUtil;
 import net.sf.json.JSONArray;
 
@@ -112,13 +114,23 @@ public class UserService {
 		
 		return list;
 	}
-	
+	/***
+	 * 查询用户
+	 * @param query
+	 * @return  用户list
+	 */
 	public List<User> getUserList(UserQuery query){
-		List<User> list = new ArrayList<>();
+		List<User> users = new ArrayList<>();
 		try {
-			
+			UserRoleQuery userRoleQuery = new UserRoleQuery();
+			ObjectConvert.obj2Obj(query, userRoleQuery);
+			//清除不在user表的查询条件
+			query.setRoleId(0);
+			query.setUserIds(userRoleDao.getUserIds(userRoleQuery));
+			users = userDao.queryList(query);
 		}catch (Exception e) {
+			LogHelper.logError(e," getUserList");
 		}
-		return list;
+		return users;
 	}
 }

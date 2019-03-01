@@ -13,7 +13,7 @@ import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONArray;
 
 import cn.edu.swust.entity.Business;
-import cn.edu.swust.entity.Deal;
+import cn.edu.swust.entity.Step;
 import cn.edu.swust.query.BusinessQuery;
 import cn.edu.swust.service.BusinessService;
 
@@ -48,8 +48,8 @@ public class BusinessController {
 	 */
 	@ResponseBody
 	@RequestMapping(value="/addBusiness",method=RequestMethod.POST)
-	public int addBusiness(@RequestBody Business business,@RequestBody List<Deal> deals) {
-		return businessService.insertBusiness(business, deals);
+	public int addBusiness(@RequestBody Business business,@RequestBody List<Step> steps) {
+		return businessService.insertBusiness(business, steps);
 	}
 	
 	@ResponseBody

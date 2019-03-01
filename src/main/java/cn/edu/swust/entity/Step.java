@@ -3,16 +3,16 @@ package cn.edu.swust.entity;
 import lombok.Data;
 
 @Data
-public class Deal {
+public class Step {
 
 	/**
 	 * 审批流程id
 	 */
-	private int dealId;
+	private int stepId;
 	/***
 	 * 流程名
 	 */
-	private String dealName;
+	private String stepName;
 	/**
 	 * 对应项目id
 	 */
@@ -28,7 +28,7 @@ public class Deal {
 	/**
 	 * 流程描述
 	 */
-	private String dealDesc;
+	private String stepDesc;
 	/**
 	 * 审批的角色id
 	 */

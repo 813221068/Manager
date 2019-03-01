@@ -15,9 +15,9 @@
 		<div>
 			<h2>项目信息</h2>
 		</div>
-		<div class="table-bg" id="app">
+		<div class="table-bg">
             <div id="toolbar" class="btn-group table-tool">
-                <el-button type="primary" icon="el-icon-plus" size="medium"  onclick="clickAddBtn()">添加</el-button>
+                <el-button type="primary" icon="el-icon-plus" size="medium"  @click="addBsnsVsb = true">添加</el-button>
                 <span class="display" id="batchBtn">
 					<el-button icon="el-icon-delete" size="medium"  @click="batchDelete()">批量删除</el-button>
                 </span>
@@ -85,74 +85,50 @@
 					</el-table>
 			</div>
 		</div>
+		<el-dialog :visible.sync="addBsnsVsb" title="项目信息" :append-to-body="true"  :modal-append-to-body='false' width="20%" :close-on-click-modal="false">
+			<el-dialog title="添加审批流程" :visible.sync="stepModalVisible" width="20%" height="80%" 
+			:modal-append-to-body='false' :close-on-click-modal="false" :append-to-body="true">
+				<el-form :rules="stepRules" :model="stepForm" status-icon label-width="90px" ref="stepForm">
+					<el-form-item label="流程名：" prop="stepName" >
+   						<el-input placeholder="请输入流程名" v-model="stepForm.stepName" style="width: 80%;" clearable>
+ 					</el-form-item>
+ 					<el-form-item label="审批角色:" prop="sltRole">
+ 						<el-select v-model="stepForm.sltRole" value-key="roleId" placeholder="选择审批角色" @change="showUser()" clearable>
+ 							<el-option v-for="role in roles" :key="role.roleId" :value="role" :label="role.roleName"></el-option>
+ 						</el-select>
+ 					</el-form-item>
+ 					<el-form-item label="审批用户:" v-if="sltUserVsb">
+						<el-select v-model="stepForm.sltUser" value-key="userId" placeholder="选择审批用户" clearable>
+ 							<el-option v-for="user in stepForm.users" :key="user.userId" :value="user" :label="user.username"></el-option>
+ 						</el-select>
+ 					</el-form-item>
+				</el-form>
+				<span slot="footer">
+					<el-button @click="hideStepModal('stepForm','stepModalVisible')">取 消</el-button>
+					<el-button type="primary" @click="addStep('stepForm')">确 认</el-button>
+				</span>
+  			</el-dialog>
+  			<el-form :model="bsnsForm" label-width="90px" :rules="bsnsRules"  status-icon ref="bsnsForm">
+				<el-form-item label="项目名：" prop="bsnsName"  >
+   					<el-input placeholder="请输入项目名" v-model="bsnsForm.bsnsName" style="width: 80%;" clearable>
+ 				</el-form-item>
+ 				<el-form-item label="项目描述：" >
+   					<el-input placeholder="请输入项目描述" v-model="bsnsForm.bsnsDesc" style="width: 80%;" clearable>
+ 				</el-form-item>
+ 				<el-form-item label="审批流程：">
+					<el-steps  :active="0" >
+					<el-step :title="step.stepName" :description="step.description" v-for="step in steps"></el-step>
+				</el-steps>
+				<el-button type="primary" size="mini" icon="el-icon-plus" @click="stepModalVisible = true"></el-button>
+  				</el-form-item>
+  			</el-form>
+			<span slot="footer">
+				<el-button @click="addBsnsVsb = false">取 消</el-button>
+    			<el-button type="primary" @click="modalOnclick()">确 认</el-button>
+			</span>
+		</el-dialog>
 	</div>
-	<form class="form-horizontal" role="form" id="addForm">
-    <div class="modal fade" id="businessModal" tabindex="-1" role="dialog" aria-hidden="true" data-backdrop="static">
-    	<el-dialog title="选择所添加的审批流程" :visible.sync="stepModalVisible" append-to-body>
-    		<el-select v-model="value" placeholder="请选择">
-    			<el-option v-for="role in roles" :key="role.roleId" :value="role.roleName"></el-option>
-    		</el-select>
-    		<el-button @click="stepModalVisible = false">取 消</el-button>
-    		<el-button type="primary" @click="addStep()">确 认</el-button>
-  		</el-dialog>
-        <div class="modal-dialog">
-            <div class="modal-content">
-                <div class="modal-header">
-                    <button type="button" class="close" data-dismiss="modal" aria-hidden="true">
-                        &times;
-                    </button>
-                    <h4 class="modal-title" >
-                        项目信息
-                    </h4>
-                </div>
-                <div class="modal-body">
-                    <form class="form-horizontal" role="form" id="roleForm">
-                        <div class="form-group required text-center">
-                            <label for="roleName" class="col-sm-3 control-label">项目名 :</label>
-                            <div class="col-sm-9">
-                                <input type="text" class="form-control" id="businessName" name="businessName" 
-                                placeholder="请输入项目名" oninput="checkBsnName()">
-                            </div>
-                            <div class="display msg" id="msgBsnName">请输入长度至少为3的项目名</div>
-                        </div>
-                        <div class="form-group">
-                            <label for="desc" class="col-sm-3 control-label">项目描述 :</label>
-                            <div class="col-sm-9">
-                                <input type="text" class="form-control" name="businessDesc" id="businessDesc"
-                                       placeholder="请输入项目描述">
-                            </div>
-                        </div>
-						<div class="form-group required">
-							<label for="desc" class="col-sm-3 control-label">审批流程 :</label>
-							<div class="col-sm-9">
-								<div class="steps">
-									<el-steps  :active="0" >
-										<el-step :title="step.title" v-for="step in steps"></el-step>
-										<!-- <el-step title="进行中"></el-step>
-										<el-step title="步骤 3"></el-step> -->
-									</el-steps>
-								</div>
-							</div>
-							<el-button type="primary" size="mini" icon="el-icon-plus" @click="stepModalVisible = true"></el-button>
-						</div>
-						<input type="hidden" id="createTime" name="createTime">
-                        <input type="hidden" id="updateTime" name="updateTime">
-                        <input type="hidden" id="createUId" name="createUId">
-                        <input type="reset" name="reset" style="display: none;" />
-                    </form>
-                </div>
-                <div class="modal-footer">
-                    <button type="button" class="btn btn-default" data-dismiss="modal">取消
-                    </button>
-                    <button type="button" onclick="modalOnclick()" class="btn btn-primary">确认
-                    </button>
-                </div>
-            </div>/.modal-content
-        </div>/.modal
-    </div>
-    </form>
 	<jsp:include page="footer.jsp"></jsp:include>
-
 </body>
 <script type="text/javascript">
 //modal标志位  0是添加   1是修改
@@ -180,16 +156,64 @@ $(document).ready(function(){
 			},
 		});
 	};
-//加载table数据
 var vue = new Vue({
-	el: '#app',
+	el: '#content',
 	data:function() {
+        var checkBsnsName = (rule, value, callback) => {
+		if (value.length<3) {
+            callback(new Error('项目名称长度不能小于3'));
+        } else if(value.length>10){
+          	callback(new Error('项目名称长度不能超过10'));
+        }else{
+          	callback();
+        }
+     	};
 		return {
+			bsnsForm:{
+				bsnsName:'',
+				bsnsDesc:'',
+			},
+			stepForm:{
+				stepName:'',
+				sltRole:'',
+				sltUser:'',
+				users:[],
+			},
+			bsnsRules:{
+				bsnsName:[{ required: true, message: '项目名不能为空'},
+						{validator: checkBsnsName, trigger: 'blur' }],
+			},
+			stepRules:{
+				stepName:[  { required: true, message: '流程名不能为空'},],
+				sltRole:[{required:true,message:'审批角色不能为空'}]
+			},
 			bsnsList: [],
-		}
+			addBsnsVsb:false,
+			sltUserVsb:false,  //审批用户下拉框vsb
+			stepModalVisible:false,
+			steps:[],
+			roles:[],
+		};
 	},
 	mounted:function(){
 		loadTableData();
+		$.ajax({
+			url:"getRoleList",
+			// data:,
+			type:"get",
+			traditional: true,//传递数组
+			contentType:"application/json;charset=UTF-8",
+			success:function(data){
+				if(data!=null && data.length!=0){
+					vue.roles = data;
+				}else{
+					toastr.error("查询失败");
+				}
+			},
+			error:function(){
+				toastr.error("请求失败");
+			},
+		});
 	},
 	methods:{
 		checkBoxChange:function(val){
@@ -221,57 +245,69 @@ var vue = new Vue({
 			}
 			var data = {"businessIds":ids};
 			deleteBsnsFunc(data);
-		}
-	}
-});
-//modal加载
-var modalVue = new Vue({
-	el:'#addForm',
-	data:function() {
-		return {
-			stepModalVisible:false,
-			steps:[],
-			// roles:[{
-			// 	"roleName": '默认角色',
-   //        		"roleId": '1'
-			// }],
-			roles:[],
-			value: ''
-		}
-	},
-	mounted:function(){
-		//获取roleList
-		$.ajax({
-			url:"getRoleList",
-			// data:,
-			type:"get",
-			traditional: true,//传递数组
-			success:function(data){
-				this.roles = data;
-				// if(data!=null && data.length!=0){
-					
-				// 	console.log(this.roles);
-				// }else{
-				// 	toastr.error("查询失败");
-				// }
-			},
-			error:function(){
-				toastr.error("请求失败");
-			},
-		});
-	},
-	methods:{
-		addStep:function(){
-			this.stepModalVisible = false;
-			//todo 增加审批流程  实现
+		},
+		addStep:function(formName){
+			this.$refs[formName].validate((valid) =>{
+				if(valid){
+					this.stepModalVisible = false;
+					if()
+					return;
+				}else{
+					return;
+				}
+			});
+			
 			if(this.steps.length<stepMaxCount){
-				var step = {"title":"审批流程"};
-				this.steps.push(step);
-				loadTableData();
+				if(!isnull(this.sltRole)){
+					var description = this.sltRole.roleName;
+					if(!isnull(this.sltUser)){
+						description += " ---- " +  this.sltUser.username;
+					}
+					var step = {"stepName":this.stepName,"description":description};//,"username":username
+					this.steps.push(step);
+					loadTableData();
+				}else{
+					//没有选择角色 
+				}
 			}else{
 				toastr.error("添加失败，超过最大值");
 			}
 		},
+		//展示选中角色下的所有用户 
+		showUser:function(){
+			if(!isnull(this.stepForm.sltRole)){
+				$.ajax({
+					url:"getUserList",
+					data:JSON.stringify({"roleId":this.stepForm.sltRole.roleId}),
+					dataType:"json",
+					type:"post",
+					traditional: true,//传递数组
+					contentType:"application/json;charset=UTF-8",
+					success:function(data){
+						vue.stepForm.users = [];
+						for(var user of data){
+							vue.stepForm.users.push(user);
+						}
+					},
+					error:function(){
+						toastr.error("请求失败");
+					},
+				});
+				this.sltUserVsb = true;
+			}else{
+				this.sltUserVsb = false;
+			}
+		},
+		//隐藏dialog 并清空对应form
+		hideModal:function(formName,visible){
+			this[visible] = false;
+			this.$refs[formName].resetFields();
+		},
+		hideStepModal:function(formName,visible){
+			this.hideModal(formName,visible);
+			this.sltUserVsb = false;
+		},
+	
 	}
 });
 //刷新table数据
@@ -302,11 +338,6 @@ function loadTableData(){
    		 });
 };
 });
-//添加按钮点击事件
-function clickAddBtn(){
-	$('#businessModal').modal('show');
-	modalOperating = 0;
-};
 function addBusiness(data) {
     var addResult = 0;
     $.ajax(
@@ -370,51 +401,9 @@ function updateBusiness(data){
                 else if(updateResult==0){
                     toastr.error("修改项目信息失败");
                 } 
-            //  $('.modal-backdrop').remove();
             }
         });
     return false;
 };
-//检查项目名输入是否合法
-function checkBsnName(){
-	var bsnName = document.getElementById("businessName").value;
-	if(isnull(bsnName)){
-		return false;
-	}
-	if(bsnName.length<3){
-		document.getElementById("businessName").className = "has-error form-control";
-		document.getElementById("msgBsnName").style.display = "inline";
-		return false;
-	}else{
-		document.getElementById("businessName").className = "form-control";
-		document.getElementById("msgBsnName").style.display = "none";
-		return true;
-	}
-};
-//modal确认事件
-function modalOnclick(){
-    if(!checkBsnName()){
-        var txt = "请输入至少长度为3的项目名"
-        window.wxc.xcConfirm(txt, window.wxc.xcConfirm.typeEnum.info);
-        return false;
-    }
-
-    var data = {};
-    data.businessName = document.getElementById("businessName").value;
-    data.businessDesc = document.getElementById("businessDesc").value;
-    data.createTime = moment().format("YYYY-MM-DD HH:mm:ss");
-    data.updateTime = moment().format("YYYY-MM-DD HH:mm:ss");
-    data.createUId =  "${user.userId}";
-    if(modalOperating==1){
-        modalOperating = 0;
-        return updateBusiness(data);
-    }else{
-        return addBusiness(data);
-    }
-};
-//modal关闭 刷新
-$('#businessModal').on('hidden.bs.modal',function(){
-	$("input[type=reset]").trigger("click");
-});
 </script>
 </html>

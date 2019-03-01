@@ -6,17 +6,17 @@ import org.apache.ibatis.session.SqlSession;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Repository;
 
-import cn.edu.swust.dao.DealDao;
-import cn.edu.swust.entity.Deal;
-import cn.edu.swust.query.DealQuery;
+import cn.edu.swust.dao.StepDao;
+import cn.edu.swust.entity.Step;
+import cn.edu.swust.query.StepQuery;
 import cn.edu.swust.util.LogHelper;
 @Repository
-public class DealDaoImpl implements DealDao {
+public class StepDaoImpl implements StepDao {
 	@Autowired
 	private SqlSession sqlSession;
 	
 	private String getNameSpace() {
-		return "cn.edu.swust.mapper.DealMapper";
+		return "cn.edu.swust.mapper.StepMapper";
 	}
 	
 	@Override
@@ -25,10 +25,10 @@ public class DealDaoImpl implements DealDao {
 	}
 
 	@Override
-	public int insertOneSelective(Deal deal) {
+	public int insertOneSelective(Step step) {
 		int row = 0;
 		try {
-			row = sqlSession.insert(getNameSpace()+".insertOneSelective", deal);
+			row = sqlSession.insert(getNameSpace()+".insertOneSelective", step);
 		} catch (Exception e) {
 			throw e;
 		}
@@ -36,17 +36,17 @@ public class DealDaoImpl implements DealDao {
 	}
 
 	@Override
-	public int batchInsert(List<Deal> list) {
+	public int batchInsert(List<Step> list) {
 		return  sqlSession.insert(getNameSpace()+".batchInsert", list);
 	}
 
 	@Override
-	public int delete(DealQuery query) {
+	public int delete(StepQuery query) {
 		return sqlSession.delete(getNameSpace()+".delete",query);
 	}
 
 	@Override
-	public List<Deal> queryList(DealQuery query) {
+	public List<Step> queryList(StepQuery query) {
 		return sqlSession.selectList(getNameSpace()+".queryList", query);
 	}
 

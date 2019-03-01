@@ -18,7 +18,8 @@
     <!-- 查询条件 -->
 	<sql id="condition">
 		<where>
-			<if test="userId != null">and userId = #{userId}</if>
+			<if test="userId != null"> and userId = #{userId}</if>
+			<if test="roleId != null and roleId != 0 "> and roleId=#{roleId}</if>
 		</where>
 	</sql>
 	<!-- orderby sql-->
@@ -36,6 +37,11 @@
 		from user_role
 		<include refid="condition" />
 		<include refid="orderby" />
+	</select>
+	<!-- 查询用户ids -->
+	<select id="getUserIds" parameterType="cn.edu.swust.query.UserRoleQuery" resultType="java.lang.String">
+		select user_role.userId from user_role
+		<include refid="condition"></include>
 	</select>
 	
 	<insert id="insert" parameterType="cn.edu.swust.entity.UserRole">

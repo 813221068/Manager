@@ -112,10 +112,16 @@ public class UserController {
 		JSONArray jsonArray = JSONArray.parseArray(JSON.toJSONString(list));
 		return jsonArray;
 	}
-	
+	/***
+	 * 查询用户
+	 * @param query
+	 * @return 用户list
+	 */
 	@ResponseBody
-	@RequestMapping(value="userList",method=RequestMethod.POST)
-	public JSONArray getUserList(UserQuery query) {
-		return null;
+	@RequestMapping(value="/getUserList",method=RequestMethod.POST)
+	public JSONArray getUserList(@RequestBody UserQuery query) {
+		List<User> users = userService.getUserList(query);
+		JSONArray jsonArray = JSONArray.parseArray(JSON.toJSONString(users));
+		return jsonArray;
 	}
 }

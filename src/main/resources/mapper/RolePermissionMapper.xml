@@ -18,7 +18,7 @@
     <!-- 查询条件 -->
 	<sql id="condition">
 		<where>
-			<if test="roleId != null and roleId != 0">roleId = #{roleId}</if>
+			<if test="roleId != null and roleId != 0"> roleId = #{roleId} </if>
 		</where>
 	</sql>
 	<!-- orderby sql-->

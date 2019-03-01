@@ -32,12 +32,9 @@
                     #{item}
                     </foreach>
                 </if>
-                <if test="roleIds.length == 0">
-                    1 = 0
-                </if>
             </if>
-			<if test="roleId != null and roleId != 0">and role.roleId = #{roleId} </if>
-			<if test="roleName != null">and role.rolename = #{roleName}</if>
+			<if test="roleId != null and roleId != 0"> and role.roleId = #{roleId} </if>
+			<if test="roleName != null"> and role.rolename = #{roleName} </if>
 			
 		</where>
 	</sql>

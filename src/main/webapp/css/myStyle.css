@@ -323,7 +323,7 @@
 .table-td:hover .tooltiptext{
 	display:  inline;
 }
-.form-group.required .control-label:before {
+.form-group.required :before {
   content:"*";
   color:red;
 }

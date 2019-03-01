@@ -14,7 +14,11 @@ public interface UserDao{
 	 * @return
 	 */
 	public User query(UserQuery query);
-	
+	/***
+	 * 查询 list
+	 * @param query
+	 * @return
+	 */
 	public List<User> queryList(UserQuery query);
 	
 	/**

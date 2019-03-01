@@ -9,18 +9,18 @@ import org.springframework.transaction.annotation.Transactional;
 import org.springframework.transaction.interceptor.TransactionAspectSupport;
 
 import cn.edu.swust.dao.BusinessDao;
-import cn.edu.swust.dao.DealDao;
 import cn.edu.swust.dao.DeclareBusinessDao;
-import cn.edu.swust.dao.DeclareDealDao;
+import cn.edu.swust.dao.DeclareStepDao;
+import cn.edu.swust.dao.StepDao;
 import cn.edu.swust.dao.UserDao;
 import cn.edu.swust.entity.Business;
-import cn.edu.swust.entity.Deal;
 import cn.edu.swust.entity.DeclareBusiness;
+import cn.edu.swust.entity.Step;
 import cn.edu.swust.query.BusinessQuery;
-import cn.edu.swust.query.DealQuery;
 import cn.edu.swust.query.DeclareBusinessQuery;
-import cn.edu.swust.query.DeclareDealQuery;
+import cn.edu.swust.query.DeclareStepQuery;
 import cn.edu.swust.query.RolePermissionQuery;
+import cn.edu.swust.query.StepQuery;
 import cn.edu.swust.query.UserQuery;
 import cn.edu.swust.util.LogHelper;
 
@@ -31,11 +31,11 @@ public class BusinessService {
 	@Autowired
 	private UserDao userDao;
 	@Autowired
-	private DealDao dealDao;
+	private StepDao stepDao;
 	@Autowired
 	private DeclareBusinessDao declareBusinessDao;
 	@Autowired
-	private DeclareDealDao declareDealDao;
+	private DeclareStepDao declareStepDao;
 	
 	public List<Business> getBusinessList(BusinessQuery query){
 		if(query!=null) {
@@ -60,17 +60,17 @@ public class BusinessService {
 	/***
 	 * 添加项目
 	 * @param business  项目信息
-	 * @param deals   项目审批过程 list
+	 * @param steps   项目审批过程 list
 	 * @return
 	 */
 	@Transactional
-	public int insertBusiness(Business business,List<Deal> deals) {
+	public int insertBusiness(Business business,List<Step> steps) {
 		int ret = 0;
 		try {
 			businessDao.setPrimaryValue(1);
 			ret = businessDao.insertOneSelective(business);
-			dealDao.setPrimaryValue(1);
-			dealDao.batchInsert(deals);
+			stepDao.setPrimaryValue(1);
+			stepDao.batchInsert(steps);
 		} catch (Exception e) {
 			LogHelper.logError(e);
 			TransactionAspectSupport.currentTransactionStatus().setRollbackOnly();
@@ -88,24 +88,24 @@ public class BusinessService {
 		int ret = 0;
 		try {
 			//todo 批量删除bug  修改删除项目的逻辑
-			//逻辑：删除business表数据、删除deal表数据、已经申报的项目不能删除
-			DealQuery dealQuery = new DealQuery();
+			//逻辑：删除business表数据、删除step表数据、已经申报的项目不能删除
+			StepQuery stepQuery = new StepQuery();
 			DeclareBusinessQuery dclrBsnsQuery = new DeclareBusinessQuery();
-			DeclareDealQuery dclrDlQuery = new DeclareDealQuery();
+			DeclareStepQuery dclrDlQuery = new DeclareStepQuery();
 			if(query.getBusinessId()!=0) {
-				dealQuery.setBusinessId(query.getBusinessId());
+				stepQuery.setBusinessId(query.getBusinessId());
 //				dclrBsnsQuery.setBusinessId(query.getBusinessId());
 //				dclrDlQuery.setDeclareBusinessId(query.getBusinessId());
 			}
 			if(query.getBusinessIds()!=null && query.getBusinessIds().length>0) {
-				dealQuery.setBusinessIds(query.getBusinessIds());
+				stepQuery.setBusinessIds(query.getBusinessIds());
 //				dclrBsnsQuery.setBusinessIds(query.getBusinessIds());
 //				dclrDlQuery.setDeclareBusinessIds(query.getBusinessIds());
 			}
 			
-//			declareDealDao.delete(dclrDlQuery);
+//			declarestepDao.delete(dclrDlQuery);
 //			declareBusinessDao.delete(dclrBsnsQuery);
-			dealDao.delete(dealQuery);
+			stepDao.delete(stepQuery);
 			
 			ret = businessDao.delete(query);
 		}catch (Exception ex) {
@@ -119,23 +119,23 @@ public class BusinessService {
 	/***
 	 * 更新项目信息    
 	 * @param business
-	 * @param deals 只修改没有申报过的项目的审批流程
+	 * @param steps 只修改没有申报过的项目的审批流程
 	 * @return
 	 */
-	public int update(Business business,List<Deal> deals) {
+	public int update(Business business,List<Step> steps) {
 		int result = 0;
 		try {
 			result = businessDao.updateByPrimaryKeySelective(business);
 			
-			if(deals!=null && deals.size()>0) {
+			if(steps!=null && steps.size()>0) {
 				DeclareBusinessQuery dclBsnsQuery = new DeclareBusinessQuery();
 				dclBsnsQuery.setBusinessId(business.getBusinessId());
 				if(declareBusinessDao.queryList(dclBsnsQuery).size() == 0) {
-					DealQuery dealQuery = new DealQuery();
-					dealQuery.setBusinessId(business.getBusinessId());
-					dealDao.delete(dealQuery);
-					dealDao.setPrimaryValue(1);
-					dealDao.batchInsert(deals);
+					StepQuery stepQuery = new StepQuery();
+					stepQuery.setBusinessId(business.getBusinessId());
+					stepDao.delete(stepQuery);
+					stepDao.setPrimaryValue(1);
+					stepDao.batchInsert(steps);
 				}
 			}
 			

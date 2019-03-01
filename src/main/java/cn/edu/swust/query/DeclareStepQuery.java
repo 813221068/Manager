@@ -3,7 +3,7 @@ package cn.edu.swust.query;
 import lombok.Data;
 
 @Data
-public class DeclareDealQuery {
+public class DeclareStepQuery {
 	/***
 	 * 申报项目id
 	 */

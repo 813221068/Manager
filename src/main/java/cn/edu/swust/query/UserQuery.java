@@ -1,5 +1,7 @@
 package cn.edu.swust.query;
 
+import java.util.List;
+
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
@@ -13,7 +15,9 @@ public class UserQuery extends BaseQuery {
 	
 	private String password;
 	
-	/*需要连表的字段*/
+	private List<String> userIds;
+	
+	/* 其他表的查询条件*/
 	
 	private int roleId;
 }

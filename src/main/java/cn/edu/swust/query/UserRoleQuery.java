@@ -8,4 +8,6 @@ import lombok.NoArgsConstructor;
 public class UserRoleQuery extends BaseQuery {
 
 	private String userId;
+	
+	private int roleId;
 }

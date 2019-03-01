@@ -20,10 +20,10 @@
     <!-- 查询条件 -->
 	<sql id="condition">
 		<where>
-			<if test="roleId != null and roleId != 0">and role.roleId = #{roleId} </if>
-			<if test="roleName != null">and role.rolename = #{roleName}</if>
-			<if test="userId != null">and user.userId = #{userId}</if>
-			<if test="username != null">and user.username = #{username}</if>
+			<if test="roleId != null and roleId != 0"> and role.roleId = #{roleId} </if>
+			<if test="roleName != null"> and role.rolename = #{roleName} </if>
+			<if test="userId != null"> and user.userId = #{userId} </if>
+			<if test="username != null"> and user.username = #{username} </if>
 		</where>
 	</sql>
 	<!-- orderby sql-->

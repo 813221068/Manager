@@ -26,7 +26,7 @@
 				and declare_business.businessId in 
 				<foreach collection="businessIds" item="item" open="(" separator="," close=")">#{item}</foreach>
 			</if>
-			<if test="businessId !=0">and businessId=#{businessId}</if>
+			<if test="businessId !=0"> and businessId=#{businessId} </if>
 		</where>
 	</sql>
 	<!-- orderby sql-->

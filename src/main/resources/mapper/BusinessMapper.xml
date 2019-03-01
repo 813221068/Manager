@@ -30,7 +30,7 @@
                     #{item}
                 </foreach>
 			</if>
-			<if test="businessId != 0 ">and business.businessId=#{businessId}</if>
+			<if test="businessId != 0 "> and business.businessId=#{businessId} </if>
 		</where>
 	</sql>
 	<!-- orderby sql-->

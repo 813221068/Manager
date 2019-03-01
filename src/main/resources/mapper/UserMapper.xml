@@ -25,10 +25,16 @@
     <!-- 查询条件 -->
 	<sql id="condition">
 		<where>
-			<if test="userId != null">and user.userId = #{userId} </if>
-			<if test="username != null">and user.username = #{username}</if>
-			<if test="password != null">and user.password = #{password}</if>
-			<if test="roleId != null and roleId != 0">and user_role.roleId = #{roleId}</if>
+			<if test="userIds != null and userIds.size()>0">
+				user.userId in
+                    <foreach collection="userIds" item="item" open="(" separator="," close=")">
+                    #{item}
+                    </foreach>
+			</if>
+			<if test="userId != null"> and user.userId = #{userId} </if>
+			<if test="username != null"> and user.username = #{username} </if>
+			<if test="password != null"> and user.password = #{password} </if>
+			<if test="roleId != null and roleId != 0"> and user_role.roleId = #{roleId} </if>
 		</where>
 	</sql>
 	<!-- orderby sql-->

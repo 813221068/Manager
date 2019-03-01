@@ -11,17 +11,19 @@ import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 
 import cn.edu.swust.dao.BusinessDao;
-import cn.edu.swust.dao.DealDao;
 import cn.edu.swust.dao.PermissionDao;
 import cn.edu.swust.dao.RoleDao;
+import cn.edu.swust.dao.StepDao;
 import cn.edu.swust.entity.Business;
-import cn.edu.swust.entity.Deal;
 import cn.edu.swust.entity.Role;
+import cn.edu.swust.entity.User;
 import cn.edu.swust.query.BusinessQuery;
 import cn.edu.swust.query.PermissionQuery;
 import cn.edu.swust.query.RoleQuery;
+import cn.edu.swust.query.UserQuery;
 import cn.edu.swust.service.BusinessService;
 import cn.edu.swust.service.RoleService;
+import cn.edu.swust.service.UserService;
 
 @RunWith(SpringJUnit4ClassRunner.class)
 @ContextConfiguration(locations="classpath:spring-servlet.xml")
@@ -34,11 +36,14 @@ public class BaseJunitTest {
 	@Autowired
 	RoleDao  roleDao; 
 	@Autowired
-	DealDao dealDao;
+	StepDao stepDao;
 	@Autowired
 	BusinessService businessService;
 	@Autowired
 	BusinessDao businessDao;
+	@Autowired
+	UserService userService;
+	
 	
 	@Test
 	public void test() {
@@ -58,8 +63,13 @@ public class BaseJunitTest {
 //		business.setBusinessId(2);
 //		business.setBusinessName("update");
 		
-		BusinessQuery query = new BusinessQuery();
-		query.setBusinessId(2);
-		System.out.println(businessService.delete(query));
+//		BusinessQuery query = new BusinessQuery();
+//		query.setBusinessId(2);
+//		System.out.println(businessService.delete(query));
+		
+		UserQuery query = new UserQuery();
+		query.setRoleId(2);
+		List<User> users = userService.getUserList(query);
+		System.out.println(users.size());
 	}
 }

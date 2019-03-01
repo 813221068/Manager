@@ -2,10 +2,11 @@ package cn.edu.swust.dao;
 
 import java.util.List;
 
-import cn.edu.swust.entity.Deal;
-import cn.edu.swust.query.DealQuery;
+import cn.edu.swust.entity.Step;
+import cn.edu.swust.query.StepQuery;
 
-public interface DealDao {
+
+public interface StepDao {
 
 	/***
 	 * 设置主键自增值
@@ -14,26 +15,26 @@ public interface DealDao {
 	public void setPrimaryValue(int value);
 	/***
 	 * 可选择性的单条插入
-	 * @param deal
+	 * @param step
 	 * @return
 	 */
-	public int insertOneSelective(Deal deal);
+	public int insertOneSelective(Step step);
 	/***
 	 * 批零插入
 	 * @param list
 	 * @return
 	 */
-	public int batchInsert(List<Deal> list);
+	public int batchInsert(List<Step> list);
 	/***
-	 * 删除 deal
+	 * 删除 step
 	 * @param query
 	 * @return
 	 */
-	public int delete(DealQuery query);
+	public int delete(StepQuery query);
 	/***
 	 * 查询多个记录
 	 * @param query
 	 * @return
 	 */
-	public List<Deal> queryList(DealQuery query);
+	public List<Step> queryList(StepQuery query);
 }

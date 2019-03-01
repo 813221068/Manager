@@ -1,11 +1,11 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
-<mapper namespace="cn.edu.swust.mapper.DeclareDealMapper">
+<mapper namespace="cn.edu.swust.mapper.DeclareStepMapper">
     <!-- 返回结果 -->
-	<resultMap id="BaseResultMap" type="cn.edu.swust.entity.DeclareDeal">
+	<resultMap id="BaseResultMap" type="cn.edu.swust.entity.DeclareStep">
 		<result column="connId" property="connId" jdbcType="INTEGER" />
 		<result column="declareBusinessId" property="declareBusinessId" jdbcType="INTEGER" />
-		<result column="dealId" property="dealId" jdbcType="INTEGER" />
+		<result column="stepId" property="stepId" jdbcType="INTEGER" />
 		<result column="status" property="status" jdbcType="INTEGER" />
 	</resultMap>
 	<!-- 查询字段集 -->
@@ -13,7 +13,7 @@
         <trim suffixOverrides=",">
         connId,
         declareBusinessId,
-        dealId,
+        stepId,
         status,
         </trim>
     </sql>
@@ -21,10 +21,10 @@
 	<sql id="condition">
 		<where>
 			<if test="declareBusinessIds != null and declareBusinessIds.length>0">
-				and declare_deal.declareBusinessId in
+				and declare_step.declareBusinessId in
 				<foreach collection="declareBusinessId" item="item" open="(" separator="," close=")">#{item}</foreach>
 			</if>
-			<if test="declareBusinessId != 0">and declareBusinessId=#{declareBusinessId}</if>
+			<if test="declareBusinessId != 0"> and declareBusinessId=#{declareBusinessId} </if>
 		</where>
 	</sql>
 	<!-- orderby sql-->
@@ -34,8 +34,8 @@
     <sql id="page">
     </sql>
     <!-- 删除 -->
-    <delete id="delete" parameterType="cn.edu.swust.query.DeclareDealQuery">
-    	delete from declare_deal
+    <delete id="delete" parameterType="cn.edu.swust.query.DeclareStepQuery">
+    	delete from declare_step
     	<include refid="condition"></include>
     </delete>
 </mapper>
