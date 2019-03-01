@@ -38,7 +38,11 @@ public class BusinessDaoImpl implements BusinessDao{
 
 	@Override
 	public int insertOneSelective(Business business) {
-		return sqlSession.insert(getNameSpace()+".insertOneSelective", business);
+		int id = 0;
+		if(sqlSession.insert(getNameSpace()+".insertOneSelective", business) != 0 ) {
+			id = getMaxId();
+		}
+		return id;
 	}
 
 	@Override
@@ -49,6 +53,11 @@ public class BusinessDaoImpl implements BusinessDao{
 	@Override
 	public int updateByPrimaryKeySelective(Business business) {
 		return sqlSession.update(getNameSpace()+".updateByPrimaryKeySelective", business);
+	}
+
+	@Override
+	public int getMaxId() {
+		return sqlSession.selectOne(getNameSpace()+".getMaxId");
 	}
 
 }

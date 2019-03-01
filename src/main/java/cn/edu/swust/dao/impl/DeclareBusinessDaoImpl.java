@@ -26,5 +26,9 @@ public class DeclareBusinessDaoImpl implements DeclareBusinessDao {
 	public int delete(DeclareBusinessQuery query) {
 		return sqlSession.delete(getNameSpace()+".delete", query);
 	}
+	@Override
+	public int count(DeclareBusinessQuery query) {
+		return sqlSession.selectOne(getNameSpace()+".count",query);
+	}
 
 }

@@ -13,7 +13,8 @@ public interface BusinessDao {
 	/**
 	 * 可选择性插入单条 
 	 * @param business
-	 * @return 插入行数
+	 * @return id  插入失败为0 
+	 *
 	 */
 	public int insertOneSelective(Business business);
 	
@@ -24,4 +25,9 @@ public interface BusinessDao {
 	 * @return 影响行数
 	 */
 	public int updateByPrimaryKeySelective(Business business);
+	/**
+	 * 获取id最大值
+	 * @return
+	 */
+	public int getMaxId();
 }

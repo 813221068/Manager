@@ -1,8 +1,8 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
-<mapper namespace="cn.edu.swust.mapper.stepMapper">
+<mapper namespace="cn.edu.swust.mapper.StepMapper">
     <!-- 返回结果 -->
-	<resultMap id="BaseResultMap" type="cn.edu.swust.entity.step">
+	<resultMap id="BaseResultMap" type="cn.edu.swust.entity.Step">
 		<result column="stepId" property="stepId" jdbcType="INTEGER" />
 		<result column="businessId" property="businessId" jdbcType="INTEGER" />
 		<result column="stepName" property="stepName" jdbcType="VARCHAR" />
@@ -40,12 +40,12 @@
     <sql id="page">
     </sql>
     <!-- 删除 -->
-    <delete id="delete" parameterType="cn.edu.swust.query.stepQuery">
+    <delete id="delete" parameterType="cn.edu.swust.query.StepQuery">
     	delete from step
     	<include refid="condition"></include>
     </delete>
     <!-- 单条插入 -->
-    <insert id="insertOneSelective" parameterType="cn.edu.swust.entity.step">
+    <insert id="insertOneSelective" parameterType="cn.edu.swust.entity.Step">
     	insert into step
     	<trim prefix="(" suffix=")" suffixOverrides="," >
 			<if test="stepId != 0 " >stepId,</if>
@@ -99,7 +99,7 @@
         </foreach>
     </insert>
     <!-- 查询多个 -->
-    <select id="queryList" parameterType="cn.edu.swust.query.stepQuery" resultMap="BaseResultMap">
+    <select id="queryList" parameterType="cn.edu.swust.query.StepQuery" resultMap="BaseResultMap">
     	select
     	<include refid="defualt_fields"></include>
     	from step

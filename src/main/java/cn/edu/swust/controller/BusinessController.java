@@ -48,15 +48,21 @@ public class BusinessController {
 	 */
 	@ResponseBody
 	@RequestMapping(value="/addBusiness",method=RequestMethod.POST)
-	public int addBusiness(@RequestBody Business business,@RequestBody List<Step> steps) {
-		return businessService.insertBusiness(business, steps);
+	public int addBusiness(@RequestBody Business business) {
+		return businessService.insertBusiness(business, business.getSteps());
 	}
 	
 	@ResponseBody
 	@RequestMapping(value="/deleteBusiness")
 	public int deleteBusiness(BusinessQuery query) {
-		System.out.println(query);
 		return businessService.delete(query);
+	}
+	
+	@ResponseBody
+	@RequestMapping(value="/batchDltBsns")
+	public int batchDltBsns(BusinessQuery query) {
+		
+		return businessService.batchDelete(query.getBusinessIds());
 	}
 	
 	@ResponseBody

@@ -42,6 +42,11 @@
     	from declare_business
     	<include refid="condition"></include>
     </select>
+    
+    <select id="count" parameterType="cn.edu.swust.query.DeclareBusinessQuery" resultType="java.lang.Integer">
+    	select count(*) from declare_business
+    	<include refid="condition"></include>
+    </select>
     <!-- 删除 -->
     <delete id="delete" parameterType="cn.edu.swust.query.DeclareBusinessQuery">
     	delete from declare_business

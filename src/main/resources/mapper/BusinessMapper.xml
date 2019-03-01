@@ -9,6 +9,7 @@
 		<result column="createTime" property="createTime" jdbcType="TIMESTAMP" />
 		<result column="updateTime" property="updateTime" jdbcType="TIMESTAMP" />
 		<result column="createUserId" property="createUserId" jdbcType="VARCHAR" />
+		<result column="status" property="status" jdbcType="INTEGER" />
 	</resultMap>
 	<!-- 查询字段集 -->
     <sql id="defualt_fields">
@@ -19,6 +20,7 @@
         createTime,
         updateTime,
         createUserId,
+        status,
         </trim>
     </sql>
     <!-- 查询条件 -->
@@ -46,6 +48,10 @@
     	<include refid="condition"></include>
     </select>
     
+    <select id="getMaxId" resultType="java.lang.Integer">
+    	select max(businessId) from business
+    </select>
+    
    	<!-- 设置主键自增值   执行时num会和已有的max+1比较 取大值-->
     <select id="setPrimaryValue" parameterType="int">
         alter table business  AUTO_INCREMENT=#{num};
@@ -60,6 +66,7 @@
 			<if test="createTime != null"> createTime,</if>
 			<if test="updateTime != null"> updateTime,</if>
 			<if test="createUserId != null"> createUserId,</if>
+			<if test="status != 0"> status,</if>
    		</trim>
    		<trim prefix="values (" suffix=")" suffixOverrides="," >
    			<if test="businessId != 0 " >#{businessId},</if>
@@ -68,6 +75,7 @@
 			<if test="createTime != null"> #{createTime},</if>
 			<if test="updateTime != null"> #{updateTime},</if>
 			<if test="createUserId != null"> #{createUserId},</if>
+			<if test="status != 0"> #{status},</if>
     	</trim>
     </insert>
     

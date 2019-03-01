@@ -8,7 +8,7 @@
 				<a href="">业务申报审批系统</a>
 			</li>
 			<li>
-				<a href="">
+				<a href="index">
 					 <i class="fa fa-circle-o-notch"></i> 
 					 <span>主页</span>
 				</a>

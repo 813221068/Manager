@@ -67,9 +67,9 @@ public class BaseJunitTest {
 //		query.setBusinessId(2);
 //		System.out.println(businessService.delete(query));
 		
-		UserQuery query = new UserQuery();
-		query.setRoleId(2);
-		List<User> users = userService.getUserList(query);
-		System.out.println(users.size());
+		BusinessQuery query = new BusinessQuery();
+		query.setBusinessId(2);
+		
+		System.out.println(businessService.delete( query));
 	}
 }

@@ -12,6 +12,8 @@ public interface DeclareBusinessDao {
 	 * @return
 	 */
 	public List<DeclareBusiness> queryList(DeclareBusinessQuery query);
+	
+	public int count(DeclareBusinessQuery query);
 	/***
 	 * 删除用户申报项目
 	 * @param query

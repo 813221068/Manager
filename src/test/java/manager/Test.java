@@ -11,13 +11,20 @@ import java.util.Scanner;
 import cn.edu.swust.query.UserQuery;
 import cn.edu.swust.query.UserRoleQuery;
 
-
+class Cust{
+	public String name;
+}
 public class Test {
 
 	public static void main(String[] args) {
-		int[] arr = new int[2];
-		List<String> list =new ArrayList<>();
-		list.size();
+		List<Cust> list = new ArrayList<>();
+		Cust cust = new Cust();
+		cust.name = "123";
+		list.add(cust);
+		for(Cust tmp:list) {
+			cust.name = "321";
+		}
+		System.out.println(list.get(0).name);
 	}
 
 }
