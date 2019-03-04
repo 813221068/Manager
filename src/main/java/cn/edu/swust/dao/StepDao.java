@@ -37,4 +37,7 @@ public interface StepDao {
 	 * @return
 	 */
 	public List<Step> queryList(StepQuery query);
+	
+	public int updateByPrimaryKeySelective(Step step);
+	
 }

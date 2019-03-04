@@ -1,8 +1,12 @@
 package cn.edu.swust.service;
 
+import static org.junit.Assert.assertNotNull;
+
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Set;
 
+import org.apache.ibatis.jdbc.SQL;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -85,6 +89,7 @@ public class BusinessService {
 	 */
 	@Transactional
 	public int insertBusiness(Business business,List<Step> steps) {
+		//todo bug 回滚事务
 		int sltId = 0;
 		try {
 			if(business.getCreateUserId()==null||business.getCreateUserId()==""||steps==null||steps.size()==0) {
@@ -99,6 +104,7 @@ public class BusinessService {
 					step.setBusinessId(sltId);
 				}
 				stepDao.setPrimaryValue(1);
+				System.out.println(steps);
 				stepDao.batchInsert(steps);
 			}
 			
@@ -158,25 +164,46 @@ public class BusinessService {
 		return ret;
 	}
 	/***
-	 * 更新项目信息    
+	 * 更新项目信息    只能修改status==0的项目
 	 * @param business
-	 * @param steps 只修改没有申报过的项目的审批流程
-	 * @return
+	 * @param steps 
+	 * @return 
 	 */
-	public int update(Business business,List<Step> steps) {
+	@Transactional
+	public boolean update(Business business,List<Step> steps) {
 		int result = 0;
 		try {
 			result = businessDao.updateByPrimaryKeySelective(business);
 			
 			if(steps!=null && steps.size()>0) {
-				DeclareBusinessQuery dclBsnsQuery = new DeclareBusinessQuery();
-				dclBsnsQuery.setBusinessId(business.getBusinessId());
-				if(declareBusinessDao.queryList(dclBsnsQuery).size() == 0) {
-					StepQuery stepQuery = new StepQuery();
-					stepQuery.setBusinessId(business.getBusinessId());
-					stepDao.delete(stepQuery);
-					stepDao.setPrimaryValue(1);
-					stepDao.batchInsert(steps);
+				StepQuery query = new StepQuery();
+				query.setBusinessId(business.getBusinessId());
+				
+				List<Step> oldSteps = stepDao.queryList(query);
+				
+				for(Step step : steps) {
+					if(step.getStepId() == 0) {
+						step.setBusinessId(business.getBusinessId());
+						
+						stepDao.setPrimaryValue(1);
+						stepDao.insertOneSelective(step);
+					}else {
+						
+						oldSteps.remove(step);
+						stepDao.updateByPrimaryKeySelective(step);
+					}
+				}
+
+				if(oldSteps != null && oldSteps.size()>0) {
+					int[] ids = new int[oldSteps.size()];
+					for(int i=0;i<oldSteps.size();i++) {
+						ids[i] = oldSteps.get(i).getStepId();
+					}
+					
+					query = new StepQuery();
+					query.setStepIds(ids);
+
+					stepDao.delete(query);
 				}
 			}
 			
@@ -185,6 +212,6 @@ public class BusinessService {
 			TransactionAspectSupport.currentTransactionStatus().setRollbackOnly();
 			result = 0;
 		}
-		return result;
+		return result==0?false:true;
 	}
 }

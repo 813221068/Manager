@@ -1,5 +1,9 @@
 package cn.edu.swust.entity;
 
+import org.eclipse.jdt.internal.compiler.ast.ThisReference;
+
+import com.sun.org.apache.regexp.internal.recompile;
+
 import lombok.Data;
 
 @Data
@@ -33,5 +37,22 @@ public class Step {
 	 * 审批的角色id
 	 */
 	private int approvalRoleId;
+	
+	
+	public boolean equals(Object obj) {
+		if(obj == this) {
+			return true;
+		}else {
+			try {
+				Step step = (Step) obj;
+				if(step.getStepId()==stepId) {
+					return true;
+				}
+			}catch (Exception e) {
+				// TODO: handle exception
+			}
+			return false;
+		}
+	}
 	
 }

@@ -13,7 +13,24 @@
 	<bean id="appTransactionManager" class="org.springframework.jdbc.datasource.DataSourceTransactionManager">
       <property name="dataSource" ref="dataSource" />
     </bean>
+	
+	<aop:config>
+		<aop:pointcut id="service" expression="execution(* cn.edu.swust..*Service*.*(..))" /><!--声明所有包含Service的类的所有方法使用事务-->
+		<aop:advisor advice-ref="txAdvice" pointcut-ref="service" />
+	</aop:config>
+	
+	<tx:advice id="txAdvice" transaction-manager="appTransactionManager">
+		<tx:attributes>
+			<tx:method name="get*" read-only="true"  />
+			<tx:method name="query*" read-only="true"  />
+			<tx:method name="find*" read-only="true" />
+			<tx:method name="is*" read-only="true" />
+			<!-- <tx:method name="insert*" read-only="true" /> -->
+			<tx:method name="*" rollback-for="Exception"/><!-- 默认回滚机制是RuntimeException -->
+		</tx:attributes>
+	</tx:advice>
 
-    <tx:annotation-driven proxy-target-class="false" transaction-manager="appTransactionManager" />
+	
+    <tx:annotation-driven  transaction-manager="appTransactionManager" />
 
 </beans>

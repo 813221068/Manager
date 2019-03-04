@@ -17,7 +17,7 @@
 		</div>
 		<div class="table-bg">
             <div id="toolbar" class="btn-group table-tool">
-                <el-button type="primary" icon="el-icon-plus" size="medium"  @click="addBsnsVsb = true">添加</el-button>
+                <el-button type="primary" icon="el-icon-plus" size="medium"  @click="bsnsModalVsb = true">添加</el-button>
                 <span class="display" id="batchBtn">
 					<el-button icon="el-icon-delete" size="medium"  @click="batchDelete()">批量删除</el-button>
                 </span>
@@ -57,18 +57,15 @@
 						<!-- bug -->
 						<el-table-column label="状态" align="center">
 							<template slot-scope="scope">
-								<span style="margin-left: 10px;color: {{scope.row.status==0?draftColor:formalColor}};">
+								<span v-bind:style="{color:scope.row.status==0?draftColor:formalColor}">
 								{{ scope.row.status==0?'草稿':'正式'}}</span>
 							</template>	
 						</el-table-column>
-				<!-- 		<el-table-column label="项目状态" align="center">
-							<template slot-scope="scope">
-								<span :style="margin-left: 10px;">{{ scope.row.status}}</span>
-							</template>
-						</el-table-column> -->
 						<el-table-column label="操作" align="center">
 							<template slot-scope="scope">
-								<el-button size="mini" @click="editBsns(scope.$index, scope.row)">编辑</el-button>
+								<el-button v-if="scope.row.status==0?true:false" type="danger" size="mini" @click="editBsns(scope.$index, scope.row)">提交为正式</el-button>
+								<el-button v-if="scope.row.status==1?true:false" size="mini" @click="showBsns(scope.$index, scope.row)">查看</el-button>
+								<el-button v-if="scope.row.status==0?true:false" size="mini" @click="editBsns(scope.$index, scope.row)">编辑</el-button>
 								<el-popover placement="top" width="160" v-model="scope.row.cfmVisible" trigger="click">
 									<div class="text-center">
 										<p>确定删除该项目吗</p>
@@ -82,7 +79,7 @@
 					</el-table>
 			</div>
 		</div>
-		<el-dialog :visible.sync="addBsnsVsb" title="项目信息" :append-to-body="true"  :modal-append-to-body='false' width="20%" :close-on-click-modal="false">
+		<el-dialog :visible.sync="bsnsModalVsb" title="项目信息" :append-to-body="true"  :modal-append-to-body='false' width="20%" :close-on-click-modal="false">
 			<el-dialog title="添加审批流程" :visible.sync="stepModalVisible" width="20%" height="80%" 
 			:modal-append-to-body='false' :close-on-click-modal="false" :append-to-body="true">
 				<el-form :rules="stepRules" :model="stepForm" status-icon label-width="90px" ref="stepForm">
@@ -100,35 +97,36 @@
  							<el-option v-for="role in roles" :key="role.roleId" :value="role" :label="role.roleName"></el-option>
  						</el-select>
  					</el-form-item>
- 					<el-form-item label="审批用户:" v-if="sltUserVsb">
+ 					<el-form-item label="审批用户:" v-if="sltUserVsb" v-model="defaultSltUser">
 						<el-select v-model="stepForm.sltUser" value-key="userId" placeholder="选择审批用户" clearable>
  							<el-option v-for="user in stepForm.users" :key="user.userId" :value="user" :label="user.username"></el-option>
  						</el-select>
  					</el-form-item>
 				</el-form>
 				<span slot="footer">
-					<el-button @click="hideStepModal('stepForm','stepModalVisible')">取 消</el-button>
+					<el-button @click="hideStepModal()">取 消</el-button>
 					<el-button type="primary" @click="addStep('stepForm','stepModalVisible')">确 认</el-button>
 				</span>
   			</el-dialog>
-  			<el-form :model="bsnsForm"  :rules="bsnsRules"  status-icon ref="bsnsForm" label="top">
+  			<el-form :model="bsnsForm" ref="bsnsForm"  :rules="bsnsRules"  status-icon ref="bsnsForm" label="top">
 				<el-form-item label="项目名：" prop="bsnsName"  >
    					<el-input placeholder="请输入项目名" v-model="bsnsForm.bsnsName" style="width: 80%;" clearable>
  				</el-form-item>
- 				<el-form-item label="项目描述：" >
+ 				<el-form-item label="项目描述：" prop="bsnsDesc" >
    					<el-input placeholder="请输入项目描述" v-model="bsnsForm.bsnsDesc" style="width: 80%;" clearable>
  				</el-form-item>
  				<!--bug  step放在item下 step线的位置会变 -->
- 				<el-form-item label="审批流程：" >
+ 				<el-form-item label="审批流程：" prop="steps">
   				</el-form-item>
- 				<el-steps  :active="0">
-					<el-step :title="step.stepName" :description="step.stepDesc" v-for="step in bsnsForm.steps"></el-step>
+ 				<el-steps  :active="0" >
+					<el-step :title="step.stepName" :description="step.stepDesc" v-for="step in bsnsForm.steps" ></el-step>
 				</el-steps>
-				<el-button type="primary" size="mini" icon="el-icon-plus" @click="stepModalVisible = true"></el-button>
+				<el-button type="primary" size="mini" icon="el-icon-plus" @click="stepModalVisible = true">添加流程</el-button>
+				<el-button type="primary" size="mini" icon="el-icon-delete" @click="deleteStep()">删除流程</el-button>
   			</el-form>
 			<span slot="footer">
-				<el-button @click="hideModal('bsnsForm','addBsnsVsb')">取 消</el-button>
-    			<el-button type="primary" @click="addBsns('bsnsForm')">确 认</el-button>
+				<el-button @click="hideBsnsModal()">取 消</el-button>
+    			<el-button type="primary" @click="submitBsnsModal('bsnsForm')">确 认</el-button>
 			</span>
 		</el-dialog>
 	</div>
@@ -138,8 +136,9 @@
 //modal标志位  0是添加   1是修改
 var modalOperating = 0;
 //流程数最大值
-var stepMaxCount = 3; 
-var sltBusiness;
+var stepMaxCount = 3;
+//标记选中的row 
+var sltBusiness;  
 $(document).ready(function(){
 var vue = new Vue({
 	el: '#content',
@@ -180,14 +179,22 @@ var vue = new Vue({
 				sltRole:[{required:true,message:'审批角色不能为空'}]
 			},
 			bsnsList: [], //table 数据
-			addBsnsVsb:false,   //添加modal
+			bsnsModalVsb:false,   //项目modal
 			sltUserVsb:false,  //审批用户下拉框vsb
 			stepModalVisible:false,//审批流程modal vsb
-			
-			draftColor:'#909399',//草稿状态字体颜色
+			defaultSltUser:'',//用于清空审批用户下拉框
+			draftColor:'#F56C6C',//草稿状态字体颜色
 			formalColor:'#67C23A',//正式状态字体颜色
 			roles:[],
+
+			///test
+			question:''
 		};
+	},
+	watch:{
+		sltUserVsb:function(){
+			this.defaultSltUser = null;
+		},
 	},
 	mounted:function(){
 		loadTableData();
@@ -221,17 +228,16 @@ var vue = new Vue({
 			
 		},
 		editBsns:function(index,row){
-			// bsnsForm:{
-			// 	bsnsName:'',
-			// 	bsnsDesc:null,
-			// 	steps:[],
-			// },
 			this.bsnsForm.bsnsName = row.businessName;
 			this.bsnsForm.bsnsDesc = row.businessDesc;
-			this.bsnsForm.steps = row.businessDesc;
-			this.addBsnsVsb = true;
+			this.bsnsForm.steps = row.steps;
+			this.bsnsModalVsb = true;
 			modalOperating = 1;
 			sltBusiness = row;
+		},
+		//查看
+		showBsns:function(index,row){
+			//和编辑界面一样  但是按钮禁用
 		},
 		deleteBsns:function(index,row){
 			row.cfmVisible = false;
@@ -283,10 +289,11 @@ var vue = new Vue({
 		addStep:function(formName,visible){
 			this.$refs[formName].validate((valid) =>{
 				if(valid){
-					this.stepModalVisible = false;
 					if(this.bsnsForm.steps.length<stepMaxCount){
 						this.stepForm.addStep = {"stepName":this.stepForm.stepName,"approvalRoleId":this.stepForm.sltRole.roleId,
-												"stepDesc":this.stepForm.stepDesc,"priority":this.stepForm.priority};
+												"stepDesc":this.stepForm.stepDesc,"priority":this.stepForm.priority
+												};
+											//	"approvalUserId":0
 						if(!isnull(this.stepForm.sltUser)){
 							this.stepForm.addStep.approvalUserId = this.stepForm.sltUser.userId;
 						}
@@ -297,48 +304,80 @@ var vue = new Vue({
 					}else{
 						toastr.error("添加失败，超过最大值");
 					}
-					this.hideStepModal(formName,visible);
+					this.hideStepModal();
 					return;
 				}else{
 					return;
 				}
 			});
 		},
-		//添加项目信息
-		addBsns:function(formName){
+		submitBsnsModal:function(formName){
 				this.$refs[formName].validate((valid) =>{
 				if(valid){
-					var parameter = {"businessName":this.bsnsForm.bsnsName,"businessDesc":this.bsnsForm.bsnsDesc,"steps":this.bsnsForm.steps,
+					//添加项目
+					if(modalOperating==0){
+						var parameter = {"businessName":this.bsnsForm.bsnsName,"businessDesc":this.bsnsForm.bsnsDesc,"steps":this.bsnsForm.steps,
 							"createTime":moment(new Date()).format("YYYY-MM-DD HH:mm:ss"),"createUserId":${user.userId},
-							"updateTime":moment(new Date()).format("YYYY-MM-DD HH:mm:ss")
+							"updateTime":moment(new Date()).format("YYYY-MM-DD HH:mm:ss"),"status":0
 						};
-					$.ajax(
-					{
-						url: "addBusiness",
-						data:JSON.stringify(parameter),
-						dataType:"json",  
-						type: "post",
-						contentType:"application/json;charset=UTF-8",
-						success:function(data)
+						$.ajax(
 						{
-							if(data>0){
-								toastr.success("添加项目成功");
-								vue.hideModal('bsnsForm','addBsnsVsb');
-								loadTableData();
-							}else{
-								if(vue.bsnsForm.steps.length==0){
-									toastr.error("添加失败,审批流程不能为空");
+							url: "addBusiness",
+							data:JSON.stringify(parameter),
+							dataType:"json",  
+							type: "post",
+							contentType:"application/json;charset=UTF-8",
+							success:function(data)
+							{
+								console.log(data);
+								if(data>0){
+									toastr.success("添加项目成功");
+									vue.hideBsnsModal();
+									loadTableData();
 								}else{
-									toastr.error("添加项目失败");
+									if(vue.bsnsForm.steps.length==0){
+										toastr.error("添加失败,审批流程不能为空");
+									}else{
+										toastr.error("添加项目失败");
+									}
+									
 								}
-								
-							}
-						},
-						error:function()
+							},
+							error:function()
+							{
+								toastr.error("请求失败");
+							},
+						});
+					}else{  //修改项目信息
+						modalOperating = 0;
+						var para = sltBusiness;
+						para['businessName'] = sltBusiness.bsnsName;
+						para['businessDesc'] = sltBusiness.bsnsDesc;
+						para['updateTime'] = moment(new Date()).format("YYYY-MM-DD HH:mm:ss");
+						para['businessId'] = sltBusiness.businessId;
+						$.ajax(
 						{
-							toastr.error("请求失败");
-						},
-					});
+							url: "updateBusiness",
+							data:JSON.stringify(para),
+							dataType:"json",  
+							type: "post",
+							contentType:"application/json;charset=UTF-8",
+							success:function(data)
+							{
+								if(data){
+									toastr.success("修改项目信息成功");
+									vue.hideBsnsModal();
+									loadTableData();
+								}else{
+									toastr.error("修改项目信息失败");
+								}
+							},
+							error:function()
+							{
+								toastr.error("请求失败");
+							},
+						});
+					}
 				}else{
 					return;
 				}
@@ -359,27 +398,44 @@ var vue = new Vue({
 						for(var user of data){
 							vue.stepForm.users.push(user);
 						}
+						
 					},
 					error:function(){
 						toastr.error("请求失败");
 					},
 				});
 				this.sltUserVsb = true;
+				//刷新select
+				this.stepForm.sltUser = null;
+				this.defaultSltUser = null;
 			}else{
 				this.sltUserVsb = false;
 			}
 		},
-	
-		//隐藏dialog 并清空对应form
-		hideModal:function(formName,visible){
-			this[visible] = false;
-			this.$refs[formName].resetFields();
+		deleteStep:function(){
+			if(this.bsnsForm.steps.length==0){
+				toastr.error('删除失败');
+			}else{
+				this.bsnsForm.steps = _.initial(this.bsnsForm.steps);
+				toastr.success('删除成功');
+			}
 		},
-		hideStepModal:function(formName,visible){
-			this.hideModal(formName,visible);
+		hideBsnsModal:function(){
+			this.$refs['bsnsForm'].resetFields();
+			this.bsnsModalVsb = false;
+			this.bsnsForm.steps = [];
+		//	this.hideStepModal();
+		},
+		hideStepModal:function(){
+			this.$refs['stepForm'].resetFields();
 			this.sltUserVsb = false;
+			this.stepModalVisible = false;
 		},
-	
+		submit2Formal:function(){
+			//提交到正式  status=1  
+		},
+
+
 	}
 });
 //加载table数据
@@ -408,39 +464,23 @@ function loadTableData(){
         	},
    		 });
 };
+/**
+ * 处理空的参数
+ * @param datas
+ * @returns
+ */
+function cleanParams(datas){
+	var v_data ={};
+	for(var a in datas){
+		if (datas[a] != null && datas[a] instanceof Array) {
+			v_data[a]=[];
+		}else {
+			v_data[a] = null;
+		}
+	}
+	return v_data;
+}
+
 });
-function updateBusiness(data){
-    data.businessId = sltBusiness.businessId;
-    var updateResult = 0;
-    $.ajax(
-        {
-            url: "updateBusiness",
-            data:JSON.stringify(data),
-            dataType:"json",  
-            type: "post",
-            contentType:"application/json;charset=UTF-8",
-            success:function(row)
-            {
-                updateResult = row;
-            },
-            error:function()
-            {
-                toastr.error("请求失败");
-            },
-            complete:function()
-            {
-                $('#businessModal').modal('hide');
-                $("#businessTable").bootstrapTable('refresh');
-                if(updateResult>0){
-                    toastr.success("修改项目信息成功");
-                    $('#businessTable').bootstrapTable('refresh');
-                }
-                else if(updateResult==0){
-                    toastr.error("修改项目信息失败");
-                } 
-            }
-        });
-    return false;
-};
 </script>
 </html>

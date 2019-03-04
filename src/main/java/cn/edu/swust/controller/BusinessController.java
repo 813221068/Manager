@@ -61,14 +61,13 @@ public class BusinessController {
 	@ResponseBody
 	@RequestMapping(value="/batchDltBsns")
 	public int batchDltBsns(BusinessQuery query) {
-		
 		return businessService.batchDelete(query.getBusinessIds());
 	}
 	
 	@ResponseBody
 	@RequestMapping(value="/updateBusiness")
-	public int updateBusiness(@RequestBody Business business) {
-//		return businessService.update(business);
-		return 0;
+	public boolean updateBusiness(@RequestBody Business business) {
+		System.out.println(business);
+		return businessService.update(business,business.getSteps());
 	}
 }

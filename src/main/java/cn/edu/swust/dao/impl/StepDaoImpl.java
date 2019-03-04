@@ -50,4 +50,10 @@ public class StepDaoImpl implements StepDao {
 		return sqlSession.selectList(getNameSpace()+".queryList", query);
 	}
 
+	@Override
+	public int updateByPrimaryKeySelective(Step step) {
+		return sqlSession.update(getNameSpace()+".updateByPrimaryKeySelective", step);
+	}
+
+
 }

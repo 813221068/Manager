@@ -16,6 +16,7 @@ import cn.edu.swust.dao.RoleDao;
 import cn.edu.swust.dao.StepDao;
 import cn.edu.swust.entity.Business;
 import cn.edu.swust.entity.Role;
+import cn.edu.swust.entity.Step;
 import cn.edu.swust.entity.User;
 import cn.edu.swust.query.BusinessQuery;
 import cn.edu.swust.query.PermissionQuery;
@@ -67,9 +68,18 @@ public class BaseJunitTest {
 //		query.setBusinessId(2);
 //		System.out.println(businessService.delete(query));
 		
-		BusinessQuery query = new BusinessQuery();
-		query.setBusinessId(2);
+		Business business = new Business();
+		business.setBusinessId(2);
+		business.setBusinessName("test");
+		List<Step> steps = new ArrayList<>();
+		Step step = new Step();
+		step.setStepId(4);
+		step.setBusinessId(2);
+		step.setStepName("test");
 		
-		System.out.println(businessService.delete( query));
+		steps.add(step);
+		business.setSteps(steps);
+		
+		System.out.println(businessService.update(business, steps));
 	}
 }
