@@ -34,8 +34,9 @@ public class BusinessController {
 	}
 	
 	@ResponseBody
-	@RequestMapping(value="/businessList")
-	public JSONArray getBusinessList(BusinessQuery query) {
+	@RequestMapping(value="/businessList",method=RequestMethod.POST)
+	public JSONArray getBusinessList(@RequestBody BusinessQuery query) {
+		System.out.println(query);
 		List<Business> list = businessService.getBusinessList(query);
 		JSONArray jsonArray = JSONArray.parseArray(JSON.toJSONString(list));
 		return jsonArray;
@@ -65,9 +66,9 @@ public class BusinessController {
 	}
 	
 	@ResponseBody
-	@RequestMapping(value="/updateBusiness")
+	@RequestMapping(value="/updateBusiness",method=RequestMethod.POST)
 	public boolean updateBusiness(@RequestBody Business business) {
-		System.out.println(business);
+//		System.out.println(business);
 		return businessService.update(business,business.getSteps());
 	}
 }

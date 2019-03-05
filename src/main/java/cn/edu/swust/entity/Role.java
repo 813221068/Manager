@@ -20,11 +20,11 @@ public class Role {
 	private Date createTime;
 	
 	@JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss") 
-	private Date lastUpdateTime;
+	private Date updateTime;
 	
 	private String createUId;
 	
-	private String desc;
+	private String roleDesc;
 	
 	/*****************************/
 	private List<User> owners;

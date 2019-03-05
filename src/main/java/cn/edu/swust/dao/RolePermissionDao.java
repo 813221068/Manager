@@ -11,6 +11,8 @@ public interface RolePermissionDao {
 	
 	public int getMaxId();
 	
+	public void setPrimaryValue(int value);
+	
 	public int delete(RolePermissionQuery query);
 	
 	public List<RolePermission> queryList(RolePermissionQuery query);

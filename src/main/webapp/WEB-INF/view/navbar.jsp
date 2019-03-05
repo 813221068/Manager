@@ -13,7 +13,7 @@
 					 <span>主页</span>
 				</a>
 			</li>
-			<li><a href=""> <i class="fa fa fa-bar-chart-o"></i> <span
+			<li><a href="declare"> <i class="fa fa fa-bar-chart-o"></i> <span
 					>业务申报</span>
 			</a></li>
 			<li>
@@ -23,7 +23,7 @@
 				</a>
 				<ul class="nav nav-second-level">
 					<li><a href="business" data-index="0">项目管理</a></li>
-					<li><a href="declareBusiness">申报状态</a></li>
+					<li><a href="declare">申报状态</a></li>
 				</ul>
 			</li>
 			<li><a href="user"> <i class="fa fa-table"></i> <span

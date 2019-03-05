@@ -97,8 +97,7 @@
                 #{item.stepDesc},
                 #{item.priority},
                 <choose>
-                <!--todo #{item.approvalUserId} bug -->
-    				<when test="item.approvalUserId != null">#{approvalUserId},</when>
+    				<when test="item.approvalUserId != null">#{item.approvalUserId},</when>
     				<otherwise>0,</otherwise>
 				</choose>
                 #{item.approvalRoleId},

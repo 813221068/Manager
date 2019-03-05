@@ -65,7 +65,9 @@
 	</insert>
 	<!-- 查询角色下的用户 -->
 	<select id="getUserListByRole" resultMap="BaseResultMap" parameterType="cn.edu.swust.query.UserQuery">
-		select distinct user.* from(user join user_role on user.userId =
+		select distinct 
+		<include refid="defualt_fields"></include>
+		from(user join user_role on user.userId =
 		user_role.userId )
 		<include refid="condition"></include>
 	</select>

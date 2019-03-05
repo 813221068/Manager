@@ -4,7 +4,7 @@
 <html>
 <head>
 	<meta charset="utf-8">
-	<title>业务申报审批系统 - 业务管理</title>
+	<title>业务申报审批系统 - 项目管理</title>
 	
 	<%@ include file="common.jsp"%>
 </head>
@@ -12,8 +12,12 @@
 	<jsp:include page="navbar.jsp"></jsp:include>
 	<jsp:include page="header.jsp"></jsp:include>
 	<div class="content" id="content">
-		<div>
-			<h2>项目信息</h2>
+		<div class="m-t m-l m-b">
+			<el-breadcrumb separator="/">
+				<el-breadcrumb-item ><a href="index">首页</a></el-breadcrumb-item>
+				<el-breadcrumb-item>项目管理</el-breadcrumb-item>
+				<el-breadcrumb-item>项目列表</el-breadcrumb-item>
+			</el-breadcrumb>
 		</div>
 		<div class="table-bg">
             <div id="toolbar" class="btn-group table-tool">
@@ -22,16 +26,28 @@
 					<el-button icon="el-icon-delete" size="medium"  @click="batchDelete()">批量删除</el-button>
                 </span>
             </div>
+            <div class="table-search">
+				<el-input  placeholder="请输入项目名" clearable suffix-icon="el-icon-search" v-model="search.bsnsName" style="width: 20%;">
+				</el-input>
+				<el-select  v-model="search.sltStatus" placeholder="状态选择" clearable style="margin-left: 20px;"> 
+					<el-option v-for=" status in statusList" :key="status.value" :value="status.value" :label="status.label">
+					</el-option>
+				</el-select>
+				<el-button type="primary" plain style="margin-left: 20px;" @click="submitSearch()">查找</el-button>
+				<el-button type="info" plain style="margin-left: 20px;" @click="resetSearch()">重置</el-button>
+            </div>
 			<div class = "table">
-				<el-table :data="bsnsList" border stripe @selection-change="checkBoxChange" >
+			<!-- tableData -->
+				<el-table :data="bsnsList.slice((currentPage-1)*pageSize,currentPage*pageSize)" @selection-change="checkBoxChange" 
+				:default-sort = "{prop: 'businessId', order: 'ascending'}"  border stripe>
 						<el-table-column type="selection" >
-						</el-table-column>
-						<el-table-column label="项目ID" align='center'>
+						</el-table-column >
+						<el-table-column label="项目ID" align='center' prop="businessId" sortable>
 							<template slot-scope="scope">
 								<span style="margin-left: 10px">{{ scope.row.businessId }}</span>
 							</template>
 						</el-table-column>
-						<el-table-column label="项目名称" align="center"> 
+						<el-table-column label="项目名称" align="center" > 
 							<template slot-scope="scope">
 								<el-popover trigger="hover" placement="top">
 									<p>创建时间: {{ scope.row.createTime}}</p>
@@ -55,17 +71,20 @@
 							</template>
 						</el-table-column>
 						<!-- bug -->
-						<el-table-column label="状态" align="center">
+						<el-table-column label="状态" align="center" sortable prop="status">
 							<template slot-scope="scope">
-								<span v-bind:style="{color:scope.row.status==0?draftColor:formalColor}">
-								{{ scope.row.status==0?'草稿':'正式'}}</span>
+								<el-tag size="medium" :type="scope.row.status==1?'danger':'success'">
+								{{ scope.row.status==1?'草稿':'正式'}}</el-tag>
+						<!-- 		<span v-bind:style="{color:scope.row.status==0?draftColor:formalColor}">
+								{{ scope.row.status==0?'草稿':'正式'}}</span> -->
 							</template>	
 						</el-table-column>
 						<el-table-column label="操作" align="center">
 							<template slot-scope="scope">
-								<el-button v-if="scope.row.status==0?true:false" type="danger" size="mini" @click="editBsns(scope.$index, scope.row)">提交为正式</el-button>
-								<el-button v-if="scope.row.status==1?true:false" size="mini" @click="showBsns(scope.$index, scope.row)">查看</el-button>
-								<el-button v-if="scope.row.status==0?true:false" size="mini" @click="editBsns(scope.$index, scope.row)">编辑</el-button>
+								<el-button v-if="scope.row.status==1?true:false" type="danger" size="mini" 
+								@click="submit2Formal(scope.$index,scope.row)">提交为正式</el-button>
+								<el-button v-if="scope.row.status==2?true:false" size="mini" @click="showBsns(scope.$index, scope.row)">查看</el-button>
+								<el-button v-if="scope.row.status==1?true:false" size="mini" @click="editBsns(scope.$index, scope.row)">编辑</el-button>
 								<el-popover placement="top" width="160" v-model="scope.row.cfmVisible" trigger="click">
 									<div class="text-center">
 										<p>确定删除该项目吗</p>
@@ -77,6 +96,11 @@
 							</template>
 						</el-table-column>
 					</el-table>
+					<div class="m-t">
+						<el-pagination background layout="total, sizes, prev, pager, next, jumper" :total="total" :page-sizes="[5, 10, 20, 50]" :page-size="pageSize"  @size-change="pageSizeChange" @current-change="currentPageChange">
+						</el-pagination>
+					</div>
+					
 			</div>
 		</div>
 		<el-dialog :visible.sync="bsnsModalVsb" title="项目信息" :append-to-body="true"  :modal-append-to-body='false' width="20%" :close-on-click-modal="false">
@@ -110,10 +134,10 @@
   			</el-dialog>
   			<el-form :model="bsnsForm" ref="bsnsForm"  :rules="bsnsRules"  status-icon ref="bsnsForm" label="top">
 				<el-form-item label="项目名：" prop="bsnsName"  >
-   					<el-input placeholder="请输入项目名" v-model="bsnsForm.bsnsName" style="width: 80%;" clearable>
+   					<el-input placeholder="请输入项目名" v-model="bsnsForm.bsnsName" style="width: 80%;" clearable :disabled="cmfDisabled">
  				</el-form-item>
  				<el-form-item label="项目描述：" prop="bsnsDesc" >
-   					<el-input placeholder="请输入项目描述" v-model="bsnsForm.bsnsDesc" style="width: 80%;" clearable>
+   					<el-input placeholder="请输入项目描述" v-model="bsnsForm.bsnsDesc" style="width: 80%;" clearable :disabled="cmfDisabled">
  				</el-form-item>
  				<!--bug  step放在item下 step线的位置会变 -->
  				<el-form-item label="审批流程：" prop="steps">
@@ -121,12 +145,12 @@
  				<el-steps  :active="0" >
 					<el-step :title="step.stepName" :description="step.stepDesc" v-for="step in bsnsForm.steps" ></el-step>
 				</el-steps>
-				<el-button type="primary" size="mini" icon="el-icon-plus" @click="stepModalVisible = true">添加流程</el-button>
-				<el-button type="primary" size="mini" icon="el-icon-delete" @click="deleteStep()">删除流程</el-button>
+				<el-button type="primary" size="mini" icon="el-icon-plus" @click="stepModalVisible = true" :disabled="cmfDisabled">添加流程</el-button>
+				<el-button type="primary" size="mini" icon="el-icon-delete" @click="deleteStep()" :disabled="cmfDisabled">删除流程</el-button>
   			</el-form>
 			<span slot="footer">
 				<el-button @click="hideBsnsModal()">取 消</el-button>
-    			<el-button type="primary" @click="submitBsnsModal('bsnsForm')">确 认</el-button>
+    			<el-button type="primary" @click="submitBsnsModal('bsnsForm')" :disabled="cmfDisabled">确 认</el-button>
 			</span>
 		</el-dialog>
 	</div>
@@ -138,7 +162,7 @@ var modalOperating = 0;
 //流程数最大值
 var stepMaxCount = 3;
 //标记选中的row 
-var sltBusiness;  
+var sltBusiness = {};  
 $(document).ready(function(){
 var vue = new Vue({
 	el: '#content',
@@ -153,6 +177,20 @@ var vue = new Vue({
         }
      	};
 		return {
+			total:100,//table总数
+			pageSize:5,//每页条数
+			currentPage:1,//当前页
+			search:{
+				bsnsName:null,
+				sltStatus:"",
+			},
+			statusList:[{
+				"value":1,
+				"label":"草稿"
+			},{
+				"value":2,
+				"label":"正式"
+			}],
 			bsnsForm:{
 				bsnsName:'',
 				bsnsDesc:null,
@@ -186,9 +224,8 @@ var vue = new Vue({
 			draftColor:'#F56C6C',//草稿状态字体颜色
 			formalColor:'#67C23A',//正式状态字体颜色
 			roles:[],
+			cmfDisabled:false,//查看时 禁用按钮
 
-			///test
-			question:''
 		};
 	},
 	watch:{
@@ -197,11 +234,11 @@ var vue = new Vue({
 		},
 	},
 	mounted:function(){
-		loadTableData();
+		loadTableData({});
 		$.ajax({
 			url:"getRoleList",
-			// data:,
-			type:"get",
+			data:JSON.stringify({}),
+			type:"post",
 			traditional: true,//传递数组
 			contentType:"application/json;charset=UTF-8",
 			success:function(data){
@@ -217,6 +254,20 @@ var vue = new Vue({
 		});
 	},
 	methods:{
+		submitSearch:function(){
+			var para = {"businessName":this.search.bsnsName,"status":this.search.sltStatus};
+			loadTableData(para);
+		},
+		resetSearch:function(){
+			this.search = cleanParams(this.search);
+			loadTableData({});
+		},
+		pageSizeChange:function(val){
+			this.pageSize = val;
+		},
+		currentPageChange:function(val){
+			this.currentPage = val;
+		},
 		checkBoxChange:function(val){
 			this.multipleSelection = val;
 			var batchBtn = document.getElementById('batchBtn');
@@ -237,7 +288,25 @@ var vue = new Vue({
 		},
 		//查看
 		showBsns:function(index,row){
+			//todo 
 			//和编辑界面一样  但是按钮禁用
+			this.bsnsForm.bsnsName = row.businessName;
+			this.bsnsForm.bsnsDesc = row.businessDesc;
+			this.bsnsForm.steps = row.steps;
+
+			this.cmfDisabled = true;
+			this.bsnsModalVsb = true;
+
+		},
+		//提交到正式
+		submit2Formal:function(index,row){
+			var para = {"businessId":row.businessId,"status":2};
+			var msg = [];
+			msg.push('提交为正式成功');
+			msg.push('提交为正式失败');
+			updateBsns(para,msg);
+			loadTableData({});
+
 		},
 		deleteBsns:function(index,row){
 			row.cfmVisible = false;
@@ -253,7 +322,7 @@ var vue = new Vue({
 				}else{
 					toastr.success("删除成功");
 				}
-				loadTableData();
+				loadTableData({});
 			},
 			error:function(){
 				toastr.error("请求失败");
@@ -279,7 +348,7 @@ var vue = new Vue({
 				}else{
 					toastr.success("全部删除成功");
 				}
-				loadTableData();
+				loadTableData({});
 			},
 			error:function(){
 				toastr.error("请求失败");
@@ -318,7 +387,7 @@ var vue = new Vue({
 					if(modalOperating==0){
 						var parameter = {"businessName":this.bsnsForm.bsnsName,"businessDesc":this.bsnsForm.bsnsDesc,"steps":this.bsnsForm.steps,
 							"createTime":moment(new Date()).format("YYYY-MM-DD HH:mm:ss"),"createUserId":${user.userId},
-							"updateTime":moment(new Date()).format("YYYY-MM-DD HH:mm:ss"),"status":0
+							"updateTime":moment(new Date()).format("YYYY-MM-DD HH:mm:ss"),"status":1
 						};
 						$.ajax(
 						{
@@ -329,11 +398,11 @@ var vue = new Vue({
 							contentType:"application/json;charset=UTF-8",
 							success:function(data)
 							{
-								console.log(data);
+								// console.log(data);
 								if(data>0){
 									toastr.success("添加项目成功");
 									vue.hideBsnsModal();
-									loadTableData();
+									loadTableData({});
 								}else{
 									if(vue.bsnsForm.steps.length==0){
 										toastr.error("添加失败,审批流程不能为空");
@@ -350,33 +419,16 @@ var vue = new Vue({
 						});
 					}else{  //修改项目信息
 						modalOperating = 0;
-						var para = sltBusiness;
-						para['businessName'] = sltBusiness.bsnsName;
-						para['businessDesc'] = sltBusiness.bsnsDesc;
-						para['updateTime'] = moment(new Date()).format("YYYY-MM-DD HH:mm:ss");
-						para['businessId'] = sltBusiness.businessId;
-						$.ajax(
-						{
-							url: "updateBusiness",
-							data:JSON.stringify(para),
-							dataType:"json",  
-							type: "post",
-							contentType:"application/json;charset=UTF-8",
-							success:function(data)
-							{
-								if(data){
-									toastr.success("修改项目信息成功");
-									vue.hideBsnsModal();
-									loadTableData();
-								}else{
-									toastr.error("修改项目信息失败");
-								}
-							},
-							error:function()
-							{
-								toastr.error("请求失败");
-							},
-						});
+						var para = {"businessName":this.bsnsForm.bsnsName,"businessDesc":this.bsnsForm.bsnsDesc,"businessId":
+									sltBusiness.businessId,"steps":this.bsnsForm.steps};
+						// console.log(para);
+						var msg = [];
+						msg.push('更新项目信息成功');
+						msg.push('更新项目信息失败');
+						updateBsns(para,msg);
+						this.hideBsnsModal();
+						loadTableData({});
+					
 					}
 				}else{
 					return;
@@ -422,7 +474,10 @@ var vue = new Vue({
 		},
 		hideBsnsModal:function(){
 			this.$refs['bsnsForm'].resetFields();
+			this.bsnsForm = cleanParams(this.bsnsForm);
+			// console.log(this.bsnsForm);
 			this.bsnsModalVsb = false;
+			this.cmfDisabled = false;
 			this.bsnsForm.steps = [];
 		//	this.hideStepModal();
 		},
@@ -431,19 +486,17 @@ var vue = new Vue({
 			this.sltUserVsb = false;
 			this.stepModalVisible = false;
 		},
-		submit2Formal:function(){
-			//提交到正式  status=1  
-		},
-
 
 	}
 });
 //加载table数据
-function loadTableData(){
+function loadTableData(para){
 	$.ajax({
 			url:"businessList",
+			data:JSON.stringify(para),
 			dataType:"json",  
-			type:"get",
+			type:"post",
+			contentType:"application/json;charset=UTF-8",
         	traditional: true,//传递数组
         	success:function(data){
         		//todo 修改modal 替换成kong
@@ -454,10 +507,11 @@ function loadTableData(){
         			if(isnull(bsns.businessDesc)){
         				bsns.businessDesc = "暂无数据";
         			}
-        			//bsns.status = bsns.status==0?'草稿':'正式';
+        			//bsns.status = bsns.status==1?'草稿':'正式';
         			list.push(bsns);
         		}
         		vue.bsnsList = list;
+        		vue.total = list.length;
         	},
         	error:function(){
         		toastr.error("请求失败");
@@ -465,7 +519,35 @@ function loadTableData(){
    		 });
 };
 /**
- * 处理空的参数
+ * 更新项目接口
+ * @param para 
+ * @param msg  msg[0]是成功提示信息  msg[1]是失败提示信息
+ * @returns
+ */
+function updateBsns(para,msg){
+	$.ajax(
+	{
+		url: "updateBusiness",
+		data:JSON.stringify(para),
+		dataType:"json",  
+		type: "post",
+		contentType:"application/json;charset=UTF-8",
+		success:function(data)
+		{
+			if(data){
+				toastr.success(msg[0]);
+			}else{
+				toastr.error(msg[1]);
+			}
+		},
+		error:function()
+		{
+			toastr.error("请求失败");
+		},
+	});
+};
+/**
+ * 清空参数
  * @param datas
  * @returns
  */

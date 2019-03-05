@@ -89,7 +89,6 @@ public class BusinessService {
 	 */
 	@Transactional
 	public int insertBusiness(Business business,List<Step> steps) {
-		//todo bug 回滚事务
 		int sltId = 0;
 		try {
 			if(business.getCreateUserId()==null||business.getCreateUserId()==""||steps==null||steps.size()==0) {
@@ -103,8 +102,8 @@ public class BusinessService {
 				for(Step step : steps) {
 					step.setBusinessId(sltId);
 				}
+				
 				stepDao.setPrimaryValue(1);
-				System.out.println(steps);
 				stepDao.batchInsert(steps);
 			}
 			
@@ -143,8 +142,7 @@ public class BusinessService {
 	public int delete(BusinessQuery query) {
 		int ret = 0;
 		try {
-			//todo 批量删除bug  修改删除项目的逻辑
-			
+			//todo 修改删除逻辑  
 			DeclareBusinessQuery dclrBsnsQuery = new DeclareBusinessQuery();
 			ObjectConvert.obj2Obj(query, dclrBsnsQuery);
 
@@ -182,18 +180,20 @@ public class BusinessService {
 				List<Step> oldSteps = stepDao.queryList(query);
 				
 				for(Step step : steps) {
+					//插入新流程
 					if(step.getStepId() == 0) {
 						step.setBusinessId(business.getBusinessId());
 						
 						stepDao.setPrimaryValue(1);
 						stepDao.insertOneSelective(step);
 					}else {
-						
+						//更新旧流程
 						oldSteps.remove(step);
 						stepDao.updateByPrimaryKeySelective(step);
 					}
 				}
 
+				//删除已删除的流程
 				if(oldSteps != null && oldSteps.size()>0) {
 					int[] ids = new int[oldSteps.size()];
 					for(int i=0;i<oldSteps.size();i++) {

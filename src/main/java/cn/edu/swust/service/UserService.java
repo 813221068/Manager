@@ -102,13 +102,20 @@ public class UserService {
 		List<Permission> list = new ArrayList<>();
 		try {
 			if(query.IsQueryByUser()) {
+				
 				list = pmsDao.queryPmsListByUser(query);
+				
 			}else if(query.IsQueryByRole()){
+				
 				list  = pmsDao.queryPmsListByRole(query);
+				
 			}else {
+				
 				list = pmsDao.queryList(query);
+				
 			}
 		} catch (Exception e) {
+			
 			LogHelper.logError(e);
 		}
 		

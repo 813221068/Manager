@@ -33,6 +33,8 @@
                 </foreach>
 			</if>
 			<if test="businessId != 0 "> and business.businessId=#{businessId} </if>
+			<if test="businessName!=null"> and business.businessName like CONCAT('%',#{businessName},'%') </if>
+			<if test="status != 0"> and business.status=#{status}</if>
 		</where>
 	</sql>
 	<!-- orderby sql-->

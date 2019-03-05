@@ -3,7 +3,7 @@
 <!DOCTYPE html>
 <html>
 <head>
-   <link rel="shortcut icon" href="img/favicon.ico">
+<!--    <link rel="shortcut icon" href="img/favicon.ico"> -->
 
     <link href="css/bootstrap.min.css" rel="stylesheet">
     <link href="css/bootstrap-select.css" rel="stylesheet">

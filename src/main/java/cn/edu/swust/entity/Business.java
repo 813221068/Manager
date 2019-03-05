@@ -38,7 +38,7 @@ public class Business {
 	 */
 	private String createUserId;
 	/**
-	 * 状态     默认为0 ->草稿    1为->正式
+	 * 状态     默认为1 ->草稿    2为->正式
 	 */
 	private int status;
 	

@@ -265,6 +265,7 @@
 .active > a > .fa.arrow:before {
     content: "\f107";
 }
+
 /* header */
 .header{
 	 background:white;
@@ -311,6 +312,10 @@
 }
 .table-tool{
     margin-top:20px;
+    margin-left: 20px;
+}
+.table-search{
+    margin-top: 20px;
     margin-left: 20px;
 }
 /* table*/

@@ -35,14 +35,14 @@ public class RoleDaoImpl implements RoleDao {
 
 	@Override
 	public int insertOne(Role role) {
-		int ret = 0;
-		try {
-			ret = sqlSession.insert(getNameSpace()+".insertOne", role);
-		} catch (Exception e) {
-			//LogHelper.logError(e.getMessage());
-			LogHelper.logError(e.getMessage()+"\nsql为:"+getNameSpace()+".insertOne");
+		int id = 0;
+		int row = sqlSession.insert(getNameSpace()+".insertOne", role);
+		
+		if(row != 0) {
+			id = getMaxRoleId();
 		}
-		return ret;
+		
+		return id;
 	}
 
 	@Override
@@ -88,6 +88,11 @@ public class RoleDaoImpl implements RoleDao {
 			LogHelper.logError(e.getMessage()+"\nsql为:"+getNameSpace()+".updateByPrimaryKeySelective");
 		}
 		return row;
+	}
+
+	@Override
+	public void setPrimaryValue(int value) {
+		sqlSession.selectOne(getNameSpace()+".setPrimaryValue", value);
 	}
 
 }

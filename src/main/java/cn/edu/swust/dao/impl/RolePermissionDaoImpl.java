@@ -66,4 +66,10 @@ public class RolePermissionDaoImpl implements RolePermissionDao {
 		return list;
 	}
 
+	@Override
+	public void setPrimaryValue(int value) {
+		sqlSession.selectOne(getNameSpace()+".setPrimaryValue", value);
+		
+	}
+
 }

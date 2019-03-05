@@ -10,6 +10,11 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 
+import com.alibaba.fastjson.JSON;
+import com.alibaba.fastjson.JSONObject;
+import com.alibaba.fastjson.serializer.SerializerFeature;
+import com.sun.xml.internal.messaging.saaj.packaging.mime.util.QDecoderStream;
+
 import cn.edu.swust.dao.BusinessDao;
 import cn.edu.swust.dao.PermissionDao;
 import cn.edu.swust.dao.RoleDao;
@@ -68,18 +73,26 @@ public class BaseJunitTest {
 //		query.setBusinessId(2);
 //		System.out.println(businessService.delete(query));
 		
-		Business business = new Business();
-		business.setBusinessId(2);
-		business.setBusinessName("test");
-		List<Step> steps = new ArrayList<>();
-		Step step = new Step();
-		step.setStepId(4);
-		step.setBusinessId(2);
-		step.setStepName("test");
+//		Business business = new Business();
+//		business.setBusinessId(2);
+//		business.setBusinessName("test");
+//		List<Step> steps = new ArrayList<>();
+//		Step step = new Step();
+//		step.setStepId(4);
+//		step.setBusinessId(2);
+//		step.setStepName("test");
+//		
+//		steps.add(step);
+//		business.setSteps(steps);
 		
-		steps.add(step);
-		business.setSteps(steps);
+//		RoleQuery query = new RoleQuery();
+//		List<Role> list = roleService.queryList(query);
+//		for(Role role : list) {
+//			System.out.println(JSONObject.toJSONString(role,SerializerFeature.WriteMapNullValue));
+//		}
 		
-		System.out.println(businessService.update(business, steps));
+		userService.getPmsList(new PermissionQuery());
+		
+		
 	}
 }

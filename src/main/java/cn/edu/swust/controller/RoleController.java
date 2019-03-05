@@ -18,6 +18,7 @@ import org.springframework.web.bind.annotation.ResponseBody;
 import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONArray;
 import com.alibaba.fastjson.JSONObject;
+import com.alibaba.fastjson.serializer.SerializerFeature;
 
 import cn.edu.swust.entity.Role;
 import cn.edu.swust.query.RoleQuery;
@@ -35,18 +36,19 @@ public class RoleController {
 	}
 	
 	@ResponseBody
-	@RequestMapping(value="/getRoleList",method=RequestMethod.GET)
-	public JSONArray getRoleList(RoleQuery query) {
+	@RequestMapping(value="/getRoleList",method=RequestMethod.POST)
+	public JSONArray getRoleList(@RequestBody RoleQuery query) {
 		List<Role> list = roleService.queryList(query);
-		JSONArray array= JSONArray.parseArray(JSON.toJSONString(list));
+		String json = JSONObject.toJSONString(list,SerializerFeature.WriteMapNullValue);
+		JSONArray array= JSONArray.parseArray(json);
 		return array;
 	}
 
 	@ResponseBody
 	@RequestMapping(value="/addRole")
 	public int add(@RequestBody Role role) {
-		int ret = roleService.addRole(role);
-		return ret;
+		int id = roleService.addRole(role);
+		return id;
 	}
 	
 	@ResponseBody

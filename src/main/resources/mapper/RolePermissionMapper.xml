@@ -27,6 +27,10 @@
     <!-- 分页 sql-->
     <sql id="page">
     </sql>
+    
+    <select id="setPrimaryValue" parameterType="int">
+        alter table role_permission   AUTO_INCREMENT=#{num};
+    </select>
 
 	<!-- 查最大主键ID -->
 	<select id="getMaxId" resultType="java.lang.Integer">

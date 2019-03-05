@@ -107,7 +107,7 @@ public class UserController {
 	 */
 	@ResponseBody
 	@RequestMapping(value="/getPmsList",method=RequestMethod.POST)
-	public JSONArray getPmsList(PermissionQuery query){
+	public JSONArray getPmsList(@RequestBody PermissionQuery query){
 		List<Permission> list = userService.getPmsList(query);
 		JSONArray jsonArray = JSONArray.parseArray(JSON.toJSONString(list));
 		return jsonArray;

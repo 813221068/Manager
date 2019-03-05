@@ -10,14 +10,21 @@ public interface RoleDao {
 
 	public List<Role> queryList(RoleQuery query);
 	/**
-	 * 添加 返回rows
+	 * 添加 
 	 * @param role
-	 * @return
+	 * @return id  失败为0
 	 */
 	public int insertOne(Role role);
-	
+	/**
+	 *原逻辑   用于更新时设置主键   已更新逻辑
+	 * @return
+	 */
 	public int getMaxRoleId();
-	
+	/**
+	 * 更新主键自增值      新逻辑
+	 * @param value
+	 */
+	public void setPrimaryValue(int value);
 	public List<Permission> queryPmsList(RoleQuery query);
 	
 	public int delete(RoleQuery query);

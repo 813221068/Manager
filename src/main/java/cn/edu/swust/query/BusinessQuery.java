@@ -14,4 +14,12 @@ public class BusinessQuery extends BaseQuery {
 	 * 项目id
 	 */
 	private int businessId;
+	/***
+	 * 项目名称
+	 */
+	private String businessName;
+	/**
+	 * 项目状态    1->草稿  2->正式
+	 */
+	private int status;
 }

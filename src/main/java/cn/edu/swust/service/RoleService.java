@@ -6,6 +6,8 @@ import java.util.List;
 import org.apache.ibatis.javassist.expr.NewArray;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
+import org.springframework.transaction.interceptor.TransactionAspectSupport;
 
 import cn.edu.swust.dao.PermissionDao;
 import cn.edu.swust.dao.RoleDao;
@@ -45,6 +47,7 @@ public class RoleService {
 		List<Role> retList = new ArrayList<>();
 		try {
 			for(Role role : roles) {
+				
 				//创建人
 				UserQuery userQuery = new UserQuery();
 				userQuery.setUserId(role.getCreateUId());
@@ -58,6 +61,8 @@ public class RoleService {
 				userQuery.setRoleId(role.getRoleId());
 				role.setOwners(userDao.getUserListByRole(userQuery));
 				retList.add(role);
+				
+				
 			}
 		} catch (Exception e) {
 			LogHelper.logError(e);
@@ -65,26 +70,40 @@ public class RoleService {
 		
 		return retList;
 	}
-	
+	/**
+	 * 添加角色
+	 * @param role
+	 * @return id 0是失败
+	 */
+	@Transactional
 	public int addRole(Role role) {
-		//设置id为最大id+1
-		role.setRoleId(roleDao.getMaxRoleId()+1);
-		int row = roleDao.insertOne(role);
+		int id = 0;
 		try {
+			roleDao.setPrimaryValue(1);
+			id = roleDao.insertOne(role);
+			
 			//添加角色-权限表
-			if(row!=0) {
+			if(id != 0 && role.getPmsList()!=null && role.getPmsList().size()>0) {
+				
 				for(Permission pms : role.getPmsList()) {
-					RolePermission rolePermission = new RolePermission(rolePmsDao.getMaxId()+1,role.getRoleId(),
-							pms.getPermissionId());
+
+					RolePermission rolePermission = new RolePermission();
+					rolePermission.setRoleId(id);
+					rolePermission.setPermissionId(pms.getPermissionId());
+					
+					rolePmsDao.setPrimaryValue(1);
 					rolePmsDao.insertOne(rolePermission);
+					
 				}
 			}
-			return row;
-		} catch (Exception e) {
+			
+		}catch (Exception e) {
 			LogHelper.logError(e);
+			TransactionAspectSupport.currentTransactionStatus().setRollbackOnly();
+			id = 0;
 		}
 		
-		return 0;
+		return id;
 	}
 	
 	public int delete(RoleQuery query) {
