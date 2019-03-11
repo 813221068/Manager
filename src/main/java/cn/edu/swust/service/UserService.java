@@ -70,15 +70,19 @@ public class UserService {
      */
     public boolean register(User user) {
     	UserQuery query = new UserQuery();
+    	
     	int ret = 0;
     	try {
-    		query.setUsername(user.getUsername());
+    		query.setMail(user.getMail());
         	if(userDao.count(query)>0) {
         		return false;
         	}
+        	
         	user.setUserId(StringUtil.get32LengthString());
+        	//前端psw 采用64base加密
         	String psw = EncodeUtil.decode64Base(user.getPassword());
         	user.setPassword(EncodeUtil.encodeByMD5(psw));
+        	
         	int ret1 = userDao.insert(user);
         	//更新user_role
         	UserRole userRole = new UserRole();
@@ -88,6 +92,7 @@ public class UserService {
         	ret = ret1*ret2;
 		} catch (Exception ex) {
 			LogHelper.logError(ex);
+			ret = 0;
 		}
     	
     	return ret>0?true:false;

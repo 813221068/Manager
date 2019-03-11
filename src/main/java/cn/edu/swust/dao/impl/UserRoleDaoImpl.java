@@ -24,37 +24,20 @@ public class UserRoleDaoImpl implements UserRoleDao {
 
 	@Override
 	public int insert(UserRole userRole) {
-		int res = 0;
-		try {
-			res = sqlSession.insert(getNameSpace()+".insert", userRole);
-		} catch (Exception e) {
-			LogHelper.logError(e);
-		}
 		
-		return res;
+		return sqlSession.insert(getNameSpace()+".insert", userRole);
 	}
 
 	@Override
 	public UserRole query(UserRoleQuery query) {
-		UserRole res = null;
-		try {
-			res = sqlSession.selectOne(getNameSpace() + ".query", query);
-		}
-		catch (Exception ex) {
-			LogHelper.logError(ex);
-		}
 		
-		return res;
+		return sqlSession.selectOne(getNameSpace() + ".query", query);
 	}
 
 	@Override
 	public List<UserRole> queryList(UserRoleQuery query) {
 		List<UserRole> list = new ArrayList<>();
-		try {
-			list = sqlSession.selectList(getNameSpace()+".query", query);
-		} catch (Exception e) {
-			LogHelper.logError(e);
-		}
+		list = sqlSession.selectList(getNameSpace()+".query", query);
 		
 		return list;
 	}
@@ -62,11 +45,7 @@ public class UserRoleDaoImpl implements UserRoleDao {
 	@Override
 	public List<String> getUserIds(UserRoleQuery query) {
 		List<String> userIds = new ArrayList<>();
-		try {
-			userIds = sqlSession.selectList(getNameSpace()+".getUserIds", query);
-		} catch (Exception e) {
-			LogHelper.logError(e," sql:"+getNameSpace()+".getUserIds");
-		}
+		userIds = sqlSession.selectList(getNameSpace()+".getUserIds", query);
 		return userIds;
 	}
 }

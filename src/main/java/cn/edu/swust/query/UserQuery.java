@@ -12,6 +12,10 @@ public class UserQuery extends BaseQuery {
 	private String userId;
 	
 	private String username;
+	/**
+	 * 邮箱     唯一
+	 */
+	private String mail;
 	
 	private String password;
 	

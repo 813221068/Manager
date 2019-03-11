@@ -79,17 +79,11 @@ public class UserController {
 		attr.addFlashAttribute("msg", "用户名或密码错误");
 		return "redirect:"+toLoginPage();
 	}
-	
+	@ResponseBody
 	@RequestMapping(value="/register",method=RequestMethod.POST)
-	public String register(User user,RedirectAttributes attr) {
-		String msg = "注册成功,请登录";
-		if(!userService.register(user)) {
-			msg = "注册失败，用户名已存在";
-			attr.addFlashAttribute("msg", msg);
-			return "redirect:"+toRisterPage();
-		}
-		attr.addFlashAttribute("msg", msg);
-		return "redirect:"+toLoginPage();
+	public boolean register(User user,RedirectAttributes attr) {
+		attr.addFlashAttribute("registerStatus", 1);
+		return userService.register(user);
 	}
 	
 	@RequestMapping(value="/doLogout")

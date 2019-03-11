@@ -12,44 +12,37 @@
 
 <body class="gray-bg register-bg">
 
-    <div class="register-box text-center animated fadeInDown">
+    <div id="content" class="register-box text-center animated fadeInDown">
         <div>
             <h3>欢迎注册 </h3>
             <p>创建一个新账户</p>
             <div class="msg">${msg}</div>
-            <form id="registerForm" class="m-t" role="form" action="register" method="post">
-                <div class="form-group">
-                    <input id="username" name="username" type="text" class="form-control" placeholder="请输入用户名" 
-                    onblur="checkUserName()" required="required">
-                </div>
-                <div class="form-group">
-                    <input id="psw"  type="password" class="form-control" placeholder="请输入密码" onblur="checkPsw()" 
-                    required="required">
-                </div>
-                <div class="form-group">
-                    <input id="confirmPsw"type="password" class="form-control" placeholder="请再次输入密码" onblur="checkConfirmPsw()"
-                    required="required">
-                </div>
-                <div>
-                    <input id="encodePsw" type="hidden" name="password"/>
-                </div>
-				<div class="form-group text-left">
-                    <div class="i-checks">
-                        <label class="no-padding">
-                            <input type="checkbox" id="checkAgree"  checked><i></i> 我已阅读并同意注册协议</label>
-							<i class="fa fa-angle-down" aria-hidden="true" id="downArrow"></i>
-							<i class="fa fa-angle-up display" aria-hidden="true" id="upArrow"></i>
-                    </div>
-                    <div class="display" id="protocol">
-                    	<a href="http://baidu.com" target="_blank">《注册协议》</a>
-                    </div>
-                </div>
-                <button class="btn btn-primary block full-width m-b" onclick="return registerForm()">注 册</button>
-
-                <p class="text-muted text-center"><small>已经有账户了？</small><a href="login">点此登录</a>
-                </p>
-
-            </form>
+            <el-form  status-icon label-postion="left" :rules="rules" :model="rgstForm" ref="rgstForm" >
+                <el-form-item  prop="username"  >
+                    <el-input placeholder="请输入用户名" v-model="rgstForm.username"  clearable >
+                </el-form-item>
+                <el-form-item  prop="mail" >
+                    <el-input placeholder="请输入邮箱地址" v-model="rgstForm.mail"  clearable >
+                </el-form-item>
+               	<el-form-item  prop="password" >
+                    <el-input type="password" placeholder="至少6位密码，区分大小写" v-model="rgstForm.password" clearable show-password>
+                </el-form-item>
+                <el-form-item  prop="cfmPassword" >
+                    <el-input type="password" placeholder="请输入确认密码" v-model="rgstForm.cfmPassword"  clearable show-password >
+                </el-form-item>
+                <el-form-item class="register-form" prop="agreement">
+                	<el-checkbox v-model="checked" >我已阅读并同意注册协议</el-checkbox>
+                	<i class="el-icon-arrow-down" v-if="arrowVsb" @click="arrowVsb=false" ></i>
+                	<i class="el-icon-arrow-up" v-if="!arrowVsb" @click="arrowVsb=true"></i>
+                	<div style="margin-top: -17px;margin-bottom: -13px;">
+						<a href="http://baidu.com" v-if="!arrowVsb" target="_blank" >《注册协议》</a>
+                	</div>
+                </el-form-item>
+                <el-form-item>
+					<el-button type="primary" class=" full-width" @click="register()">注册</el-button>
+					<p class="text-muted text-center"><small>已经有账户了？</small><a href="login">点此登录</a>
+                </el-form-item>
+            </el-form>
         </div>
     </div>
     
@@ -58,114 +51,99 @@
             <a href="http://baidu.com">BlackC</a>
         </p>
     </div>
-
-	<script>
-		$(document).ready(function() {
-			$('.i-checks').iCheck({
-				checkboxClass : 'icheckbox_square-green',
-				radioClass : 'iradio_square-green',
-			});
-			//显示注册协议
-			$("#downArrow").click(function(){
-				document.getElementById("downArrow").style.display = "none";
-				document.getElementById("upArrow").style.display = "inline";
-				document.getElementById("protocol").style.display = "inline";
-				
-			});
-			$("#upArrow").click(function(){
-				document.getElementById("downArrow").style.display = "inline";
-				document.getElementById("upArrow").style.display = "none";
-				document.getElementById("protocol").style.display = "none";
-			});
-		}); 
-	    function registerForm() {
-			var form = document.getElementById("registerForm");
-			if(check()){
-				var psw = document.getElementById("psw");
-				var encodePsw = document.getElementById("encodePsw");
-				//加密
-				encodePsw.value = $.base64.btoa(psw.value);
-				form.submit();
-			}
-			
-			return false;
-		};
-		function checkUserName() {
-			var username = document.getElementById("username").value;
-			var patt = new RegExp("^[A-Za-z0-9]*$");
-			if( username.length<=16 && patt.test(username)){
-				return true;
-			}
-	//		alert("输入不合法，用户名由数字和字母组成，长度小于等于16位");
-			var txt= "输入不合法，用户名由数字和字母组成，长度小于等于16位";
-			window.wxc.xcConfirm(txt, window.wxc.xcConfirm.typeEnum.info);
-		};
-		function checkPsw(){
-			var psw = document.getElementById("psw").value;
-			var patt = new RegExp("^[A-Za-z0-9]*$");
-			if( psw.length<=16 && psw.length>=6 && patt.test(psw)){
-				return true;
-			}
-			var txt= "输入不合法，密码为6-16位字母和数字组合";
-			window.wxc.xcConfirm(txt, window.wxc.xcConfirm.typeEnum.info);
-			return false;
-		};
-		function checkConfirmPsw(){
-			var confirmPsw = document.getElementById("confirmPsw").value;
-			var psw = document.getElementById("psw").value;
-			var patt = new RegExp("^[A-Za-z0-9]*$");
-			if(confirmPsw != psw){
-				var txt= "两次输入密码不一致,请重新输入";
-				window.wxc.xcConfirm(txt, window.wxc.xcConfirm.typeEnum.info);
-			}
-		}
-		function check() {
-			//输入不为空 ，两次密码相同 ，点击同意
-			var username = document.getElementById("username");
-			if(isnull(username.value)){
-				var txt= "用户名不能为空";
-				window.wxc.xcConfirm(txt, window.wxc.xcConfirm.typeEnum.info);
-				return false;
-			}
-			var password = document.getElementById("psw");
-            if(isnull(password.value)){
-            //	alert("密码不能为空");
-            	var txt= "密码不能为空";
-				window.wxc.xcConfirm(txt, window.wxc.xcConfirm.typeEnum.info);
-            	return false;
-            }
-            var confirmPsw = document.getElementById("confirmPsw");
-            if(isnull(confirmPsw.value)){
-            //	alert("确认密码不能为空");
-            	var txt= "确认密码不能为空";
-				window.wxc.xcConfirm(txt, window.wxc.xcConfirm.typeEnum.info);
-            	return false;
-            }
-            if(password.value != confirmPsw.value){
-            //	alert("两次输入密码不一致");
-            	var txt= "两次输入密码不一致";
-                window.wxc.xcConfirm(txt, window.wxc.xcConfirm.typeEnum.info);
-            	return false;
-            } 
-            if(!document.getElementById("checkAgree").checked){
-            //	alert("请先同意注册协议");
-            	var txt= "请先同意注册协议";
-				window.wxc.xcConfirm(txt, window.wxc.xcConfirm.typeEnum.info);
-            	return false;
-            }
-            return true;
-		};
-		//判读是否为空
-		function isnull(str){
-			str = str.replace(/\s+/g,"");
-			if(str==''||str==undefined||str==null){
-				return true;
-			}else{
-				return false;
-			}
-		};
-	</script>
-
 </body>
+<script type="text/javascript">
+$(document).ready(function(){
+	var vue = new Vue({
+		el:"#content",
+		data:function(){
+			var checkPassword = (rule, value, callback) => {
+				if (value.length<6) {
+					callback(new Error('密码长度不能小于6'));
+				} else if(value.length>=16){
+					callback(new Error('密码长度不能超过16'));
+				}else{
+					callback();
+				}
+			};
+			var checkCfmPassword = (rule,value,callback) =>{
+				if(value!=this.rgstForm.password){
+					callback(new Error('两次输入的密码不一致！'));
+				}else{
+					callback();
+				}
+			};
+			var checkAgreement = (rule,value,callback)=>{
+				if(this.checked==false){
+					callback(new Error('请阅读并同意注册协议'));
+				}else{
+					callback();
+				}
+			};
+			return {
+				rgstForm:{
+					username:null,
+					mail:null,
+					password:null,
+					cfmPassword:null,
+				},
+				checked:true,
+				arrowVsb:true,//true箭头向下，false箭头向上且显示协议
+				rules:{
+					username:[{required: true, message: '用户名不能为空'}],
+					mail:[
+						{required: true, message: '邮箱不能为空'},
+						{ type: 'email', message: '请输入正确的邮箱地址', trigger: ['blur', 'change'] }
+					],
+					password:[
+						{required: true, message: '密码不能为空'},
+						{validator: checkPassword, trigger: 'blur' }
+					],
+					cfmPassword:[
+						{required:true,message:'确认密码不能为空'},
+						{validator:checkCfmPassword,trigger:'blur'}
+					],
+					agreement:[{validator:checkAgreement,trigger:'blur'}]
+				},
+			};
+		},
+		methods:{
+			register:function(){
+				this.$refs['rgstForm'].validate((valid) =>{
+					this.rgstForm['password'] =  $.base64.btoa(this.rgstForm['password']);
+					if(valid){
+						$.ajax({
+							url:"register",
+							data:this.rgstForm,
+							type:"post",
+							traditional: true,//传递数组
+							success:function(data){
+								if(data){
+									vue.$refs['rgstForm'].resetFields();
+									//todo  提示框动态显示跳转时间
+									var count = 10;
+									setInterval(vue.$message({
+										type: 'success',
+										message: '注册成功，请前往邮箱激活账号...'+'正在跳转登录页面中:'+count--,
+										}),1000);
+									setTimeout("window.location.href='login'",10000);
+								}else{
+									vue.rgstForm['password'] =  $.base64.atob(vue.rgstForm['password']);
+									toastr.error("注册失败！");
+								}
+							},
+							error:function(){
+								toastr.error("请求失败");
+							},
+						});
+					}else{
+						return;
+					}
+				});
+			},
+		},
+	});
+});
+</script>
 
 </html>

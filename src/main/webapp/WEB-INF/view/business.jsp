@@ -132,7 +132,7 @@
 					<el-button type="primary" @click="addStep('stepForm','stepModalVisible')">确 认</el-button>
 				</span>
   			</el-dialog>
-  			<el-form :model="bsnsForm" ref="bsnsForm"  :rules="bsnsRules"  status-icon ref="bsnsForm" label="top">
+  			<el-form :model="bsnsForm" :rules="bsnsRules"  status-icon ref="bsnsForm" label="top">
 				<el-form-item label="项目名：" prop="bsnsName"  >
    					<el-input placeholder="请输入项目名" v-model="bsnsForm.bsnsName" style="width: 80%;" clearable :disabled="cmfDisabled">
  				</el-form-item>

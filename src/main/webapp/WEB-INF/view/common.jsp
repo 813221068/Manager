@@ -13,7 +13,7 @@
     <link href="css/iCheck/green.css" rel="stylesheet">
     <link href="css/xcConfirm.css" rel="stylesheet">
     <link href="css/toastr.css" rel="stylesheet">
-    <link href="css/myStyle.css" rel="stylesheet">
+   
     <!-- 全局js -->
     <script src="js/jquery.min.js"></script>
     <script src="js/bootstrap.js"></script>
@@ -36,6 +36,9 @@
  	<script src="https://unpkg.com/vue/dist/vue.js"></script>
   	<script src="https://unpkg.com/element-ui/lib/index.js"></script>
   
+  
+  	<!-- css样式 -->
+   	<link href="css/myStyle.css" rel="stylesheet">
 
 </head>
 <body>

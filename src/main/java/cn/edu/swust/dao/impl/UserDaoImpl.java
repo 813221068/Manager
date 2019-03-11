@@ -26,60 +26,33 @@ public class UserDaoImpl implements UserDao{
 
 	@Override
 	public User query(UserQuery query) {
-		User res = null;
-		try {
-			res = sqlSession.selectOne(getNameSpace() + ".query", query);
-		}
-		catch (Exception ex) {
-			LogHelper.logError(ex);
-		}
 		
-		return res;
+		return sqlSession.selectOne(getNameSpace() + ".query", query);
 	}
 
 	@Override
 	public int count(UserQuery query) {
-		int res = 0;
-		try {
-			res = sqlSession.selectOne(getNameSpace()+".count", query);
-		} catch (Exception ex) {
-			LogHelper.logError(ex);
-		}
 		
-		return res;
+		return sqlSession.selectOne(getNameSpace()+".count", query);
 	}
 
 	@Override
 	public int insert(User user) {
-		int res = 0;
-		try {
-			res = sqlSession.insert(getNameSpace()+".insert", user);
-		} catch (Exception ex) {
-			LogHelper.logError(ex);
-		}
 		
-		return res;
+		return sqlSession.insert(getNameSpace()+".insert", user);
 	}
 
 	@Override
 	public List<User> queryList(UserQuery query) {
 		List<User> list = new ArrayList<>();
-		try {
-			list = sqlSession.selectList(getNameSpace()+".query", query);
-		} catch (Exception e) {
-			LogHelper.logError(e);
-		}
+		list = sqlSession.selectList(getNameSpace()+".query", query);
 		return list;
 	}
 
 	@Override
 	public List<User> getUserListByRole(UserQuery query) {
 		List<User> list = new ArrayList<>();
-		try {
-			list = sqlSession.selectList(getNameSpace()+".getUserListByRole", query);
-		} catch (Exception e) {
-			LogHelper.logError(e);
-		}
+		list = sqlSession.selectList(getNameSpace()+".getUserListByRole", query);
 		return list;
 	}
 
