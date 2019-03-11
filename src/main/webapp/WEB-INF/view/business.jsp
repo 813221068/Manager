@@ -28,7 +28,7 @@
             </div>
             <div class="table-search">
 				<el-input  placeholder="请输入项目名" clearable suffix-icon="el-icon-search" v-model="search.bsnsName" style="width: 20%;">
-				</el-input>
+				</el-input> 
 				<el-select  v-model="search.sltStatus" placeholder="状态选择" clearable style="margin-left: 20px;"> 
 					<el-option v-for=" status in statusList" :key="status.value" :value="status.value" :label="status.label">
 					</el-option>
@@ -281,6 +281,7 @@ var vue = new Vue({
 		editBsns:function(index,row){
 			this.bsnsForm.bsnsName = row.businessName;
 			this.bsnsForm.bsnsDesc = row.businessDesc;
+			console.log(row.steps);
 			this.bsnsForm.steps = row.steps;
 			this.bsnsModalVsb = true;
 			modalOperating = 1;
@@ -475,11 +476,9 @@ var vue = new Vue({
 		hideBsnsModal:function(){
 			this.$refs['bsnsForm'].resetFields();
 			this.bsnsForm = cleanParams(this.bsnsForm);
-			// console.log(this.bsnsForm);
 			this.bsnsModalVsb = false;
 			this.cmfDisabled = false;
 			this.bsnsForm.steps = [];
-		//	this.hideStepModal();
 		},
 		hideStepModal:function(){
 			this.$refs['stepForm'].resetFields();

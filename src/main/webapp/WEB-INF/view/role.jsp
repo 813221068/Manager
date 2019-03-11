@@ -23,12 +23,20 @@
             <div id="toolbar" class="btn-group table-tool">
                 <el-button type="primary" icon="el-icon-plus" size="medium"  @click="roleModalVsb = true">添加</el-button>
                 <span class="display" id="batchBtn">
-                    <el-button icon="el-icon-delete" size="medium"  @click="batchDelete()">批量删除</el-button>
+                    <el-popover placement="top" width="160" v-model="batchCfmVsb" trigger="click">
+                        <div class="text-center">
+                            <p>确定删除该项目吗</p>
+                            <el-button size="mini" type="text" @click="batchCfmVsb = false">取消</el-button>
+                            <el-button type="primary" size="mini" @click="atchDelete()">确定</el-button>
+                        </div>
+                        <el-button icon="el-icon-delete" size="medium"  @click="batchCfmVsb = true">批量删除</el-button>
+                    </el-popover> 
                 </span>
             </div>
             <div class="table">
-                <el-table :data="roleList.slice((currentPage-1)*pageSize,currentPage*pageSize)"  border stripe>
-                    <el-table-column type="selection" >
+                <el-table :data="roleList.slice((currentPage-1)*pageSize,currentPage*pageSize)" @selection-change="checkBoxChange"
+                 border stripe >
+                    <el-table-column type="selection"   >
                     </el-table-column >
                     <el-table-column label="角色ID" align='center' prop="roleId" sortable>
                         <template slot-scope="scope">
@@ -37,7 +45,7 @@
                     </el-table-column>
                     <el-table-column label="角色名" align="center" > 
                         <template slot-scope="scope">
-                            <span style="margin-left: 10px">{{ scope.row.roleId }}</span>
+                            <span style="margin-left: 10px">{{ scope.row.roleName }}</span>
                         </template>
                     </el-table-column>
                     <el-table-column label="描述" align="center">
@@ -69,22 +77,19 @@
                             <span style="margin-left: 10px" v-if="scope.row.createUser==null">暂无数据</span>
                         </template> 
                     </el-table-column>
-                   <!--  <el-table-column label="操作" align="center">
+                    <el-table-column label="操作" align="center">
                         <template slot-scope="scope">
-                            <el-button v-if="scope.row.status==1?true:false" type="danger" size="mini" 
-                            @click="submit2Formal(scope.$index,scope.row)">提交为正式</el-button>
-                            <el-button v-if="scope.row.status==2?true:false" size="mini" @click="showBsns(scope.$index, scope.row)">查看</el-button>
-                            <el-button v-if="scope.row.status==1?true:false" size="mini" @click="editBsns(scope.$index, scope.row)">编辑</el-button>
+                            <el-button size="mini" @click="editRole(scope.$index,scope.row)">编辑</el-button>
                             <el-popover placement="top" width="160" v-model="scope.row.cfmVisible" trigger="click">
                                 <div class="text-center">
                                     <p>确定删除该项目吗</p>
                                     <el-button size="mini" type="text" @click="scope.row.cfmVisible = false">取消</el-button>
-                                    <el-button type="primary" size="mini" @click="deleteBsns(scope.$index, scope.row)">确定</el-button>
+                                    <el-button type="primary" size="mini" @click="deleteRole(scope.$index,scope.row)">确定</el-button>
                                 </div>
                                 <el-button size="mini" type="danger" slot="reference" >删除</el-button>
                             </el-popover> 
                         </template>
-                    </el-table-column> -->
+                    </el-table-column>
                 </el-table>
                 <div class="m-t">
                     <el-pagination background layout="total, sizes, prev, pager, next, jumper" :total="total" :page-sizes="[5, 10, 20, 50]" :page-size="pageSize"  @size-change="pageSizeChange" @current-change="currentPageChange">
@@ -103,8 +108,8 @@
                     <el-input placeholder="请输入角色描述" v-model="roleForm.roleDesc" style="width: 80%;" clearable >
                 </el-form-item>
                 <el-form-item label="角色权限：" prop="sltPmsList">
-                    <el-select v-model="roleForm.sltPmsList" value-key="permissionId" placeholder="请选择角色权限" multiple   >
-                        <el-option v-for="pms in roleForm.pmsList" :value="pms.permissionId" :key="pms.permissionId" :label="pms.permissionName">
+                    <el-select v-model="roleForm.sltPmsList" value-key="pms" placeholder="请选择角色权限" multiple   >
+                        <el-option v-for="pms in pmsList" :value="pms.permissionId" :key="pms.permissionId" :label="pms.permissionName">
                         </el-option>
                     </el-select>
                 </el-form-item>
@@ -121,6 +126,7 @@
 <script type="text/javascript">
 //modal标志位  0是添加   1是修改
 var modalOperating = 0;
+
 $(document).ready(function () {
 var vue = new Vue({
     el:"#content",
@@ -131,15 +137,20 @@ var vue = new Vue({
             currentPage:1,//当前页
             roleList:[],
             roleModalVsb:false,
+            pmsList:[],
             roleForm:{
                 roleName:null,
                 roleDesc:null,
-                pmsList:[],
-                sltPmsList:'',
+                
+                sltPmsList:'', //选中的权限ids
                 rules:{
                     roleName:[{required: true, message: '用户名不能为空'}]
                 }
             },
+            sltRole:null,//选中行
+            bacthBtnVsb:false,
+            batchCfmVsb:false,
+            multipleSelection:[],//table选中项
         };
     },
     mounted:function(){
@@ -154,8 +165,7 @@ var vue = new Vue({
         success:function(data)
         {
             if(data!=null && data.length>0){
-                vue.roleForm.pmsList = data;
-                console.log(vue.roleForm.pmsList);
+                vue.pmsList = data;
             }else{
                 toastr.error('加载权限列表失败');
             }
@@ -167,6 +177,24 @@ var vue = new Vue({
     });
     },
     methods:{
+        checkBoxChange:function(val){
+            //todo bug 用v-if和v-show时，为true自动清空val
+            this.multipleSelection = val;
+            var batchBtn = document.getElementById('batchBtn');
+            if(val.length>0){
+                batchBtn.style.display = "inline";
+            }else{
+                batchBtn.style.display = "none";
+            }
+        },
+        batchDelete:function(){
+            var roleIds = [];
+            for(var role of this.multipleSelection){
+                roleIds.push(role.roleId);
+            }
+            var para = {"roleIds":roleIds};
+            deleteRole(para);
+        },
         pageSizeChange:function(val){
             this.pageSize = val;
         },
@@ -174,19 +202,104 @@ var vue = new Vue({
             this.currentPage = val;
         },
         hideModal:function(){
-            this.roleModalVsb = false;
             this.$refs['roleForm'].resetFields();
+            this.roleForm = cleanParams(this.roleForm);
+            this.roleModalVsb = false;
+        },
+        editRole:function(index,row){
+            this.roleForm.roleName = row.roleName;
+            this.roleForm.roleDesc = row.roleDesc;
+            this.roleForm.sltPmsList = [];
+            for(var pms of row.pmsList){
+                this.roleForm.sltPmsList.push(pms.permissionId);
+            }
+            this.roleModalVsb = true;
+            modalOperating = 1;
+            this.sltRole = row;
+        },
+        deleteRole:function(index,row){
+            row.cfmVisible = false;
+            var para = {"roleId":row.roleId};
+            deleteRole(para);
         },
         submitModal:function(){
             this.$refs['roleForm'].validate((valid) =>{
                 if(valid){
                     //添加
                     if(modalOperating==0){
-                        var para = {"roleName":this.roleForm.roleName,"roleDesc":this.roleForm.roleDesc,"pmsList":this.roleForm.sltPmsList};
-                        var msg = ['添加角色成功','添加角色信息失败'];
-                        ajaxMethod('addRole',para,'get',msg);
-                    }else{ //更新
+                        var pmsList = [];
+                        for(var pmsId of this.roleForm.sltPmsList){
+                            var pms = {"permissionId":pmsId};
+                            pmsList.push(pms);
+                        }
+                        var para = {"roleName":this.roleForm.roleName,"roleDesc":this.roleForm.roleDesc,"pmsList":pmsList,
+                        "createUId":${user.userId},"createTime":moment(new Date()).format("YYYY-MM-DD HH:mm:ss"),
+                        "updateTime":moment(new Date()).format("YYYY-MM-DD HH:mm:ss")};
+                        $.ajax({
+                            url: 'addRole',
+                            data:JSON.stringify(para),
+                            dataType:"json",  
+                            type: 'post',
+                            contentType:"application/json;charset=UTF-8",
+                            success:function(data)
+                            {
+                                if(data!=0){
+                                    toastr.success('添加成功');
+                                    loadTableData({});
+                                    vue.roleModalVsb = false;
 
+                                }else{
+                                    toastr.error('添加失败');
+                                }
+                            },
+                            error:function()
+                            {
+                                toastr.error("请求失败");
+                            },
+                        });
+                    }else{ //更新
+                        modalOperating = 0;
+
+                        var oldPmsList = [];
+                        var newPmsList = [];
+                        for(var id of this.roleForm.sltPmsList){
+                            var isAdd = true;
+                            for(var pms of this.sltRole.pmsList){
+                                if(pms.permissionId == id){
+                                    oldPmsList.push(pms);
+                                    isAdd = false;
+                                    break;
+                                }
+                            }
+                            if(isAdd){
+                                var pms = {"permissionId":id};
+                                newPmsList.push(pms);
+                            }
+                        }
+                        var para = {"roleName":this.roleForm.roleName,"roleDesc":this.roleForm.roleDesc,"roleId":this.sltRole.roleId,
+                                    "pmsList":oldPmsList,"updateTime":moment(new Date()).format("YYYY-MM-DD HH:mm:ss")};
+                        var data = {"role":para,"addPmsList":newPmsList};
+                        $.ajax({
+                            url: 'updateRole',
+                            data:JSON.stringify(data),
+                            dataType:"json",  
+                            type: 'post',
+                            contentType:"application/json;charset=UTF-8",
+                            success:function(data)
+                            {
+                                if(data!=0){
+                                    toastr.success('更新成功');
+                                }else{
+                                    toastr.error('更新失败');
+                                }
+                                loadTableData({});
+                                vue.roleModalVsb = false;
+                            },
+                            error:function()
+                            {
+                                toastr.error("请求失败");
+                            },
+                        });
                     }
                 }else{
                     return;
@@ -195,29 +308,20 @@ var vue = new Vue({
         },
     }
 });
-//msg[0]是成功信息  msg[1]是失败信息
-function ajaxMethod(url,data,type,msg){
+function deleteRole(para){
     $.ajax({
-        url: url,
-        data:JSON.stringify(data),
-        dataType:"json",  
-        type: type,
-        contentType:"application/json;charset=UTF-8",
-        success:function(data)
-        {
-            console.log(data);
+        url:'deleteRole',
+        data:para,
+        traditional: true,//传递数组
+        success:function(data){
             if(data!=0){
-                if(!isnull(msg)){
-                    toastr.success(msg[0]);
-                }
+                toastr.success('删除成功');
             }else{
-                if(!isnull(msg)){
-                    toastr.error(msg[1]);
-                }
+                toastr.error('删除失败');
             }
+            loadTableData({});
         },
-        error:function()
-        {
+        error:function(){
             toastr.error("请求失败");
         },
     });

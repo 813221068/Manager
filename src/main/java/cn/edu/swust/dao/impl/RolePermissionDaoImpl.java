@@ -46,23 +46,15 @@ public class RolePermissionDaoImpl implements RolePermissionDao {
 
 	@Override
 	public int delete(RolePermissionQuery query) {
-		try {
-			int ret = sqlSession.delete(getNameSpace()+".delete", query);
-			return ret;
-		} catch (Exception e) {
-			LogHelper.logError(e.getMessage()+"\nsql为:"+getNameSpace()+".delete");
-		}
-		return 0;
+		int row = sqlSession.delete(getNameSpace()+".delete", query);
+		return row;
 	}
 
 	@Override
 	public List<RolePermission> queryList(RolePermissionQuery query) {
 		List<RolePermission> list = new ArrayList<>();
-		try {
-			list = sqlSession.selectList(getNameSpace()+".queryList",query);
-		} catch (Exception e) {
-			LogHelper.logError(e.getMessage()+"\nsql为:"+getNameSpace()+".queryList");
-		}
+		list = sqlSession.selectList(getNameSpace()+".queryList",query);
+		
 		return list;
 	}
 

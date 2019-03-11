@@ -4,6 +4,7 @@ import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
+import java.util.Map;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.propertyeditors.CustomDateEditor;
@@ -20,6 +21,7 @@ import com.alibaba.fastjson.JSONArray;
 import com.alibaba.fastjson.JSONObject;
 import com.alibaba.fastjson.serializer.SerializerFeature;
 
+import cn.edu.swust.entity.Permission;
 import cn.edu.swust.entity.Role;
 import cn.edu.swust.query.RoleQuery;
 import cn.edu.swust.service.RoleService;
@@ -39,13 +41,15 @@ public class RoleController {
 	@RequestMapping(value="/getRoleList",method=RequestMethod.POST)
 	public JSONArray getRoleList(@RequestBody RoleQuery query) {
 		List<Role> list = roleService.queryList(query);
-		String json = JSONObject.toJSONString(list,SerializerFeature.WriteMapNullValue);
+		//消除循环引用
+		String json = JSONObject.toJSONString(list,SerializerFeature.WriteMapNullValue
+				,SerializerFeature.DisableCircularReferenceDetect);
 		JSONArray array= JSONArray.parseArray(json);
 		return array;
 	}
 
 	@ResponseBody
-	@RequestMapping(value="/addRole")
+	@RequestMapping(value="/addRole",method=RequestMethod.POST)
 	public int add(@RequestBody Role role) {
 		int id = roleService.addRole(role);
 		return id;
@@ -59,9 +63,12 @@ public class RoleController {
 	}
 	
 	@ResponseBody
-	@RequestMapping(value="/updateRole")
-	public int update(@RequestBody Role role){
-		return roleService.updateRole(role);
+	@RequestMapping(value="/updateRole",method=RequestMethod.POST)
+	public int update( @RequestBody Map<String,Object> map){
+		Role role  = JSON.parseObject(JSON.toJSONString(map.get("role")),Role.class);
+		List<Permission> addPmsList = JSONArray.parseArray(JSON.toJSONString(map.get("addPmsList")),
+				Permission.class);
+		return roleService.updateRole(role,addPmsList);
 	}
 	
 	

@@ -61,8 +61,6 @@ public class RoleService {
 				userQuery.setRoleId(role.getRoleId());
 				role.setOwners(userDao.getUserListByRole(userQuery));
 				retList.add(role);
-				
-				
 			}
 		} catch (Exception e) {
 			LogHelper.logError(e);
@@ -78,6 +76,7 @@ public class RoleService {
 	@Transactional
 	public int addRole(Role role) {
 		int id = 0;
+		//todo  事务回滚有bug  调用多个dao.method 只回滚最后一个
 		try {
 			roleDao.setPrimaryValue(1);
 			id = roleDao.insertOne(role);
@@ -107,12 +106,13 @@ public class RoleService {
 	}
 	
 	public int delete(RoleQuery query) {
+		int row = 0;
 		try {
 			if(query.isNull()) {
 				return 0;
 			}
 			//删除role表
-			int row = roleDao.delete(query);
+			row = roleDao.delete(query);
 			if(row!=0) {
 				if(query.getRoleIds()!=null && query.getRoleIds().length!=0) {
 					int[] ids = query.getRoleIds();
@@ -127,41 +127,65 @@ public class RoleService {
 					rolePmsQuery.setRoleId(query.getRoleId());
 					rolePmsDao.delete(rolePmsQuery);
 				}
-				//todo 该用户下的用户
+				//todo 更新删除角色逻辑  旧逻辑：只删除role和role_permission表数据 
+				//没有处理 角色下用户信息   
 			}
 			return row;
 		} catch (Exception e) {
 			LogHelper.logError(e);
+			TransactionAspectSupport.currentTransactionStatus().setRollbackOnly();
 		}
-		return 0;
+		return row;
 	}
-	
-	public int updateRole(Role role) {
+	/**
+	 * 更新role信息
+	 * @param role
+	 * @return row 
+	 */
+	public int updateRole(Role role,List<Permission> addPmsList) {
+		int row = 0;
 		try {
 			if(role.getRoleId()==0) {
 				return 0;
 			}
-			int row = roleDao.updateByPrimaryKeySelective(role);
-			//1 2 3 to 3 4 删除原来权限，在添加新权限 todo
+			row = roleDao.updateByPrimaryKeySelective(role);
 			if(row != 0) {
 				RolePermissionQuery rolePmsQuery = new RolePermissionQuery();
 				rolePmsQuery.setRoleId(role.getRoleId());
-				rolePmsDao.delete(rolePmsQuery);
 				
-				for(Permission pms:role.getPmsList()) {
-					RolePermission rolePermission = new RolePermission();
-					rolePermission.setConnId(rolePmsDao.getMaxId()+1);
-					rolePermission.setRoleId(role.getRoleId());
-					rolePermission.setPermissionId(pms.getPermissionId());
-					
-					rolePmsDao.insertOne(rolePermission);
-					
+				List<RolePermission> oldPmsList = rolePmsDao.queryList(rolePmsQuery);
+				
+				for(RolePermission rolePms : oldPmsList) {
+					boolean havePmsInTable = false;
+					for(Permission pms : role.getPmsList()) {
+						if(rolePms.getPermissionId() == pms.getPermissionId()) {
+							havePmsInTable = true;
+							break;
+						}
+					}
+					//删除原来的权限
+					if(!havePmsInTable) {
+						RolePermissionQuery rpq = new RolePermissionQuery();
+						rpq.setRoleId(role.getRoleId());
+						rpq.setPermissionId(rolePms.getPermissionId());
+						rolePmsDao.delete(rpq);
+					}
 				}
+				
+				for(Permission pms : addPmsList) {
+					RolePermission rolePms = new RolePermission();
+					rolePms.setPermissionId(pms.getPermissionId());
+					rolePms.setRoleId(role.getRoleId());
+					
+					rolePmsDao.insertOne(rolePms);
+				}
+				
 			}
-			return row;
 		} catch (Exception e) {
 			LogHelper.logError(e);
+			TransactionAspectSupport.currentTransactionStatus().setRollbackOnly();
+			row = 0;
 		}
-		return 0;
+		return row;
 	}
 }

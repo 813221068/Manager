@@ -18,7 +18,8 @@
     <!-- 查询条件 -->
 	<sql id="condition">
 		<where>
-			<if test="roleId != null and roleId != 0"> roleId = #{roleId} </if>
+			<if test="roleId != 0"> and roleId = #{roleId} </if>
+			<if test="permissionId != 0"> and permissionId = #{permissionId} </if>
 		</where>
 	</sql>
 	<!-- orderby sql-->
@@ -57,8 +58,9 @@
 		<include refid="condition"></include>
 	</delete>
 	
-	<select id="queryList" parameterType="cn.edu.swust.query.RolePermissionQuery">
-		select <include refid="defualt_fields"></include>
+	<select id="queryList" parameterType="cn.edu.swust.query.RolePermissionQuery" resultMap="BaseResultMap">
+		select 
+		<include refid="defualt_fields"></include>
 		from role_permission
 		<include refid="condition"></include>
 	</select>

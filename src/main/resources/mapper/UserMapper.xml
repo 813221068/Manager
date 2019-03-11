@@ -18,8 +18,8 @@
 	<!-- 查询字段集 -->
     <sql id="defualt_fields">
         <trim suffixOverrides=",">
-        userId,
-        username,
+        user.userId,
+        user.username,
         </trim>
     </sql>
     <!-- 查询条件 -->

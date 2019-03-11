@@ -10,27 +10,26 @@
 	http://www.springframework.org/schema/aop
 	http://www.springframework.org/schema/aop/spring-aop.xsd">
 	<!-- 事务回滚 -->
-	<bean id="appTransactionManager" class="org.springframework.jdbc.datasource.DataSourceTransactionManager">
+	<bean id="transactionManager" class="org.springframework.jdbc.datasource.DataSourceTransactionManager">
       <property name="dataSource" ref="dataSource" />
     </bean>
 	
-<!-- 	<aop:config>
-		<aop:pointcut id="service" expression="execution(* cn.edu.swust..*Service*.*(..))" />声明所有包含Service的类的所有方法使用事务
-		<aop:advisor advice-ref="txAdvice" pointcut-ref="service" />
+	<!--  声明所有包含Service的类的所有方法使用事务  -->
+	<aop:config>
+		<aop:pointcut id="servicePoint" expression="execution(* cn.edu.swust.service.*.*(..))" />
+		<aop:advisor advice-ref="txAdvice" pointcut-ref="servicePoint" />
 	</aop:config>
-	todo bug  事务回滚 
-	<tx:advice id="txAdvice" transaction-manager="appTransactionManager">
+<!-- 	todo bug  事务回滚  默认回滚机制是RuntimeException  -->
+	<tx:advice id="txAdvice" transaction-manager="transactionManager">
 		<tx:attributes>
-			<tx:method name="get*" read-only="true"  />
-			<tx:method name="query*" read-only="true"  />
-			<tx:method name="find*" read-only="true" />
-			<tx:method name="is*" read-only="true" />
-			<tx:method name="insert*" read-only="true" />
-			<tx:method name="*" rollback-for="Exception"/>默认回滚机制是RuntimeException
+			<tx:method name="query*" read-only="true"/>
+			<tx:method name="get*" read-only="true"/>
+			<tx:method name="find*" read-only="true"/>
+			<tx:method name="*"/>
 		</tx:attributes>
-	</tx:advice> -->
+	</tx:advice>
 
 	
-    <tx:annotation-driven  transaction-manager="appTransactionManager" />
+    <tx:annotation-driven  transaction-manager="transactionManager" />
 
 </beans>
