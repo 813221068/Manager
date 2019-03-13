@@ -45,6 +45,11 @@
 			      <list>
 			          <value>/login</value>
 			          <value>/register</value>
+			          <value>/nologin</value>
+			      <!--     激活账号
+			          <value>/activate</value>
+			          重置密码 
+			          <value>/resetPsw</value> -->
 			      </list>
 			   </property>
 			</bean>

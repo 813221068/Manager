@@ -2,6 +2,8 @@ package cn.edu.swust.controller;
 
 import java.util.HashMap;
 import java.util.List;
+import java.util.Timer;
+import java.util.TimerTask;
 
 import javax.management.Query;
 import javax.servlet.http.HttpServletRequest;
@@ -26,10 +28,14 @@ import cn.edu.swust.entity.Permission;
 import cn.edu.swust.entity.Role;
 import cn.edu.swust.entity.User;
 import cn.edu.swust.entity.UserRole;
+import cn.edu.swust.entity.enumEntity.UserActiveEnum;
 import cn.edu.swust.query.PermissionQuery;
 import cn.edu.swust.query.UserQuery;
 import cn.edu.swust.query.UserRoleQuery;
 import cn.edu.swust.service.UserService;
+import cn.edu.swust.util.EmailUtil;
+import cn.edu.swust.util.EncodeUtil;
+import sun.print.resources.serviceui;
 
 @Controller
 public class UserController {
@@ -62,36 +68,74 @@ public class UserController {
 	
 	
 	/** 接口 **/
+	/**
+	 * 登录
+	 * @param query
+	 * @param attr
+	 * @param session
+	 * @return  0是用户名或密码错误   1是账号为激活    2是成功
+	 */
+	@ResponseBody
 	@RequestMapping(value = "/login",method=RequestMethod.POST)
-	public String login(UserQuery query,RedirectAttributes attr,HttpSession session) {
-		HashMap<String, Object> map = userService.login(query);
-		User user = (User) map.get("user");
-		UserRole userRole = (UserRole)map.get("userRole");
-		if(user != null) {
-			attr.addFlashAttribute("msg", "success");
-			session.setAttribute("user", user);
-			session.setAttribute("userRole", userRole);
-			//所有权限
-			session.setAttribute("pmsAll", getPmsList(new PermissionQuery()));
-			
-			return "redirect:"+toIndexPage(session);
+	public int login(UserQuery query,RedirectAttributes attr,HttpSession session) {
+		
+		String psw = EncodeUtil.decode64Base(query.getPassword());
+		query.setPassword(EncodeUtil.encodeByMD5(psw));
+		User user = userService.queryUser(query);
+		if(user==null) {
+			return 0;
 		}
-		attr.addFlashAttribute("msg", "用户名或密码错误");
-		return "redirect:"+toLoginPage();
+		if(user.getActive()==UserActiveEnum.inactivated) {
+			return 1;
+		}
+		session.setAttribute("user", user);
+		
+		return 2;
 	}
+	/**
+	 * 用户注册    30分钟内邮箱未激活 则删除记录
+	 * @param user
+	 * @param attr
+	 * @return
+	 */
 	@ResponseBody
 	@RequestMapping(value="/register",method=RequestMethod.POST)
-	public boolean register(User user,RedirectAttributes attr) {
-		attr.addFlashAttribute("registerStatus", 1);
+	public int register(User user) {
 		return userService.register(user);
 	}
-	
+	@ResponseBody
+	@RequestMapping(value="/nologin/activate")
+	public String activate(User user) {
+		String ret = "激活成功";
+		if(!userService.activate(user)) {
+			ret = "激活失败";
+		}
+		return ret;
+	}
+	/***
+	 * 忘记密码  发送重置密码邮件
+	 * @param query
+	 */
+	@ResponseBody
+	@RequestMapping(value="/nologin/forgetPsw")
+	public boolean forgetPsw(UserQuery query) {
+		return userService.forgetPsw(query);
+	}
+	@ResponseBody
+	@RequestMapping(value="/nologin/resetPsw")
+	public String resetPsw(UserQuery query){
+		String ret = "重置密码成功";
+		if(!userService.resetPsw(query)) {
+			ret = "重置密码失败";
+		}
+		return ret;
+	}
 	@RequestMapping(value="/doLogout")
 	public String logout(HttpSession session,RedirectAttributes attr) {
-		String msg = "登出成功";
 		//清除缓存
 		session.invalidate();
-		attr.addFlashAttribute("msg", msg);
+		attr.addFlashAttribute("logout", true);
+//		attr.addAttribute("logout", true);
 		return "redirect:"+toLoginPage();
 	}
 	/***

@@ -56,5 +56,17 @@ public class UserDaoImpl implements UserDao{
 		return list;
 	}
 
+	@Override
+	public int delete(UserQuery query) {
+		// TODO 自动生成的方法存根
+		return sqlSession.delete(getNameSpace()+".delete", query);
+	}
+
+	@Override
+	public int updateByPrimaryKeySelective(User user) {
+		// TODO 自动生成的方法存根
+		return sqlSession.update(getNameSpace()+".updateByPrimaryKeySelective", user);
+	}
+
 
 }

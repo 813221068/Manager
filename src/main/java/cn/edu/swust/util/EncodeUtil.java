@@ -51,7 +51,6 @@ public class EncodeUtil {
 	 * @param str
 	 * @return
 	 */
-	@SuppressWarnings("restriction")
 	public static String decode64Base(String str) {
 		BASE64Decoder decoder = new BASE64Decoder();
 		String ret = null;
@@ -65,6 +64,8 @@ public class EncodeUtil {
 	}
 	
 	public static void main(String[] args) {
-		System.out.println("e948576f30bd1669961698bf99cf5c93".length());
+		String str1 = encodeByMD5("123456");
+		System.out.println(str1);
+		System.out.println(decode64Base(str1));
 	}
 }

@@ -49,5 +49,9 @@
 	   values(#{userId},#{roleId})
 	</insert>
 	
+	<delete id="delete" parameterType="cn.edu.swust.query.UserRoleQuery">
+		delete  from user_role
+		<include refid="condition"></include>
+	</delete>
     
 </mapper>

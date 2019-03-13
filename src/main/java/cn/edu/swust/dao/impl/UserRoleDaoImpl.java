@@ -48,4 +48,10 @@ public class UserRoleDaoImpl implements UserRoleDao {
 		userIds = sqlSession.selectList(getNameSpace()+".getUserIds", query);
 		return userIds;
 	}
+
+	@Override
+	public int delete(UserRoleQuery query) {
+		// TODO 自动生成的方法存根
+		return sqlSession.delete(getNameSpace()+".delete", query);
+	}
 }

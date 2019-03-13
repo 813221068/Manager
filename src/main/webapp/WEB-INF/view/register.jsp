@@ -14,21 +14,21 @@
 
     <div id="content" class="register-box text-center animated fadeInDown">
         <div>
-            <h3>欢迎注册 </h3>
-            <p>创建一个新账户</p>
-            <div class="msg">${msg}</div>
             <el-form  status-icon label-postion="left" :rules="rules" :model="rgstForm" ref="rgstForm" >
+            	<el-form-item>
+					<div class="font-logo">欢迎注册</div>
+            	</el-form-item>
                 <el-form-item  prop="username"  >
-                    <el-input placeholder="请输入用户名" v-model="rgstForm.username"  clearable >
+                    <el-input placeholder="请输入用户名" v-model="rgstForm.username"  clearable prefix-icon="fa fa-user" >
                 </el-form-item>
                 <el-form-item  prop="mail" >
-                    <el-input placeholder="请输入邮箱地址" v-model="rgstForm.mail"  clearable >
+                    <el-input placeholder="请输入邮箱地址" v-model="rgstForm.mail"  clearable prefix-icon="fa fa-envelope">
                 </el-form-item>
                	<el-form-item  prop="password" >
-                    <el-input type="password" placeholder="至少6位密码，区分大小写" v-model="rgstForm.password" clearable show-password>
+                    <el-input type="password" placeholder="至少6位密码，区分大小写" v-model="rgstForm.password" prefix-icon="fa fa-lock" clearable show-password>
                 </el-form-item>
                 <el-form-item  prop="cfmPassword" >
-                    <el-input type="password" placeholder="请输入确认密码" v-model="rgstForm.cfmPassword"  clearable show-password >
+                    <el-input type="password" placeholder="请输入确认密码" v-model="rgstForm.cfmPassword" prefix-icon="fa fa-key"  clearable show-password >
                 </el-form-item>
                 <el-form-item class="register-form" prop="agreement">
                 	<el-checkbox v-model="checked" >我已阅读并同意注册协议</el-checkbox>
@@ -110,26 +110,45 @@ $(document).ready(function(){
 		methods:{
 			register:function(){
 				this.$refs['rgstForm'].validate((valid) =>{
-					this.rgstForm['password'] =  $.base64.btoa(this.rgstForm['password']);
+					var password = this.rgstForm.password;
+					var para = {"username":this.rgstForm.username,"password":$.base64.btoa(password),
+					"mail":this.rgstForm.mail,"createTime":moment(new Date()).format("YYYY-MM-DD HH:mm:ss")};
 					if(valid){
 						$.ajax({
 							url:"register",
 							data:this.rgstForm,
 							type:"post",
-							traditional: true,//传递数组
-							success:function(data){
-								if(data){
+							traditional: true,//传递数组  
+							success:function(data){ 
+								//0是发生异常或错误  1是用户名重复  2是邮箱重复  3是成功
+								console.log(data);
+								if(data == 3){
 									vue.$refs['rgstForm'].resetFields();
-									//todo  提示框动态显示跳转时间
-									var count = 10;
-									setInterval(vue.$message({
+									vue.$message({
 										type: 'success',
-										message: '注册成功，请前往邮箱激活账号...'+'正在跳转登录页面中:'+count--,
-										}),1000);
-									setTimeout("window.location.href='login'",10000);
+										message: '注册成功，请前往邮箱激活账号...'+'正在跳转登录页面中...',
+									});
+									setTimeout("window.location.href='login'",3000);
 								}else{
 									vue.rgstForm['password'] =  $.base64.atob(vue.rgstForm['password']);
-									toastr.error("注册失败！");
+									if(data == 0){
+										vue.$message({
+											type:'error',
+											message:'注册失败！'
+										})
+									}
+									else if(data==1){
+										vue.$message({
+											type:'error',
+											message:'此用户名重复！'
+										})
+									}
+									else if(data==2){
+										vue.$message({
+											type:'error',
+											message:'此邮箱已注册'
+										})
+									}
 								}
 							},
 							error:function(){

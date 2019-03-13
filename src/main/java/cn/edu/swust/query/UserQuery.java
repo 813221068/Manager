@@ -17,6 +17,8 @@ public class UserQuery extends BaseQuery {
 	 */
 	private String mail;
 	
+	private int active;
+	
 	private String password;
 	
 	private List<String> userIds;

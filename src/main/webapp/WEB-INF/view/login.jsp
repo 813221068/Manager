@@ -8,37 +8,44 @@
     <%@ include file="common.jsp" %>
 </head>
 <body class="gray-bg login-bg">
-    <div class="login-box text-center animated fadeInDown">
+    <div id="content" class="login-box text-center animated fadeInDown">
         <div>
-        	<div class="font-logo m-b-b">欢迎登录</div>
-            <div class="msg">${msg}</div>
-            <form id ="loginForm" class="m-t" action="login" method="post">
-                <div class="form-group">
-                    <input id="username" name="username" type="text" class="form-control user-icon" placeholder="请输入用户名"
-                     required="required" onblur="checkUserName()">
-                </div>
-                <div class="form-group">
-                    <input id="psw" type="password" class="form-control psw-icon" placeholder="请输入密码" required="required"
-                    onblur="checkPsw()">
-                </div>
-                 <div>
-                    <input id="encodePsw" type="hidden" name="password"/>
-                </div>
-                <div class="form-group text-left">
-                    <div class="checkbox i-checks font-1">
-                        <label class="no-padding">
-                            <input type="checkbox">
-                            <i></i>显示密码
-                        </label>
-                    </div>
-                </div>
-                <button class="btn btn-primary block full-width m-b" onclick="return login()">登 录</button>
-                <p class="text-muted text-center"> 
-                	<a href="javascript:void(0)" onclick="alert('请联系管理员');">忘记密码了？</a> | 
-                	<a href="register">注册一个新账号</a>
-                </p>
-
-            </form>
+            <el-form  status-icon label-postion="left" :rules="rules" :model="loginForm" ref="loginForm" v-if="!forgetFormVsb">
+                <el-form-item>
+                    <div class="font-logo">欢迎登录</div>
+                </el-form-item>
+                <el-form-item  prop="username" >
+                    <el-input placeholder="请输入用户名" v-model="loginForm.username" prefix-icon="fa fa-user"  clearable >
+                </el-form-item>
+                <el-form-item  prop="password" >
+                    <el-input type="password" placeholder="请输入密码" v-model="loginForm.password" prefix-icon="fa fa-lock" clearable show-password>
+                </el-form-item>
+                <el-form-item>
+                    <el-button type="primary" class=" full-width" @click="login()">登录</el-button>
+                </el-form-item>
+                <el-form-item>
+                    <p class="text-muted text-center"> 
+                        <el-button type="text" @click="forgetFormVsb=true;" >忘了密码？ </el-button>| 
+                        <el-button type="text" onclick="javascrtpt:window.location.href = 'register'"> 注册一个新账号</el-button>
+                    </p>
+                </el-form-item>
+            </el-form>
+        </div>
+        <div>
+            <el-form :rules="rules" v-if="forgetFormVsb" :model="forgetForm" ref="forgetForm">
+                <el-form-item>
+                    <div class="font-logo">重置密码</div>
+                </el-form-item>
+                <el-form-item label="邮箱:" prop="mail">
+                    <el-input placeholder="请输入注册时填写的邮箱" v-model="forgetForm.mail"  clearable prefix-icon="fa fa-envelope">
+                </el-form-item>
+                <el-form-item>
+                    <el-button type="primary" class=" full-width" @click="forgetPsw()">确认</el-button>
+                </el-form-item>
+                <el-form-item>
+                    <el-button type="text" @click="forgetFormVsb=false;" >返回登录 </el-button> 
+                </el-form-item>
+            </el-form>
         </div>
     </div>
     <div class="copyright text-center m-t">
@@ -47,77 +54,114 @@
         </p>
     </div>
 
-    <script type="text/javascript">
-    $(document).ready(function() {
-		$('.i-checks').iCheck({
-			checkboxClass : 'icheckbox_square-green',
-			radioClass : 'iradio_square-green',
-		});
-	});
-    //showPsw
-    $('.i-checks').on('ifChanged', function(event){
-    	var x = document.getElementById("psw");
-        if (x.type === "password") {
-            x.type = "text";
-        } else {
-            x.type = "password";
-        }
-   	});
-    function login() {
-    	var form = document.getElementById("loginForm");
-		if(check()){
-			var psw = document.getElementById("psw");
-			var encodePsw = document.getElementById("encodePsw");
-			//加密
-			encodePsw.value = $.base64.btoa(psw.value);
-			form.submit();
-		}
-		return false;
-	};
-	function checkUserName() {
-		var username = document.getElementById("username").value;
-		var patt = new RegExp("^[A-Za-z0-9]*$");
-		if( username.length<=16 && patt.test(username)){
-			return true;
-		}
-		var txt= "输入不合法，用户名由数字和字母组成，长度小于等于16位";
-		window.wxc.xcConfirm(txt, window.wxc.xcConfirm.typeEnum.info);
-	};
-	function checkPsw(){
-		var psw = document.getElementById("psw").value;
-		var patt = new RegExp("^[A-Za-z0-9]*$");
-		if( psw.length<=16 && patt.test(psw)){
-			return true;
-		}
-		var txt= "输入不合法，密码长度不能超过16位";
-		window.wxc.xcConfirm(txt, window.wxc.xcConfirm.typeEnum.info);
-	};
-	function check(){
-		var username = document.getElementById("username");
-		if(isnull(username.value)){
-			var txt= "用户名不能为空";
-			window.wxc.xcConfirm(txt, window.wxc.xcConfirm.typeEnum.info);
-			return false;
-		}
-		var password = document.getElementById("psw");
-        if(isnull(password.value)){
-        	var txt= "密码不能为空";
-			window.wxc.xcConfirm(txt, window.wxc.xcConfirm.typeEnum.info);
-        	return false;
-        }
-		return true;
-	};
-	//判读字符串是否为空
-	function isnull(str){
-		str = str.replace(/\s+/g,"");
-		if(str==''||str==undefined||str==null){
-			return true;
-		}else{
-			return false;
-		}
-	};
-    </script>
-
 </body>
+<script type="text/javascript">
+$(document).ready(function(){
+    var vue = new Vue({
+        el:"#content",
+        data:function(){
+            var checkPassword = (rule, value, callback) => {
+                if (value.length<6) {
+                    callback(new Error('密码长度不能小于6'));
+                } else if(value.length>=16){
+                    callback(new Error('密码长度不能超过16'));
+                }else{
+                    callback();
+                }
+            };
+            return {
+                forgetFormVsb:false,
+                loginForm:{
+                    username:null,
+                    password:null,
+                },
+                forgetForm:{
+                    mail:null,
+                },
+                rules:{
+                    username:[
+                        {required: true, message: '用户名不能为空'},
+                    ],
+                    password:[
+                        {required: true, message: '密码不能为空'},
+                        {validator: checkPassword, trigger: 'blur' }
+                    ],
+                    mail:[
+                        {required: true, message: '邮箱不能为空'},
+                        { type: 'email', message: '请输入正确的邮箱地址', trigger: ['blur', 'change'] }
+                    ]
+                },
+            };
+        },
+        mounted:function(){
+        	//防止el表达式取值为空  == 空白 报错
+        	if(!${logout eq null}){
+        		this.$message({
+                    message:"登出成功",
+                    type:"success",
+                })
+        	}
 
+        },
+        methods:{
+            login:function(){
+                this.$refs['loginForm'].validate((valid) =>{
+                    password = this.loginForm.password;
+                    var para = {"username":this.loginForm.username,"password":$.base64.btoa(password)};
+                    if(valid){
+                        $.ajax({
+                            url:"login",
+                            data:para,
+                            type:"post",
+                            traditional: true,//传递数组
+                            success:function(data){
+                                if(data==2){
+                                    window.location.href='index';
+                                }else if(data==0){
+                                    vue.$message({
+                                        message:'用户名或密码不正确',
+                                        type:'error'
+                                    });
+                                    // toastr.error("登录失败！");
+                                }else if(data==1){
+                                    vue.$message({
+                                        message:'此账号未激活',
+                                        type:'error'
+                                    });
+                                }
+                            },
+                            error:function(){
+                                toastr.error("请求失败");
+                            },
+                        });
+                    }else{
+                        return;
+                    }
+                });
+            },
+            forgetPsw:function(){
+                this.$refs['forgetForm'].validate((valid)=>{
+                    if(valid){
+                        $.ajax({
+                            url:'nologin/forgetPsw',
+                            data:this.forgetForm,
+                            type:'get',
+                            success:function(data){
+                                if(data){
+                                    vue.$message({
+                                        message:'请前往邮箱重置密码',
+                                        type:'success',
+                                    })
+                                }else{
+                                    toastr.error("此邮箱没有注册或未激活");
+                                }
+                            }
+                        })
+                    }
+                });
+            },
+        },
+    });
+});
+</script>
 </html>

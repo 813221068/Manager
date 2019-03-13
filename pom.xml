@@ -19,7 +19,12 @@
     <version>4.11</version>
     <scope>test</scope>
 </dependency>
-
+<!-- email -->
+ <dependency>
+            <groupId>com.sun.mail</groupId>
+            <artifactId>javax.mail</artifactId>
+            <version>1.6.0</version>
+        </dependency>
 
 	<!--spring -->
 	<dependency>

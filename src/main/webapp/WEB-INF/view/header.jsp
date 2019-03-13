@@ -2,7 +2,7 @@
     pageEncoding="UTF-8"%>
 <!DOCTYPE html>
 <div class="header">
-		<a class="logout" href="">
+		<a class="logout" href="doLogout">
 			<i class="fa fa-sign-out" aria-hidden="true"></i>
 			<span>注销</span>
 		</a>	

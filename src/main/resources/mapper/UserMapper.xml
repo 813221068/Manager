@@ -6,21 +6,19 @@
 		<result column="userId" property="userId" jdbcType="VARCHAR" />
 		<result column="username" property="username" jdbcType="VARCHAR" />
 		<result column="password" property="password" jdbcType="VARCHAR" />
-		<result column="role" property="role" jdbcType="INTEGER" />
+		<result column="mail" property="mail" jdbcType="VARCHAR" />
+		<result column="active" property="active" jdbcType="INTEGER" />
+		<result column="createTime" property="createTime" jdbcType="TIMESTAMP" />
 	</resultMap>
 	
-	<resultMap id="PermissionResultMap" type="cn.edu.swust.entity.Permission">
-		<result column="permissionId" property="permissionId" jdbcType="INTEGER" />
-		<result column="permissionName" property="permissionName" jdbcType="VARCHAR" />
-		<result column="permissionDesc" property="permissionDesc" jdbcType="VARCHAR" />
-		<result column="fatherId" property="fatherId" jdbcType="INTEGER" />
-	</resultMap>
 	<!-- 查询字段集 -->
     <sql id="defualt_fields">
         <trim suffixOverrides=",">
         user.userId,
         user.username,
         user.mail,
+        user.active,
+        user.createTime,
         </trim>
     </sql>
     <!-- 查询条件 -->
@@ -36,6 +34,7 @@
 			<if test="username != null"> and user.username = #{username} </if>
 			<if test="password != null"> and user.password = #{password} </if>
 			<if test="mail != null"> and user.mail = #{mail} </if>
+			<if test="active != 0 "> and user.active = #{active} </if>
 			<if test="roleId != null and roleId != 0"> and user_role.roleId = #{roleId} </if>
 		</where>
 	</sql>
@@ -62,9 +61,24 @@
 	</select>
 	
 	<insert id="insert" parameterType="cn.edu.swust.entity.User">
-	   insert into user (userId,username,password,mail)
-	   values(#{userId},#{username},#{password},#{mail})
+	   insert into user (userId,username,password,mail,active,createTime)
+	   values(#{userId},#{username},#{password},#{mail},#{active},{createTime})
 	</insert>
+	
+	<delete id="delete" parameterType="cn.edu.swust.query.UserQuery">
+		delete from user
+		<include refid="condition"></include>
+	</delete>
+	
+	<update id="updateByPrimaryKeySelective" parameterType="cn.edu.swust.entity.User">
+		update user
+		<set>
+			<if test="active != 0"> user.active = #{active},</if>
+			<if test="password != null"> user.password = #{password},</if>
+		</set>
+		where userId = #{userId,jdbcType=INTEGER}
+	</update>
+	
 	<!-- 查询角色下的用户 -->
 	<select id="getUserListByRole" resultMap="BaseResultMap" parameterType="cn.edu.swust.query.UserQuery">
 		select distinct 

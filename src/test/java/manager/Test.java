@@ -1,17 +1,15 @@
 package manager;
 
-import java.lang.reflect.Field;
-import java.lang.reflect.InvocationTargetException;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.Scanner;
+import java.util.Date;
+import java.util.Timer;
+import java.util.TimerTask;
 
-import com.sun.org.apache.bcel.internal.generic.NEW;
+import org.springframework.scheduling.config.Task;
 
-import cn.edu.swust.query.UserQuery;
-import cn.edu.swust.query.UserRoleQuery;
+import com.sun.org.apache.regexp.internal.recompile;
+
+import cn.edu.swust.util.EncodeUtil;
+import cn.edu.swust.util.LogHelper;
 
 class Cust{
 	public String name;
@@ -19,16 +17,8 @@ class Cust{
 public class Test {
 
 	public static void main(String[] args) {
-		ArrayList<Cust> list = new ArrayList<>();
-		Object object = new Object();
-		Cust cust = new Cust();
-		cust.name = "123";
-		list.add(cust);
-		list.equals(new ArrayList<Cust>());
-		for(Cust tmp:list) {
-			cust.name = "321";
-		}
-		System.out.println(list.get(0).name);
+		String string = EncodeUtil.decode64Base("e948576f30bd1669961698bf99cf5c93");
+		System.out.println(string);
 	}
-
+	
 }

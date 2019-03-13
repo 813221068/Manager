@@ -34,8 +34,16 @@ public interface UserDao{
 	 * @return
 	 */
 	public int insert(User user);
+	/**
+	 * 删除
+	 * @return  影响行数
+	 */
+	public int delete(UserQuery query);
+	
 	
 	public List<User> getUserListByRole(UserQuery query);
+	
+	public int updateByPrimaryKeySelective(User user);
 	
 	
 }
