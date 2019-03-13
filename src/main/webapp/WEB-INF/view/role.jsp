@@ -82,7 +82,7 @@
                             <el-button size="mini" @click="editRole(scope.$index,scope.row)">编辑</el-button>
                             <el-popover placement="top" width="160" v-model="scope.row.cfmVisible" trigger="click">
                                 <div class="text-center">
-                                    <p>确定删除该项目吗</p>
+                                    <p>确定删除该角色吗</p>
                                     <el-button size="mini" type="text" @click="scope.row.cfmVisible = false">取消</el-button>
                                     <el-button type="primary" size="mini" @click="deleteRole(scope.$index,scope.row)">确定</el-button>
                                 </div>
