@@ -14,7 +14,7 @@ public class DeclareController {
 	
 	
 	/** 接口  **/
-	@RequestMapping(value="/uploadData")
+	@RequestMapping(value="/doDeclare")
 	public void uploadData() {
 		
 	}

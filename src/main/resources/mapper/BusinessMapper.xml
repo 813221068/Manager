@@ -10,6 +10,7 @@
 		<result column="updateTime" property="updateTime" jdbcType="TIMESTAMP" />
 		<result column="createUserId" property="createUserId" jdbcType="VARCHAR" />
 		<result column="status" property="status" jdbcType="INTEGER" />
+		<result column="declareAsk" property="declareAsk" jdbcType="VARCHAR" />
 	</resultMap>
 	<!-- 查询字段集 -->
     <sql id="defualt_fields">
@@ -21,6 +22,7 @@
         updateTime,
         createUserId,
         status,
+        declareAsk,
         </trim>
     </sql>
     <!-- 查询条件 -->
@@ -69,6 +71,7 @@
 			<if test="updateTime != null"> updateTime,</if>
 			<if test="createUserId != null"> createUserId,</if>
 			<if test="status != null"> status,</if>
+			<if test="declareAsk != null"> declareAsk,</if>
    		</trim>
    		<trim prefix="values (" suffix=")" suffixOverrides="," >
    			<if test="businessId != 0 " >#{businessId},</if>
@@ -78,6 +81,7 @@
 			<if test="updateTime != null"> #{updateTime},</if>
 			<if test="createUserId != null"> #{createUserId},</if>
 			<if test="status != null"> #{status},</if>
+			<if test="declareAsk != null"> #{declareAsk},</if>
     	</trim>
     </insert>
     
@@ -95,7 +99,8 @@
 			</if>
 			<if test="updateTime != null"> business.updateTime = #{updateTime,jdbcType=TIMESTAMP},
 			</if>
-			<if test="status !=0">business.status = #{status,jdbcType=INTEGER}</if>
+			<if test="status !=0"> business.status = #{status,jdbcType=INTEGER},</if>
+			<if test="declareAsk !=null"> business.declareAsk = #{declareAsk,jdbcType=VARCHAR},</if>
 		</set>
 		where business.businessId = #{businessId,jdbcType=INTEGER}
 	</update>

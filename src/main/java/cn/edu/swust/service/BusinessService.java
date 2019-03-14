@@ -167,7 +167,6 @@ public class BusinessService {
 	 * @param steps 
 	 * @return 
 	 */
-	@Transactional
 	public boolean update(Business business,List<Step> steps) {
 		int result = 0;
 		try {

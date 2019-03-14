@@ -12,371 +12,178 @@
 	<jsp:include page="navbar.jsp"></jsp:include>
 	<jsp:include page="header.jsp"></jsp:include>
 	<div class="content" id="content">
-		<div>
-			<h2>业务申报信息</h2>
-		</div>
+		<div class="m-t m-l m-b">
+            <el-breadcrumb separator="/">
+                <el-breadcrumb-item ><a href="index">首页</a></el-breadcrumb-item>
+                <el-breadcrumb-item>业务申报</el-breadcrumb-item>
+                <el-breadcrumb-item>业务列表</el-breadcrumb-item>
+            </el-breadcrumb>
+        </div>
 		<div class="table-bg">
-            <div id="toolbar" class="btn-group">
-                <button type="button" class="btn btn-primary m-r" data-toggle="modal" data-target="#businessModal" data-backdrop="static" id="addButton">
-                    <span class="glyphicon glyphicon-plus" aria-hidden="true"></span>添加项目
-                </button>
-                <button id="batchDelete" type="button" class="ant-btn display" onclick="batchDelete()">
-                    <span><i class="fa fa-trash-o" aria-hidden="true"></i></span>批量删除
-                </button>
+             <div class="table-search">
+                <el-input  placeholder="请输入项目名" clearable suffix-icon="el-icon-search" v-model="search.bsnsName" style="width: 20%;">
+                </el-input> 
+                <el-button type="primary" plain style="margin-left: 20px;" @click="submitSearch()">查找</el-button>
+                <el-button type="info" plain style="margin-left: 20px;" @click="resetSearch()">重置</el-button>
             </div>
-			<div class = "table">
-				<table id="businessTable" >
-				</table>	
-			</div>
+            <div class="table">
+                <el-table :data="bsnsList.slice((currentPage-1)*pageSize,currentPage*pageSize)" border stripe>
+                    <el-table-column label="项目ID" align='center' prop="businessId" sortable>
+                            <template slot-scope="scope">
+                                <span style="margin-left: 10px">{{ scope.row.businessId }}</span>
+                            </template>
+                        </el-table-column>
+                        <el-table-column label="项目名称" align='center' prop="businessName" sortable>
+                            <template slot-scope="scope">
+                                <span style="margin-left: 10px">{{ scope.row.businessName }}</span>
+                            </template>
+                        </el-table-column>
+                        <el-table-column label="项目描述" align='center' prop="businessDesc" sortable>
+                            <template slot-scope="scope">
+                                <span style="margin-left: 10px">{{ scope.row.businessDesc }}</span>
+                            </template>
+                        </el-table-column>
+                        <el-table-column label="申报要求" align='center' prop="declareAsk" sortable>
+                            <template slot-scope="scope">
+                                <span style="margin-left: 10px">{{ scope.row.declareAsk }}</span>
+                            </template>
+                        </el-table-column>
+                        <el-table-column label="操作" align="center">
+                            <template slot-scope="scope">
+                                <el-button size="mini" type="primary"  @click="declareVsb=true">申报</el-button>
+                            </template>
+                        </el-table-column>
+                </el-table>
+                <div class="m-t">
+                    <el-pagination background layout="total, sizes, prev, pager, next, jumper" :total="total" :page-sizes="[5, 10, 20, 50]" :page-size="pageSize"  @size-change="pageSizeChange" @current-change="currentPageChange">
+                    </el-pagination>
+                </div>
+            </div>
 		</div>
+        <el-dialog :visible.sync="declareVsb" title="上传申报资料" :append-to-body="true"  :modal-append-to-body='false' width="20%"
+        :close-on-click-modal="false">
+            <el-upload ref="upload" action="" :auto-upload="false"  :before-remove="beforeRemove" 
+            :limit="3" :on-exceed="handleExceed" :on-change="onChange" :on-success="onSuccess" :on-error="onError">
+                <el-button slot="trigger" size="small" type="primary">选择申报资料</el-button>
+            </el-upload>
+            <span slot="footer">
+                <el-button @click="hideDialog()">取 消</el-button>
+                <el-button style="margin-left: 10px;" type="success" @click="submitUpload" plain>确认</el-button>
+            </span>
+            
+        </el-dialog>
 	</div>
 	<jsp:include page="footer.jsp"></jsp:include>
-    <form class="form-horizontal" role="form" id="addForm">
-    <div class="modal fade" id="businessModal" tabindex="-1" role="dialog" aria-hidden="true" data-backdrop="static">
-        <div class="modal-dialog">
-            <div class="modal-content">
-                <div class="modal-header">
-                    <button type="button" class="close" data-dismiss="modal" aria-hidden="true">
-                        &times;
-                    </button>
-                    <h4 class="modal-title" >
-                        项目信息
-                    </h4>
-                </div>
-                <div class="modal-body">
-                    <form class="form-horizontal" role="form" id="roleForm">
-                        <div class="form-group required text-center">
-                            <label for="roleName" class="col-sm-3 control-label">项目名</label>
-                            <div class="col-sm-9">
-                                <input type="text" class="form-control" id="businessName" name="businessName" 
-                                placeholder="请输入项目名" oninput="checkBsnName()">
-                            </div>
-                            <div class="display msg" id="msgBsnName">请输入长度至少为3的项目名</div>
-                        </div>
-                        <div class="form-group">
-                            <label for="desc" class="col-sm-3 control-label">项目描述</label>
-                            <div class="col-sm-9">
-                                <input type="text" class="form-control" name="businessDesc" id="businessDesc"
-                                       placeholder="请输入项目描述">
-                            </div>
-                        </div>
-                        <input type="hidden" id="createTime" name="createTime">
-                        <input type="hidden" id="updateTime" name="updateTime">
-                        <input type="hidden" id="createUId" name="createUId">
-                        <input type="reset" name="reset" style="display: none;" />
-                    </form>
-                </div>
-                <div class="modal-footer">
-                    <button type="button" class="btn btn-default" data-dismiss="modal">取消
-                    </button>
-                    <button type="button" onclick="modalOnclick()" class="btn btn-primary">确认
-                    </button>
-                </div>
-            </div>/.modal-content
-        </div>/.modal
-    </div>
-    </form>
 </body>
 <script type="text/javascript">
-var modalOperating = 0; //0是添加   1是修改
-var sltBusiness;
 $(document).ready(function(){
-	//table操作事件
-	window.operateEvents = {
-	//修改操作
-    'click #tableEdit':function(e,value,row,index){
-        $('#businessModal').modal('show');
-        document.getElementById('businessName').value = row.businessName;
-        document.getElementById('businessDesc').value = row.businessDesc;
-        modalOperating = 1;
-        sltBusiness = row;
-    },
-    //删除操作
-    'click #tableDelete':function(e,value,row,index){
-        $.ajax({
-            url:"deleteBusiness",
-            data:{"businessId":row.businessId},
-            type:"get",
-            success:function(data){
-                if(data==0){
-                    toastr.error("删除失败");
+    var vue = new Vue({
+        el:"#content",
+        data:function(){
+            return {
+                total:100,//table总数
+                pageSize:5,//每页条数
+                currentPage:1,//当前页
+                declareVsb:false,
+                bsnsList:[],
+                search:{
+                    bsnsName:null,
+                    sltStatus:"",
+                },
+            };
+        },
+        mounted:function(){
+            loadTableData({});
+        },
+        methods:{
+            submitSearch:function(){
+                var para = {"businessName":this.search.bsnsName};
+                loadTableData(para);
+            },
+            resetSearch:function(){
+                this.search = cleanParams(this.search);
+                loadTableData({});
+            },
+            pageSizeChange:function(val){
+                this.pageSize = val;
+            },
+            currentPageChange:function(val){
+                this.currentPage = val;
+            },
+            submitUpload:function() {
+                if( this.$refs.upload.uploadFiles.length == 0){
+                    this.$message.error('请选择申报资料！');
                 }else{
-                    toastr.success("删除成功");
+                    this.$refs.upload.submit();
                 }
-                $('#businessTable').bootstrapTable('refresh');
                 
+                // this.hideDialog();
             },
-            error:function(){
-                toastr.error("删除失败");
+            beforeRemove(file, fileList) {
+                return this.$confirm('确定移除 ${ file.name }？');
             },
-        });
-    }
-};
-	//加载table数据
-	$('#businessTable').bootstrapTable({
-		url:'businessList',
-		method:'get',
-		toolbar: '#toolbar',
-		striped: true,
-		cache: false,
-		pagination: true,                  
-        sortable: true,                   
-        // sortOrder: "asc",                   
-        sidePagination: "client",          
-        pageNumber: 1,                    
-        pageSize: 10,                     
-        pageList: [ 5,10, 20, 50],       
-        search: false,                      
-        strictSearch: true,
-        showColumns: true,                  
-        showRefresh: true,                 
-        minimumCountColumns: 2,           
-        clickToSelect: false,             
-        uniqueId: "businessId",                   
-        showToggle: true,                   
-        cardView: false,                 
-        detailView: false,
-        columns: [
-        {
-        	checkbox: true,  
-            visible: true 
-        },
-        {
-        	field: 'businessId',
-            title: "项目ID",
-            sortable: true
-        },
-        {
-        	field: 'businessName',
-            title: "项目名称",
-        },
-         {
-        	field: 'businessDesc',
-            title: "项目描述",
-        },
-        {
-        	field: 'createUser',
-            title: "创建人",
-            formatter: function (value, row, index) {
-                if(isnull(value)){
-                    return value;
+            //上传成功时钩子
+            onSuccess(response, file, fileList){
+                this.hideDialog();
+                this.$message.success('申报成功');
+            },
+            //失败时钩子
+            onError(err, file, fileList){
+                this.$message.error('申报失败！');
+            },
+            hideDialog:function(){
+                this.declareVsb = false;
+                this.$refs.upload.clearFiles();
+            },
+            //超出允许文件最大数
+            handleExceed:function(files, fileList){
+                this.$message.warning('允许上传最大文件数为3，已超出！');
+            },
+            //上传文件状态改变触发
+            onChange:function(currentFile, fileList){
+                var eqCount = 0;
+                for(var file of fileList){
+                    if(file.name == currentFile.name){
+                        eqCount++;
+                    }
                 }
-                var str = '<div class="table-td">'+value.username+'<span class="tooltiptext">'
-                    +'用户ID:'+value.userId+'<br>用户名:'+value.username+'</span></div>';
-                return str;
-            }
-        },
-        {
-        	field: 'createTime',
-            title: "创建时间",
-            sortable: true,
-            formatter: function (value, row, index) {
-                var date = moment(value);
-                var str = '<i class="fa fa-clock-o" aria-hidden="true"></i><span> </span>';
-                return str+moment(date).format("YYYY-MM-D  HH:mm:ss");
-            }
-        },
-        {
-        	field: 'updateTime',
-            title: "更新时间",
-            sortable: true,
-            formatter: function (value, row, index) {
-                var date = moment(value);
-                var str = '<i class="fa fa-clock-o" aria-hidden="true"></i><span> </span>';
-                return str+moment(date).format("YYYY-MM-D  HH:mm:ss");
-            }
-        },
-        {
-            field:'button',
-            title: '操作',
-            align: 'center',
-            valign: 'middle',
-            formatter: actionFormatter,
-            events:operateEvents
-        }, 
-        ],
-        onPostBody:function(){
-            //引入icheck样式  todo 修改dropmenu的checkbox
-            $('.bs-checkbox').iCheck({
-                checkboxClass : 'icheckbox_square-green',
-                radioClass : 'iradio_square-green',
-            });
-            $('.card-view').iCheck({
-                checkboxClass : 'icheckbox_square-green',
-                radioClass : 'iradio_square-green',
-            });
-            //全选
-             $("th.bs-checkbox").on('ifChecked',function(event){
-                 $('.bs-checkbox').iCheck('check');
-             });
-             //反选
-            $("th.bs-checkbox").on('ifUnchecked',function(event){
-                $('.bs-checkbox').iCheck('uncheck');
-            });
-            //table模式下批量删除按钮
-            $('.bs-checkbox').on('ifChanged',function(){
-                if($('.bs-checkbox input:checked').length>0){
-                    document.getElementById('batchDelete').style.display = "inline";
-                }else{
-                    document.getElementById('batchDelete').style.display = "none";
+                if(eqCount>1){
+                    this.$message.error('选择重名文件');
+                    //bug 有闪烁
+                    this.$refs.upload.uploadFiles = fileList.slice(-1);
                 }
-            });
-            //card模式下批量删除
-            $('.card-view').on('ifChanged',function(){
-                 if($('.card-view input:checked').length>0){
-                    document.getElementById('batchDelete').style.display = "inline";
-                }else{
-                    document.getElementById('batchDelete').style.display = "none";
-                }
-            });
-            
-
-        },
-	});
-
-});
-//批量删除
-function batchDelete(){
-    var table = $('#businessTable').bootstrapTable('getData');
-    var rows = document.getElementById('businessTable').rows;
-    var ids = new Array;
-    for(var i=1;i<=rows.length;i++){
-        if($(rows[i]).find('input:checked').length>0){
-            ids.push(table[i-1].businessId);
-        }
-    }
-    $.ajax({
-        url:"deleteBusiness",
-        data:{"businessIds":ids},
-        type:"get",
-        traditional: true,//传递数组
-        success:function(data){
-            if(data==0){
-                toastr.error("删除失败");
-            }else{
-                toastr.success("删除成功");
-            }
-            $('#businessTable').bootstrapTable('refresh');
-            
-        },
-        error:function(){
-            toastr.error("删除失败");
+            },
         },
     });
-    
-    document.getElementById('batchDelete').style.display = 'none';
-};
-function addBusiness(data) {
-    var addResult = 0;
-    $.ajax(
-        {
-            url: "addBusiness",
-            data:JSON.stringify(data),
+    function loadTableData(para){
+        //状态为正式
+        para.status = 2;
+        $.ajax({
+            url:"businessList",
+            data:JSON.stringify(para),
             dataType:"json",  
-            type: "post",
+            type:"post",
             contentType:"application/json;charset=UTF-8",
-            success:function(row)
-            {
-                addResult = row;
+            traditional: true,//传递数组
+            success:function(data){
+                var list = [];
+                for(var bsns of data){
+                    bsns.createTime = moment(bsns.createTime).format("YYYY-MM-DD  HH:mm:ss");
+                    bsns.updateTime = moment(bsns.updateTime).format("YYYY-MM-DD  HH:mm:ss");
+                    if(isnull(bsns.businessDesc)){
+                        bsns.businessDesc = "暂无数据";
+                    }
+                    list.push(bsns);
+                }
+                vue.bsnsList = list;
+                vue.total = list.length;
             },
-            error:function()
-            {
+            error:function(){
                 toastr.error("请求失败");
             },
-            complete:function()
-            {
-                $('#businessModal').modal('hide');
-                $("#businessTable").bootstrapTable('refresh');
-                if(addResult>0){
-                    toastr.success("添加项目成功");
-                     $('#businessTable').bootstrapTable('refresh');
-                }
-                else if(addResult==0){
-                    toastr.error("添加项目失败");
-                }
-                
-            }
         });
-
-    return false;
-};
-function updateBusiness(data){
-    data.businessId = sltBusiness.businessId;
-    var updateResult = 0;
-    $.ajax(
-        {
-            url: "updateBusiness",
-            data:JSON.stringify(data),
-            dataType:"json",  
-            type: "post",
-            contentType:"application/json;charset=UTF-8",
-            success:function(row)
-            {
-                updateResult = row;
-            },
-            error:function()
-            {
-                toastr.error("请求失败");
-            },
-            complete:function()
-            {
-                $('#businessModal').modal('hide');
-                $("#businessTable").bootstrapTable('refresh');
-                if(updateResult>0){
-                    toastr.success("修改项目信息成功");
-                    $('#businessTable').bootstrapTable('refresh');
-                }
-                else if(updateResult==0){
-                    toastr.error("修改项目信息失败");
-                } 
-            //  $('.modal-backdrop').remove();
-            }
-        });
-    return false;
-};
-//检查项目名输入是否合法
-function checkBsnName(){
-	var bsnName = document.getElementById("businessName").value;
-	if(isnull(bsnName)){
-		return false;
-	}
-	if(bsnName.length<3){
-		document.getElementById("businessName").className = "has-error form-control";
-		document.getElementById("msgBsnName").style.display = "inline";
-		return false;
-	}else{
-		document.getElementById("businessName").className = "form-control";
-		document.getElementById("msgBsnName").style.display = "none";
-		return true;
-	}
-};
-//modal确认事件
-function modalOnclick(){
-    if(!checkBsnName()){
-        var txt = "请输入至少长度为3的项目名"
-        window.wxc.xcConfirm(txt, window.wxc.xcConfirm.typeEnum.info);
-        return false;
-    }
-
-    var data = {};
-    data.businessName = document.getElementById("businessName").value;
-    data.businessDesc = document.getElementById("businessDesc").value;
-    data.createTime = moment().format("YYYY-MM-DD HH:mm:ss");
-    data.updateTime = moment().format("YYYY-MM-DD HH:mm:ss");
-    data.createUId =  "${user.userId}";
-    if(modalOperating==1){
-        modalOperating = 0;
-        return updateBusiness(data);
-    }else{
-        return addBusiness(data);
-    }
-};
-//modal关闭 刷新
-$('#businessModal').on('hide.bs.modal', function () {
-	
+    };
 });
-$('#businessModal').on('hidden.bs.modal',function(){
-	$("input[type=reset]").trigger("click");
-});
+
 </script>
 </html>

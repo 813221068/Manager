@@ -59,6 +59,11 @@
 								</el-popover>
 							</template>
 						</el-table-column>
+						<el-table-column label="申报要求" align='center' prop="declareAsk" sortable>
+							<template slot-scope="scope">
+								<span style="margin-left: 10px">{{ scope.row.declareAsk }}</span>
+							</template>
+						</el-table-column>
  						<el-table-column label="创建人" align="center">
 							<template slot-scope="scope">
 								<el-popover trigger="hover" placement="top">
@@ -81,6 +86,7 @@
 						</el-table-column>
 						<el-table-column label="操作" align="center">
 							<template slot-scope="scope">
+								<!-- todo 查看正式项目显示申报进度 -->
 								<el-button v-if="scope.row.status==1?true:false" type="danger" size="mini" 
 								@click="submit2Formal(scope.$index,scope.row)">提交为正式</el-button>
 								<el-button v-if="scope.row.status==2?true:false" size="mini" @click="showBsns(scope.$index, scope.row)">查看</el-button>
@@ -139,6 +145,9 @@
  				<el-form-item label="项目描述：" prop="bsnsDesc" >
    					<el-input placeholder="请输入项目描述" v-model="bsnsForm.bsnsDesc" style="width: 80%;" clearable :disabled="cmfDisabled">
  				</el-form-item>
+ 				<el-form-item label="申报要求：" prop="declareAsk" >
+   					<el-input placeholder="请输入申报要求" v-model="bsnsForm.declareAsk" style="width: 80%;" clearable :disabled="cmfDisabled">
+ 				</el-form-item>
  				<!--bug  step放在item下 step线的位置会变 -->
  				<el-form-item label="审批流程：" prop="steps">
   				</el-form-item>
@@ -194,6 +203,7 @@ var vue = new Vue({
 			bsnsForm:{
 				bsnsName:'',
 				bsnsDesc:null,
+				declareAsk:null,
 				steps:[],
 			},
 			stepForm:{
@@ -306,7 +316,7 @@ var vue = new Vue({
 			msg.push('提交为正式成功');
 			msg.push('提交为正式失败');
 			updateBsns(para,msg);
-			loadTableData({});
+			this.submitSearch();
 
 		},
 		deleteBsns:function(index,row){
@@ -388,7 +398,7 @@ var vue = new Vue({
 					if(modalOperating==0){
 						var parameter = {"businessName":this.bsnsForm.bsnsName,"businessDesc":this.bsnsForm.bsnsDesc,"steps":this.bsnsForm.steps,
 							"createTime":moment(new Date()).format("YYYY-MM-DD HH:mm:ss"),"createUserId":${user.userId},
-							"updateTime":moment(new Date()).format("YYYY-MM-DD HH:mm:ss"),"status":1
+							"updateTime":moment(new Date()).format("YYYY-MM-DD HH:mm:ss"),"status":1,"declareAsk":this.bsnsForm.declareAsk
 						};
 						$.ajax(
 						{
@@ -545,22 +555,7 @@ function updateBsns(para,msg){
 		},
 	});
 };
-/**
- * 清空参数
- * @param datas
- * @returns
- */
-function cleanParams(datas){
-	var v_data ={};
-	for(var a in datas){
-		if (datas[a] != null && datas[a] instanceof Array) {
-			v_data[a]=[];
-		}else {
-			v_data[a] = null;
-		}
-	}
-	return v_data;
-}
+
 
 });
 </script>

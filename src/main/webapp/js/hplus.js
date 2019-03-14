@@ -28,6 +28,7 @@ function cleanParams(datas){
 	return v_data;
 };
 // 公共配置
+
 //消息提示框设置
 toastr.options = {  
         closeButton: false,                                            // 是否显示关闭按钮，（提示框右上角关闭按钮）

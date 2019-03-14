@@ -42,6 +42,8 @@ public class Business {
 	 */
 	private int status;
 	
+	private String declareAsk;
+	
 	/*****************************/ //表外字段	
 	private User createUser;
 	

@@ -2,6 +2,10 @@
 .msg{
 	color:red;
 }
+/*//bootstrap 覆盖掉了 element*/
+input[type=file]{
+    display: none;
+}
 
 /* BACKGROUNDS */
 
