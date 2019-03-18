@@ -8,6 +8,7 @@ public class DeclareBusinessQuery {
 	 * 项目id
 	 */
 	private int businessId;
+	private String declareUserId;
 	/***
 	 * 项目ids
 	 */

@@ -55,7 +55,13 @@
 			</bean>
 		</mvc:interceptor>
 	</mvc:interceptors>
-    
+	
+	<!-- 支持上传文件 -->
+	<bean id="multipartResolver" class="org.springframework.web.multipart.commons.CommonsMultipartResolver" >
+		<property name="defaultEncoding" value="UTF-8" />
+	</bean>
+
+
     <!--相关配置文件-->
     <import resource="classpath:/spring-config/spring-mybatis.xml"/>
     <import resource="classpath:/spring-config/spring-view.xml"/>

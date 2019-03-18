@@ -6,6 +6,7 @@ import java.util.TimerTask;
 
 import org.springframework.scheduling.config.Task;
 
+import com.sun.javafx.binding.StringFormatter;
 import com.sun.org.apache.regexp.internal.recompile;
 
 import cn.edu.swust.util.EncodeUtil;
@@ -17,8 +18,12 @@ class Cust{
 public class Test {
 
 	public static void main(String[] args) {
-		String string = EncodeUtil.decode64Base("e948576f30bd1669961698bf99cf5c93");
-		System.out.println(string);
+		Cust[] custs = new Cust[2];
+		Cust cust = new Cust();
+		cust.name="1234";
+		custs[0] = cust;
+		System.out.println(custs);
+
 	}
 	
 }

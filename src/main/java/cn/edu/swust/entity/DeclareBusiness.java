@@ -24,7 +24,7 @@ public class DeclareBusiness {
 	 */
 	private Date startTime;
 	/**
-	 * 申报状态  0是没有开始 1是进行中  2是申报失败 3是申报完成
+	 * 申报状态   1是进行中  2是申报失败 3是申报完成
 	 */
 	private int status;
 }

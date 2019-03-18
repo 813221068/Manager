@@ -4,7 +4,7 @@
 <html>
 <head>
 	<meta charset="utf-8">
-	<title>业务申报审批系统 - 申报状态</title>
+	<title>业务申报审批系统 - 业务列表</title>
 	
 	<%@ include file="common.jsp"%>
 </head>
@@ -50,7 +50,7 @@
                         </el-table-column>
                         <el-table-column label="操作" align="center">
                             <template slot-scope="scope">
-                                <el-button size="mini" type="primary"  @click="declareVsb=true">申报</el-button>
+                                <el-button size="mini" type="primary"  @click="declareBtnClick(scope.row)">申报</el-button>
                             </template>
                         </el-table-column>
                 </el-table>
@@ -60,10 +60,10 @@
                 </div>
             </div>
 		</div>
-        <el-dialog :visible.sync="declareVsb" title="上传申报资料" :append-to-body="true"  :modal-append-to-body='false' width="20%"
-        :close-on-click-modal="false">
-            <el-upload ref="upload" action="" :auto-upload="false"  :before-remove="beforeRemove" 
-            :limit="3" :on-exceed="handleExceed" :on-change="onChange" :on-success="onSuccess" :on-error="onError">
+        <el-dialog :visible.sync="declareVsb" title="上传申报资料" :append-to-body="true"  :modal-append-to-body='false' 
+        width="20%" :close-on-click-modal="false">
+            <el-upload ref="upload" action="doDeclare" :auto-upload="false"  :before-remove="beforeRemove" :data="declareBsns"
+            :limit="3" :on-exceed="handleExceed" :on-change="onChange" >
                 <el-button slot="trigger" size="small" type="primary">选择申报资料</el-button>
             </el-upload>
             <span slot="footer">
@@ -90,6 +90,10 @@ $(document).ready(function(){
                     bsnsName:null,
                     sltStatus:"",
                 },
+                declareBsns:{
+                    declareUserId:null,
+                    businessId:null,
+                },
             };
         },
         mounted:function(){
@@ -114,7 +118,8 @@ $(document).ready(function(){
                 if( this.$refs.upload.uploadFiles.length == 0){
                     this.$message.error('请选择申报资料！');
                 }else{
-                    this.$refs.upload.submit();
+                    this.uploadFiles();
+                    // this.$refs.upload.submit();
                 }
                 
                 // this.hideDialog();
@@ -122,14 +127,57 @@ $(document).ready(function(){
             beforeRemove(file, fileList) {
                 return this.$confirm('确定移除 ${ file.name }？');
             },
-            //上传成功时钩子
-            onSuccess(response, file, fileList){
-                this.hideDialog();
-                this.$message.success('申报成功');
-            },
-            //失败时钩子
-            onError(err, file, fileList){
-                this.$message.error('申报失败！');
+            // beforeUpload(file){
+            //     console.log(file);
+            //     var tmp = this.$refs.upload;
+            //     console.log(tmp);
+            //     for(var file of tmp.uploadFiles){
+            //         console.log(file.raw);
+            //     }
+            //     var form = new FormData();
+            //     form.append("file",file);
+            //     $.ajax({
+            //         processData:false,
+            //         contentType:false,
+            //         type:"post",
+            //         url:"doDeclare",
+            //         data:form,
+            //         success(data){
+            //             if(data){
+            //                 vue.$message.success('申报成功');
+            //             }
+            //             else{
+            //                 vue.$message.error('申报失败');
+            //             }
+            //         }
+            //     });
+            // },
+            uploadFiles(){
+                var files = this.$refs.upload.uploadFiles;
+                var form = new FormData();
+                form.append("businessId",this.declareBsns.businessId);
+                form.append("declareUserId",this.declareBsns.declareUserId);
+                for(var file of files){
+                    form.append("files",file.raw);
+                }
+                $.ajax({
+                    processData:false,
+                    contentType:false,
+                    type:"post",
+                    url:"doDeclare",
+                    data:form,
+                    success: function(data) {
+                        if(data){
+                            vue.$message.success('申报成功');
+                        }
+                        else{
+                            vue.$message.error('申报失败！');
+                        }
+                    },
+                    error: function(error) {
+                        vue.$message.error('请求失败！');
+                    }
+                });
             },
             hideDialog:function(){
                 this.declareVsb = false;
@@ -149,9 +197,14 @@ $(document).ready(function(){
                 }
                 if(eqCount>1){
                     this.$message.error('选择重名文件');
-                    //bug 有闪烁
+                    // 有闪烁
                     this.$refs.upload.uploadFiles = fileList.slice(-1);
                 }
+            },
+            declareBtnClick:function(row){
+                this.declareVsb = true;
+                this.declareBsns.businessId = row.businessId;
+                this.declareBsns.declareUserId = ${user.userId}; 
             },
         },
     });

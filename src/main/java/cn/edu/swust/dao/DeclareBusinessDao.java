@@ -20,4 +20,18 @@ public interface DeclareBusinessDao {
 	 * @return
 	 */
 	public int delete(DeclareBusinessQuery query);
+	/**
+	 * 可选择性插入单条
+	 * @param declareBusiness
+	 * @return  id
+	 */
+	public int insertOneSelective(DeclareBusiness declareBusiness);
+	/**
+	 * 查询单条
+	 * @param query
+	 * @return
+	 */
+	public DeclareBusiness query(DeclareBusinessQuery query);
+	
+	public int getMaxPrimaryKey();
 }

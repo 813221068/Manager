@@ -7,6 +7,7 @@
 		<result column="businessId" property="businessId" jdbcType="INTEGER" />
 		<result column="declareUserId" property="declareUserId" jdbcType="VARCHAR" />
 		<result column="startTime" property="startTime" jdbcType="TIMESTAMP" />
+		<result column="endTime" property="endTime" jdbcType="TIMESTAMP" />
 		<result column="status" property="status" jdbcType="INTEGER" />
 	</resultMap>
 	<!-- 查询字段集 -->
@@ -16,6 +17,7 @@
         businessId,
         declareUserId,
         startTime,
+        endTime,
         status,
         </trim>
     </sql>
@@ -52,4 +54,26 @@
     	delete from declare_business
     	<include refid="condition"></include>
     </delete>
+    
+    <select id="getMaxPrimaryKey" resultType="java.lang.Integer">
+    	select max(connId) from declare_business 
+    </select>
+    
+    <insert id="insertOneSelective" parameterType="cn.edu.swust.entity.DeclareBusiness">
+    	insert into declare_business
+    	<trim prefix="(" suffix=")" suffixOverrides="," >
+			<if test="businessId != 0 " >businessId,</if>
+      		<if test="declareUserId != null" >declareUserId,</if>
+      		<if test="startTime != null"> startTime,</if>
+			<if test="endTime != null"> endTime,</if>
+			<if test="status != 0"> status,</if>
+   		</trim>
+   		<trim prefix="values (" suffix=")" suffixOverrides="," >
+   			<if test="businessId != 0 " >#{businessId},</if>
+      		<if test="declareUserId != null" >#{declareUserId},</if>
+      		<if test="startTime != null"> #{startTime},</if>
+			<if test="endTime != null"> #{endTime},</if>
+			<if test="status != null"> #{status},</if>
+    	</trim>
+    </insert>
 </mapper>
