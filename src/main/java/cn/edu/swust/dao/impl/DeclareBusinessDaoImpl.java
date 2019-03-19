@@ -33,7 +33,8 @@ public class DeclareBusinessDaoImpl implements DeclareBusinessDao {
 	@Override
 	public int insertOneSelective(DeclareBusiness declareBusiness) {
 		int id = 0;
-		int row  = sqlSession.insert(getNameSpace()+"insertOneSelective", declareBusiness);
+		setPrimaryValue(1);
+		int row  = sqlSession.insert(getNameSpace()+".insertOneSelective", declareBusiness);
 		if(row != 0) {
 			id = getMaxPrimaryKey();
 		}
@@ -41,12 +42,16 @@ public class DeclareBusinessDaoImpl implements DeclareBusinessDao {
 	}
 	@Override
 	public DeclareBusiness query(DeclareBusinessQuery query) {
-		return sqlSession.selectOne(getNameSpace()+"query", query);
+		return sqlSession.selectOne(getNameSpace()+".query", query);
 	}
 	@Override
 	public int getMaxPrimaryKey() {
 		// TODO 自动生成的方法存根
 		return sqlSession.selectOne(getNameSpace()+".getMaxPrimaryKey");
+	}
+	@Override
+	public void setPrimaryValue(int value) {
+		sqlSession.selectOne(getNameSpace()+".setPrimaryValue",value);
 	}
 
 }

@@ -38,6 +38,7 @@ public class BusinessController {
 	@ResponseBody
 	@RequestMapping(value="/businessList",method=RequestMethod.POST)
 	public JSONArray getBusinessList(@RequestBody BusinessQuery query) {
+		
 		List<Business> list = businessService.getBusinessList(query);
 		String json = JSONObject.toJSONString(list,SerializerFeature.DisableCircularReferenceDetect);
 		JSONArray jsonArray = JSONArray.parseArray(json);

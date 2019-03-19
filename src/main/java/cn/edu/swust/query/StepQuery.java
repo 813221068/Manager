@@ -1,5 +1,7 @@
 package cn.edu.swust.query;
 
+import java.util.Date;
+
 import lombok.Data;
 
 @Data
@@ -17,4 +19,5 @@ public class StepQuery {
 	 * 项目ids
 	 */
 	private int[] businessIds;
+	
 }

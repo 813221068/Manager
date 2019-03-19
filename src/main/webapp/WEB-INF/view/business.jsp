@@ -25,6 +25,7 @@
                 <span class="display" id="batchBtn">
 					<el-button icon="el-icon-delete" size="medium"  @click="batchDelete()">批量删除</el-button>
                 </span>
+                <!-- <el-button @click="loadTableData({})">测试</el-button> -->
             </div>
             <div class="table-search">
 				<el-input  placeholder="请输入项目名" clearable suffix-icon="el-icon-search" v-model="search.bsnsName" style="width: 20%;">
@@ -244,7 +245,7 @@ var vue = new Vue({
 		},
 	},
 	mounted:function(){
-		loadTableData({});
+		this.loadTableData({});
 		$.ajax({
 			url:"getRoleList",
 			data:JSON.stringify({}),
@@ -255,22 +256,22 @@ var vue = new Vue({
 				if(data!=null && data.length!=0){
 					vue.roles = data;
 				}else{
-					toastr.error("查询失败");
+					vue.$message.error("查询失败");
 				}
 			},
 			error:function(){
-				toastr.error("请求失败");
+				vue.$message.error("请求失败");
 			},
 		});
 	},
 	methods:{
 		submitSearch:function(){
 			var para = {"businessName":this.search.bsnsName,"status":this.search.sltStatus};
-			loadTableData(para);
+			this.loadTableData(para);
 		},
 		resetSearch:function(){
 			this.search = cleanParams(this.search);
-			loadTableData({});
+			this.loadTableData({});
 		},
 		pageSizeChange:function(val){
 			this.pageSize = val;
@@ -291,7 +292,6 @@ var vue = new Vue({
 		editBsns:function(index,row){
 			this.bsnsForm.bsnsName = row.businessName;
 			this.bsnsForm.bsnsDesc = row.businessDesc;
-			console.log(row.steps);
 			this.bsnsForm.steps = row.steps;
 			this.bsnsModalVsb = true;
 			modalOperating = 1;
@@ -315,7 +315,7 @@ var vue = new Vue({
 			var msg = [];
 			msg.push('提交为正式成功');
 			msg.push('提交为正式失败');
-			updateBsns(para,msg);
+			this.updateBsns(para,msg);
 			this.submitSearch();
 
 		},
@@ -329,14 +329,14 @@ var vue = new Vue({
 			traditional: true,//传递数组
 			success:function(data){
 				if(data==0){
-					toastr.error("删除失败");
+					vue.$message.error("删除失败");
 				}else{
-					toastr.success("删除成功");
+					vue.$message.success("删除成功");
 				}
-				loadTableData({});
+				vue.loadTableData({});
 			},
 			error:function(){
-				toastr.error("请求失败");
+				vue.$message.error("请求失败");
 			}
 		});
 		},
@@ -353,16 +353,16 @@ var vue = new Vue({
 			traditional: true,//传递数组
 			success:function(data){
 				if(data==0){
-					toastr.error("全部删除失败");
+					vue.$message.error("全部删除失败");
 				}else if(data==1){
-					toastr.success("部分删除成功");
+					vue.$message.success("部分删除成功");
 				}else{
-					toastr.success("全部删除成功");
+					vue.$message.success("全部删除成功");
 				}
-				loadTableData({});
+				this.loadTableData({});
 			},
 			error:function(){
-				toastr.error("请求失败");
+				vue.$message.error("请求失败");
 			}
 		});
 		},
@@ -382,7 +382,7 @@ var vue = new Vue({
 
 						this.bsnsForm.stepRequired = 'notnull';
 					}else{
-						toastr.error("添加失败，超过最大值");
+						vue.$message.error("添加失败，超过最大值");
 					}
 					this.hideStepModal();
 					return;
@@ -398,7 +398,7 @@ var vue = new Vue({
 					if(modalOperating==0){
 						var parameter = {"businessName":this.bsnsForm.bsnsName,"businessDesc":this.bsnsForm.bsnsDesc,"steps":this.bsnsForm.steps,
 							"createTime":moment(new Date()).format("YYYY-MM-DD HH:mm:ss"),"createUserId":${user.userId},
-							"updateTime":moment(new Date()).format("YYYY-MM-DD HH:mm:ss"),"status":1,"declareAsk":this.bsnsForm.declareAsk
+							"updateTime":moment(new Date()).format("YYYY-MM-DD HH:mm:ss"),"declareAsk":this.bsnsForm.declareAsk
 						};
 						$.ajax(
 						{
@@ -411,34 +411,32 @@ var vue = new Vue({
 							{
 								// console.log(data);
 								if(data>0){
-									toastr.success("添加项目成功");
+									vue.$message.success("添加项目成功");
 									vue.hideBsnsModal();
-									loadTableData({});
+									vue.loadTableData({});
 								}else{
 									if(vue.bsnsForm.steps.length==0){
-										toastr.error("添加失败,审批流程不能为空");
+										vue.$message.error("添加失败,审批流程不能为空");
 									}else{
-										toastr.error("添加项目失败");
+										vue.$message.error("添加项目失败");
 									}
 									
 								}
 							},
 							error:function()
 							{
-								toastr.error("请求失败");
+								vue.$message.error("请求失败");
 							},
 						});
 					}else{  //修改项目信息
 						modalOperating = 0;
 						var para = {"businessName":this.bsnsForm.bsnsName,"businessDesc":this.bsnsForm.bsnsDesc,"businessId":
 									sltBusiness.businessId,"steps":this.bsnsForm.steps};
-						// console.log(para);
 						var msg = [];
 						msg.push('更新项目信息成功');
 						msg.push('更新项目信息失败');
-						updateBsns(para,msg);
+						this.updateBsns(para,msg);
 						this.hideBsnsModal();
-						loadTableData({});
 					
 					}
 				}else{
@@ -464,7 +462,7 @@ var vue = new Vue({
 						
 					},
 					error:function(){
-						toastr.error("请求失败");
+						vue.$message.error("请求失败");
 					},
 				});
 				this.sltUserVsb = true;
@@ -477,10 +475,10 @@ var vue = new Vue({
 		},
 		deleteStep:function(){
 			if(this.bsnsForm.steps.length==0){
-				toastr.error('删除失败');
+				vue.$message.error('删除失败');
 			}else{
 				this.bsnsForm.steps = _.initial(this.bsnsForm.steps);
-				toastr.success('删除成功');
+				vue.$message.success('删除成功');
 			}
 		},
 		hideBsnsModal:function(){
@@ -495,68 +493,67 @@ var vue = new Vue({
 			this.sltUserVsb = false;
 			this.stepModalVisible = false;
 		},
+		//加载table数据
+		loadTableData(para){
+			$.ajax({
+				url:"businessList",
+				data:JSON.stringify(para),
+				dataType:"json",  
+				type:"post",
+				contentType:"application/json;charset=UTF-8",
+	        	traditional: true,//传递数组
+	        	success:function(data){
+	        		//todo 修改modal 替换成kong
+	        		var list = [];
+	        		for(var bsns of data){
+	        			bsns.createTime = moment(bsns.createTime).format("YYYY-MM-DD  HH:mm:ss");
+	        			bsns.updateTime = moment(bsns.updateTime).format("YYYY-MM-DD  HH:mm:ss");
+	        			if(isnull(bsns.businessDesc)){
+	        				bsns.businessDesc = "暂无数据";
+	        			}
+	        			//bsns.status = bsns.status==1?'草稿':'正式';
+	        			list.push(bsns);
+	        		}
+	        		vue.bsnsList = list;
+	        		vue.total = list.length;
+	        	},
+	        	error:function(){
+	        		vue.$message.error("请求失败");
+	        	},
+	   		});
+		},
+		/**
+		 * 更新项目接口
+		 * @param para 
+		 * @param msg  msg[0]是成功提示信息  msg[1]是失败提示信息
+		 * @returns
+		 */
+		updateBsns(para,msg){
+			$.ajax(
+			{
+				url: "updateBusiness",
+				data:JSON.stringify(para),
+				dataType:"json",  
+				type: "post",
+				contentType:"application/json;charset=UTF-8",
+				success:function(data)
+				{
+					if(data){
+						vue.$message.success(msg[0]);
+					}else{
+						vue.$message.error(msg[1]);
+					}
+					vue.loadTableData({});
+				},
+				error:function()
+				{
+					vue.$message.error("请求失败");
+				},
+			});
+		},
 
 	}
 });
-//加载table数据
-function loadTableData(para){
-	$.ajax({
-			url:"businessList",
-			data:JSON.stringify(para),
-			dataType:"json",  
-			type:"post",
-			contentType:"application/json;charset=UTF-8",
-        	traditional: true,//传递数组
-        	success:function(data){
-        		//todo 修改modal 替换成kong
-        		var list = [];
-        		for(var bsns of data){
-        			bsns.createTime = moment(bsns.createTime).format("YYYY-MM-DD  HH:mm:ss");
-        			bsns.updateTime = moment(bsns.updateTime).format("YYYY-MM-DD  HH:mm:ss");
-        			if(isnull(bsns.businessDesc)){
-        				bsns.businessDesc = "暂无数据";
-        			}
-        			//bsns.status = bsns.status==1?'草稿':'正式';
-        			list.push(bsns);
-        		}
-        		vue.bsnsList = list;
-        		vue.total = list.length;
-        	},
-        	error:function(){
-        		toastr.error("请求失败");
-        	},
-   		 });
-};
-/**
- * 更新项目接口
- * @param para 
- * @param msg  msg[0]是成功提示信息  msg[1]是失败提示信息
- * @returns
- */
-function updateBsns(para,msg){
-	$.ajax(
-	{
-		url: "updateBusiness",
-		data:JSON.stringify(para),
-		dataType:"json",  
-		type: "post",
-		contentType:"application/json;charset=UTF-8",
-		success:function(data)
-		{
-			if(data){
-				toastr.success(msg[0]);
-			}else{
-				toastr.error(msg[1]);
-			}
-		},
-		error:function()
-		{
-			toastr.error("请求失败");
-		},
-	});
-};
-
-
 });
 </script>
 </html>

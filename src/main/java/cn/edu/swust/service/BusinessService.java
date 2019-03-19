@@ -3,6 +3,7 @@ package cn.edu.swust.service;
 import static org.junit.Assert.assertNotNull;
 
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 import java.util.Set;
 
@@ -82,25 +83,25 @@ public class BusinessService {
 		return businesses;
 	}
 	/***
-	 * 添加项目
+	 * 添加项目  
 	 * @param business  项目信息
 	 * @param steps   项目审批过程 list
 	 * @return  插入Id
 	 */
-	@Transactional
 	public int insertBusiness(Business business,List<Step> steps) {
-		int sltId = 0;
+		int bsnsId = 0;
 		try {
 			if(business.getCreateUserId()==null||business.getCreateUserId()==""||steps==null||steps.size()==0) {
-				return sltId;
+				return bsnsId;
 			}
-			
+			business.setStatus(1);
+			business.setIsEnable(1);
 			businessDao.setPrimaryValue(1);
-			sltId = businessDao.insertOneSelective(business);
+			bsnsId = businessDao.insertOneSelective(business);
 			
-			if(sltId != 0) {
+			if(bsnsId != 0) {
 				for(Step step : steps) {
-					step.setBusinessId(sltId);
+					step.setBusinessId(bsnsId);
 				}
 				
 				stepDao.setPrimaryValue(1);
@@ -110,9 +111,10 @@ public class BusinessService {
 		} catch (Exception e) {
 			LogHelper.logError(e);
 			TransactionAspectSupport.currentTransactionStatus().setRollbackOnly();
-			sltId = 0;
+			bsnsId = 0;
 		}
-		return sltId;
+		
+		return bsnsId;
 	}
 	/**
 	 * 批量删除  
@@ -134,26 +136,32 @@ public class BusinessService {
 		return successCount==ids.length?2:1;
 	}
 	/**
-	 * 删除项目信息 删除business表数据、删除step表数据、已经申报的项目不能删除
+	 * 删除项目信息
 	 * @param query
 	 * @return 影响行数
 	 */
-	@Transactional
 	public int delete(BusinessQuery query) {
 		int ret = 0;
 		try {
-			//todo 修改删除逻辑  
-			DeclareBusinessQuery dclrBsnsQuery = new DeclareBusinessQuery();
-			ObjectConvert.obj2Obj(query, dclrBsnsQuery);
-
-			boolean isDeclare = declareBusinessDao.count(dclrBsnsQuery)==0?false:true;
-
-			if(!isDeclare) {
-				ret = businessDao.delete(query);
-				StepQuery stepQuery = new StepQuery();
-				ObjectConvert.obj2Obj(query, stepQuery);
-				stepDao.delete(stepQuery);
-			}
+			//原逻辑  删除business表数据、删除step表数据、已经申报的项目不能删除
+//			DeclareBusinessQuery dclrBsnsQuery = new DeclareBusinessQuery();
+//			ObjectConvert.obj2Obj(query, dclrBsnsQuery);
+//
+//			boolean isDeclare = declareBusinessDao.count(dclrBsnsQuery)==0?false:true;
+//
+//			if(!isDeclare) {
+//				ret = businessDao.delete(query);
+//				StepQuery stepQuery = new StepQuery();
+//				ObjectConvert.obj2Obj(query, stepQuery);
+//				stepDao.delete(stepQuery);
+//			}
+			//新逻辑 增加字段isEnable 
+			Business business = new Business();
+			business.setBusinessId(query.getBusinessId());
+			business.setUpdateTime(new Date());
+			
+			ret = businessDao.deleteById(business);
+			
 		}catch (Exception ex) {
 			LogHelper.logError(ex);
 			TransactionAspectSupport.currentTransactionStatus().setRollbackOnly();
@@ -162,7 +170,7 @@ public class BusinessService {
 		return ret;
 	}
 	/***
-	 * 更新项目信息    只能修改status==0的项目
+	 * 更新项目信息   状态为草稿的项目
 	 * @param business
 	 * @param steps 
 	 * @return 

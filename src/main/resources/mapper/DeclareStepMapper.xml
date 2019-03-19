@@ -38,4 +38,30 @@
     	delete from declare_step
     	<include refid="condition"></include>
     </delete>
+    
+    <insert id="insertOneSelective" parameterType="cn.edu.swust.entity.DeclareStep">
+    	insert into declare_step
+    	<trim prefix="(" suffix=")" suffixOverrides=",">
+    		<if test="declareBusinessId != 0"> declareBusinessId, </if>
+    		<if test="stepId != 0"> stepId , </if>
+    		<if test="status != 0"> status,</if>
+    	</trim>
+    	<trim prefix="values (" suffix=")" suffixOverrides="," >
+   			<if test="declareBusinessId != 0"> #{declareBusinessId}, </if>
+    		<if test="stepId != 0"> #{stepId} , </if>
+    		<if test="status != 0"> #{status} , </if>
+    	</trim>
+    </insert>
+    
+    <insert id="insertBatch" parameterType="java.util.List">
+    	insert into declare_step(declareBusinessId,stepId,status) values
+    	<foreach collection="list" item="item" index="index" separator=",">
+    		(#{item.declareBusinessId},#{item.stepId},#{item.status})
+    	</foreach>
+    </insert>
+    
+    <select id="setPrimaryValue" parameterType="java.lang.Integer">
+    	alter table declare_step  AUTO_INCREMENT=#{num}; 
+    </select>
+    
 </mapper>

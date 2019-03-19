@@ -17,7 +17,7 @@ public class DeclareStep {
 	 */
 	private int stepId;
 	/**
-	 * 状态  0是为开始  1是审批中   2是审批失败   3是审批通过
+	 * 状态    1是审批中   2是审批失败   3是审批通过
 	 */
 	private int status;
 }

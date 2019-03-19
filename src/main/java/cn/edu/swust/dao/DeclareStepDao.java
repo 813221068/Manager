@@ -1,5 +1,8 @@
 package cn.edu.swust.dao;
 
+import java.util.List;
+
+import cn.edu.swust.entity.DeclareStep;
 import cn.edu.swust.query.DeclareStepQuery;
 
 public interface DeclareStepDao {
@@ -9,4 +12,14 @@ public interface DeclareStepDao {
 	 * @return
 	 */
 	public int delete(DeclareStepQuery query);
+	/**
+	 * 
+	 * @param declareStep
+	 * @return row
+	 */
+	public int insertOneSelective(DeclareStep declareStep);
+	
+	public int insertBatch(List<DeclareStep> list);
+	
+	public void setPrimaryValue(int value);
 }

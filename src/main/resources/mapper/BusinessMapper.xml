@@ -11,6 +11,7 @@
 		<result column="createUserId" property="createUserId" jdbcType="VARCHAR" />
 		<result column="status" property="status" jdbcType="INTEGER" />
 		<result column="declareAsk" property="declareAsk" jdbcType="VARCHAR" />
+		<result column="isEnable" property="isEnable" jdbcType="INTEGER" />
 	</resultMap>
 	<!-- 查询字段集 -->
     <sql id="defualt_fields">
@@ -23,11 +24,13 @@
         createUserId,
         status,
         declareAsk,
+        isEnable,
         </trim>
     </sql>
     <!-- 查询条件 -->
 	<sql id="condition">
 		<where>
+			isEnable = 1
 			<if test="businessIds != null and businessIds.length>0">
 				and business.businessId in
                 <foreach collection="businessIds" item="item" open="(" separator="," close=")">
@@ -72,6 +75,7 @@
 			<if test="createUserId != null"> createUserId,</if>
 			<if test="status != null"> status,</if>
 			<if test="declareAsk != null"> declareAsk,</if>
+			<if test="isEnable != null"> isEnable,</if>
    		</trim>
    		<trim prefix="values (" suffix=")" suffixOverrides="," >
    			<if test="businessId != 0 " >#{businessId},</if>
@@ -82,13 +86,14 @@
 			<if test="createUserId != null"> #{createUserId},</if>
 			<if test="status != null"> #{status},</if>
 			<if test="declareAsk != null"> #{declareAsk},</if>
+			<if test="isEnable != null"> #{isEnable},</if>
     	</trim>
     </insert>
     
-    <delete id="delete" parameterType="cn.edu.swust.query.BusinessQuery">
-    	delete from business
-    	<include refid="condition"></include>
-    </delete>
+    <update id="deleteById" parameterType="cn.edu.swust.entity.Business">
+    	update business set isEnable = 0,updateTime=#{updateTime}
+    	where business.businessId = #{businessId}
+    </update>
     
     <update id="updateByPrimaryKeySelective" parameterType="cn.edu.swust.entity.Business">
 		update business

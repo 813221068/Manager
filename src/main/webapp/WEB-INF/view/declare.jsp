@@ -127,36 +127,12 @@ $(document).ready(function(){
             beforeRemove(file, fileList) {
                 return this.$confirm('确定移除 ${ file.name }？');
             },
-            // beforeUpload(file){
-            //     console.log(file);
-            //     var tmp = this.$refs.upload;
-            //     console.log(tmp);
-            //     for(var file of tmp.uploadFiles){
-            //         console.log(file.raw);
-            //     }
-            //     var form = new FormData();
-            //     form.append("file",file);
-            //     $.ajax({
-            //         processData:false,
-            //         contentType:false,
-            //         type:"post",
-            //         url:"doDeclare",
-            //         data:form,
-            //         success(data){
-            //             if(data){
-            //                 vue.$message.success('申报成功');
-            //             }
-            //             else{
-            //                 vue.$message.error('申报失败');
-            //             }
-            //         }
-            //     });
-            // },
             uploadFiles(){
                 var files = this.$refs.upload.uploadFiles;
                 var form = new FormData();
                 form.append("businessId",this.declareBsns.businessId);
                 form.append("declareUserId",this.declareBsns.declareUserId);
+                form.append("startTime",moment(new Date()).format("YYYY-MM-DD HH:mm:ss"));
                 for(var file of files){
                     form.append("files",file.raw);
                 }

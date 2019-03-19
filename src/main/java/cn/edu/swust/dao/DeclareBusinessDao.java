@@ -34,4 +34,6 @@ public interface DeclareBusinessDao {
 	public DeclareBusiness query(DeclareBusinessQuery query);
 	
 	public int getMaxPrimaryKey();
+	
+	public void setPrimaryValue(int value);
 }

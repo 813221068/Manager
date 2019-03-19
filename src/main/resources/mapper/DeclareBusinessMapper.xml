@@ -76,4 +76,9 @@
 			<if test="status != null"> #{status},</if>
     	</trim>
     </insert>
+    
+    <select id="setPrimaryValue" parameterType="java.lang.Integer">
+    	alter table declare_business auto_increment = #{value}
+    </select>
+    
 </mapper>

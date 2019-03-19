@@ -17,8 +17,12 @@ public interface BusinessDao {
 	 *
 	 */
 	public int insertOneSelective(Business business);
-	
-	public int delete(BusinessQuery query);
+	/***
+	 *根据businessId删除   isenable=0  且更新updateTime
+	 * @param business
+	 * @return row
+	 */
+	public int deleteById(Business business);
 	/**
 	 * 可选择性更新
 	 * @param business

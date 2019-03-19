@@ -21,6 +21,7 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.multipart.MultipartFile;
 
+import cn.edu.swust.entity.DeclareBusiness;
 import cn.edu.swust.query.DeclareBusinessQuery;
 import cn.edu.swust.service.DeclareService;
 import cn.edu.swust.util.PropertiesUtil;
@@ -41,9 +42,8 @@ public class DeclareController {
 	/** 接口  **/
 	@ResponseBody
 	@RequestMapping(value="/doDeclare",method=RequestMethod.POST)
-	public boolean uploadData(MultipartFile[] files,DeclareBusinessQuery query) {
-	
-		return declareService.uploadFile(files, query);
-	}
+	public boolean uploadData(MultipartFile[] files,DeclareBusiness declareBusiness) {
+		return declareService.uploadFile(files, declareBusiness);
+	} 
 	
 }

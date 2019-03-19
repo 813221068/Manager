@@ -46,8 +46,8 @@ public class BusinessDaoImpl implements BusinessDao{
 	}
 
 	@Override
-	public int delete(BusinessQuery query) {
-		return sqlSession.delete(getNameSpace()+".delete", query);
+	public int deleteById(Business business) {
+		return sqlSession.update(getNameSpace()+".deleteById", business);
 	}
 
 	@Override

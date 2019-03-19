@@ -43,6 +43,10 @@ public class Business {
 	private int status;
 	
 	private String declareAsk;
+	/**
+	 * 是否可用  1表示可用   0表示删除
+	 */
+	private int isEnable;
 	
 	/*****************************/ //表外字段	
 	private User createUser;
