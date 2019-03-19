@@ -1,0 +1,133 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="cn.edu.swust.mapper.StepMapper">
+    <!-- 返回结果 -->
+	<resultMap id="BaseResultMap" type="cn.edu.swust.entity.Step">
+		<result column="stepId" property="stepId" jdbcType="INTEGER" />
+		<result column="businessId" property="businessId" jdbcType="INTEGER" />
+		<result column="stepName" property="stepName" jdbcType="VARCHAR" />
+		<result column="stepDesc" property="stepDesc" jdbcType="VARCHAR" />
+		<result column="approvalUserId" property="approvalUserId" jdbcType="VARCHAR" />
+		<result column="approvalRoleId" property="approvalRoleId" jdbcType="INTEGER" />
+		<result column="priority" property="priority" jdbcType="INTEGER" />
+	</resultMap>
+	<!-- 查询字段集 -->
+    <sql id="defualt_fields">
+        <trim suffixOverrides=",">
+        stepId,
+        businessId,
+        stepDesc,
+        stepName,
+        approvalUserId,
+        approvalRoleId,
+        priority,
+        </trim>
+    </sql>
+    <!-- 查询条件 -->
+	<sql id="condition">
+		<where>
+			<if test="stepIds!=null and stepIds.length>0">
+				and step.stepId in 
+				<foreach collection="stepIds" item="item" open="(" separator="," close=")">
+				#{item}
+				</foreach>
+			</if>
+			<if test="businessIds!=null and businessIds.length>0">
+				and step.businessId in
+				<foreach collection="businessIds" item="item" open="(" separator="," close=")">#{item}</foreach>
+			</if>
+			<if test="businessId !=0"> and step.businessId=#{businessId} </if>
+		</where>
+	</sql>
+	<!-- orderby sql-->
+    <sql id="orderby">
+    </sql>
+    <!-- 分页 sql-->
+    <sql id="page">
+    </sql>
+    <!-- 删除 -->
+    <delete id="delete" parameterType="cn.edu.swust.query.StepQuery">
+    	delete from step
+    	<include refid="condition"></include>
+    </delete>
+    <!-- 单条插入 -->
+    <insert id="insertOneSelective" parameterType="cn.edu.swust.entity.Step">
+    	insert into step
+    	<trim prefix="(" suffix=")" suffixOverrides="," >
+			<if test="stepId != 0 " >stepId,</if>
+      		<if test="businessId != null" >businessId,</if>
+      		<if test="stepName != null"> stepName,</if>
+			<if test="stepDesc != null"> stepDesc,</if>
+			<if test="approvalUserId != null"> approvalUserId,</if>
+			<if test="approvalRoleId != null"> approvalRoleId,</if>
+			<if test="priority != null"> priority,</if>
+   		</trim>
+   		<trim prefix="values (" suffix=")" suffixOverrides="," >
+   			<if test="stepId != 0 " >#{stepId},</if>
+      		<if test="businessId != null" >#{businessId},</if>
+      		<if test="stepName != null"> #{stepName},</if>
+			<if test="stepDesc != null"> #{stepDesc},</if>
+			<if test="approvalUserId != null"> #{approvalUserId},</if>
+			<if test="approvalRoleId != null"> #{approvalRoleId},</if>
+			<if test="priority != null"> #{priority},</if>
+    	</trim>
+    </insert>
+   	<!-- 设置主键自增值   执行时num会和已有的max+1比较 取大值-->
+    <select id="setPrimaryValue" parameterType="int">
+        alter table step  AUTO_INCREMENT=#{num};
+    </select>
+    <!-- 批量添加 -->
+    <insert id="batchInsert" parameterType="java.util.List">
+        insert into step
+        <trim prefix="(" suffix=")" suffixOverrides=",">
+	        stepId,
+	        businessId,
+	        stepName,
+	        stepDesc,
+	        priority,
+        	approvalUserId,
+        	approvalRoleId,
+        </trim>
+        value
+        <foreach item="item" index="index" collection="list" separator=",">
+            <trim prefix="(" suffix=")" suffixOverrides=",">
+                #{item.stepId},
+                #{item.businessId},
+                #{item.stepName},
+                #{item.stepDesc},
+                #{item.priority},
+                <choose>
+    				<when test="item.approvalUserId != null">#{item.approvalUserId},</when>
+    				<otherwise>0,</otherwise>
+				</choose>
+                #{item.approvalRoleId},
+            </trim>
+        </foreach>
+    </insert>
+    <!-- 查询多个 -->
+    <select id="queryList" parameterType="cn.edu.swust.query.StepQuery" resultMap="BaseResultMap">
+    	select
+    	<include refid="defualt_fields"></include>
+    	from step
+    	<include refid="condition"></include>
+    </select>
+    
+    <update id="updateByPrimaryKeySelective" parameterType="cn.edu.swust.entity.Step">
+     update step
+     	<set>
+			<if test="stepName != null"> step.stepName = #{stepName,jdbcType=VARCHAR},
+			</if>
+			<if test="stepDesc != null"> step.stepDesc = #{stepDesc,jdbcType=VARCHAR},
+			</if>
+			<if test="businessId != null"> step.businessId = #{businessId,jdbcType=INTEGER},
+			</if>
+			<if test="approvalRoleId != null"> step.approvalRoleId = #{approvalRoleId,jdbcType=INTEGER},
+			</if>
+			<if test="approvalUserId != null"> step.approvalUserId = #{approvalUserId,jdbcType=INTEGER},
+			</if>
+			<if test="priority !=null and priority!=0">step.priority = #{priority,jdbcType=INTEGER}</if>
+		</set>
+		where step.stepId = #{stepId,jdbcType=INTEGER}
+    </update>
+    
+</mapper>
