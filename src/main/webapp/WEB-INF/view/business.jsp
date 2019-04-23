@@ -4,7 +4,7 @@
 <html>
 <head>
 	<meta charset="utf-8">
-	<title>业务申报审批系统 - 项目管理</title>
+	<title>业务申报审批系统 - 业务管理</title>
 	
 	<%@ include file="common.jsp"%>
 </head>
@@ -15,8 +15,8 @@
 		<div class="m-t m-l m-b">
 			<el-breadcrumb separator="/">
 				<el-breadcrumb-item ><a href="index">首页</a></el-breadcrumb-item>
-				<el-breadcrumb-item>项目管理</el-breadcrumb-item>
-				<el-breadcrumb-item>项目列表</el-breadcrumb-item>
+				<el-breadcrumb-item>业务管理</el-breadcrumb-item>
+				<el-breadcrumb-item>业务列表</el-breadcrumb-item>
 			</el-breadcrumb>
 		</div>
 		<div class="table-bg">
@@ -28,7 +28,7 @@
                 <!-- <el-button @click="loadTableData({})">测试</el-button> -->
             </div>
             <div class="table-search">
-				<el-input  placeholder="请输入项目名" clearable suffix-icon="el-icon-search" v-model="search.bsnsName" style="width: 20%;">
+				<el-input  placeholder="请输入业务名" clearable suffix-icon="el-icon-search" v-model="search.bsnsName" style="width: 20%;">
 				</el-input> 
 				<el-select  v-model="search.sltStatus" placeholder="状态选择" clearable style="margin-left: 20px;"> 
 					<el-option v-for=" status in statusList" :key="status.value" :value="status.value" :label="status.label">
@@ -43,12 +43,12 @@
 				:default-sort = "{prop: 'businessId', order: 'ascending'}"  border stripe>
 						<el-table-column type="selection" >
 						</el-table-column >
-						<el-table-column label="项目ID" align='center' prop="businessId" sortable>
+						<el-table-column label="业务ID" align='center' prop="businessId" sortable>
 							<template slot-scope="scope">
 								<span style="margin-left: 10px">{{ scope.row.businessId }}</span>
 							</template>
 						</el-table-column>
-						<el-table-column label="项目名称" align="center" > 
+						<el-table-column label="业务名称" align="center" > 
 							<template slot-scope="scope">
 								<el-popover trigger="hover" placement="top">
 									<p>创建时间: {{ scope.row.createTime}}</p>
@@ -62,7 +62,8 @@
 						</el-table-column>
 						<el-table-column label="申报要求" align='center' prop="declareAsk" sortable>
 							<template slot-scope="scope">
-								<span style="margin-left: 10px">{{ scope.row.declareAsk }}</span>
+								<!-- <span style="margin-left: 10px">{{ scope.row.declareAsk }}</span> -->
+								 <a href="img/favicon.ico" download="test">点击下载</a>
 							</template>
 						</el-table-column>
  						<el-table-column label="创建人" align="center">
@@ -94,7 +95,7 @@
 								<el-button v-if="scope.row.status==1?true:false" size="mini" @click="editBsns(scope.$index, scope.row)">编辑</el-button>
 								<el-popover placement="top" width="160" v-model="scope.row.cfmVisible" trigger="click">
 									<div class="text-center">
-										<p>确定删除该项目吗</p>
+										<p>确定删除该业务吗</p>
 										<el-button size="mini" type="text" @click="scope.row.cfmVisible = false">取消</el-button>
 										<el-button type="primary" size="mini" @click="deleteBsns(scope.$index, scope.row)">确定</el-button>
 									</div>
@@ -110,7 +111,7 @@
 					
 			</div>
 		</div>
-		<el-dialog :visible.sync="bsnsModalVsb" title="项目信息" :append-to-body="true"  :modal-append-to-body='false' width="20%" :close-on-click-modal="false">
+		<el-dialog :visible.sync="bsnsModalVsb" title="业务信息" :append-to-body="true"  :modal-append-to-body='false' width="20%" :close-on-click-modal="false">
 			<el-dialog title="添加审批流程" :visible.sync="stepModalVisible" width="20%" height="80%" 
 			:modal-append-to-body='false' :close-on-click-modal="false" :append-to-body="true">
 				<el-form :rules="stepRules" :model="stepForm" status-icon label-width="90px" ref="stepForm">
@@ -140,14 +141,19 @@
 				</span>
   			</el-dialog>
   			<el-form :model="bsnsForm" :rules="bsnsRules"  status-icon ref="bsnsForm" label="top">
-				<el-form-item label="项目名：" prop="bsnsName"  >
-   					<el-input placeholder="请输入项目名" v-model="bsnsForm.bsnsName" style="width: 80%;" clearable :disabled="cmfDisabled">
+				<el-form-item label="业务名：" prop="bsnsName"  >
+   					<el-input placeholder="请输入业务名" v-model="bsnsForm.bsnsName" style="width: 80%;" clearable :disabled="cmfDisabled">
  				</el-form-item>
- 				<el-form-item label="项目描述：" prop="bsnsDesc" >
-   					<el-input placeholder="请输入项目描述" v-model="bsnsForm.bsnsDesc" style="width: 80%;" clearable :disabled="cmfDisabled">
+ 				<el-form-item label="业务描述：" prop="bsnsDesc" >
+   					<el-input placeholder="请输入业务描述" v-model="bsnsForm.bsnsDesc" style="width: 80%;" clearable :disabled="cmfDisabled">
  				</el-form-item>
- 				<el-form-item label="申报要求：" prop="declareAsk" >
-   					<el-input placeholder="请输入申报要求" v-model="bsnsForm.declareAsk" style="width: 80%;" clearable :disabled="cmfDisabled">
+ 				<el-form-item>
+   					<!-- <el-input placeholder="请输入申报要求" v-model="bsnsForm.declareAsk" style="width: 80%;" clearable :disabled="cmfDisabled"> -->
+   					<el-upload ref="upload" :auto-upload="false" :limit="1" action="addBusiness"
+   					accept="text/plain" :on-exceed="handleExceed" >
+   						<el-button slot="trigger" size="small" type="primary">上传申报要求文件</el-button>
+   						<div slot="tip" class="el-upload__tip">只能上传txt文件，且不超过500kb</div>
+   					</el-upload>
  				</el-form-item>
  				<!--bug  step放在item下 step线的位置会变 -->
  				<el-form-item label="审批流程：" prop="steps">
@@ -179,9 +185,9 @@ var vue = new Vue({
 	data:function() {
         var checkBsnsName = (rule, value, callback) => {
 		if (value.length<3) {
-            callback(new Error('项目名称长度不能小于3'));
+            callback(new Error('业务名称长度不能小于3'));
         } else if(value.length>10){
-          	callback(new Error('项目名称长度不能超过10'));
+          	callback(new Error('业务名称长度不能超过10'));
         }else{
           	callback();
         }
@@ -219,7 +225,7 @@ var vue = new Vue({
 				addStep:'',
 			},
 			bsnsRules:{
-				bsnsName:[{ required: true, message: '项目名不能为空'},
+				bsnsName:[{ required: true, message: '业务名不能为空'},
 						{validator: checkBsnsName, trigger: 'blur' }],
 			},
 			stepRules:{
@@ -265,6 +271,10 @@ var vue = new Vue({
 		});
 	},
 	methods:{
+		 //超出允许文件最大数		
+        handleExceed:function(files, fileList){
+            this.$message.warning('允许上传最大文件数为1，已超出！');
+        },
 		submitSearch:function(){
 			var para = {"businessName":this.search.bsnsName,"status":this.search.sltStatus};
 			this.loadTableData(para);
@@ -394,33 +404,51 @@ var vue = new Vue({
 		submitBsnsModal:function(formName){
 				this.$refs[formName].validate((valid) =>{
 				if(valid){
+					if(this.$refs.upload.uploadFiles.length==0){
+						this.$message.error("申报要求不能不为空");
+						return;
+					}
+					if(this.bsnsForm.steps.length==0){
+						vue.$message.error("审批流程不能为空");
+						return;
+					}
 					//添加项目
 					if(modalOperating==0){
-						var parameter = {"businessName":this.bsnsForm.bsnsName,"businessDesc":this.bsnsForm.bsnsDesc,"steps":this.bsnsForm.steps,
-							"createTime":moment(new Date()).format("YYYY-MM-DD HH:mm:ss"),"createUserId":${user.userId},
-							"updateTime":moment(new Date()).format("YYYY-MM-DD HH:mm:ss"),"declareAsk":this.bsnsForm.declareAsk
+						var para = {"businessName":this.bsnsForm.bsnsName,"businessDesc":this.bsnsForm.bsnsDesc,
+							"steps":this.bsnsForm.steps,"createTime":moment(new Date()).format("YYYY-MM-DD HH:mm:ss"),
+							"createUserId":${user.userId},"updateTime":moment(new Date()).format("YYYY-MM-DD HH:mm:ss"),
 						};
+						
 						$.ajax(
 						{
 							url: "addBusiness",
-							data:JSON.stringify(parameter),
-							dataType:"json",  
+							data:JSON.stringify(para),  
 							type: "post",
 							contentType:"application/json;charset=UTF-8",
 							success:function(data)
 							{
-								// console.log(data);
 								if(data>0){
-									vue.$message.success("添加项目成功");
+									//添加项目成功后，上传文件
+									var form = new FormData();
+									var file = vue.$refs.upload.uploadFiles[0];
+									form.append("businessId",data);
+									form.append("file",file.raw);
+									$.ajax({
+										url:"uploadFile",
+										data:form,
+										type:"post",
+										processData:false,
+										contentType:false,
+										success:function(data){
+											//上传文件结果
+											console.log(data);
+										}
+									});
+									vue.$message.success("添加业务成功");
 									vue.hideBsnsModal();
 									vue.loadTableData({});
 								}else{
-									if(vue.bsnsForm.steps.length==0){
-										vue.$message.error("添加失败,审批流程不能为空");
-									}else{
-										vue.$message.error("添加项目失败");
-									}
-									
+									vue.$message.error("添加业务失败");
 								}
 							},
 							error:function()
@@ -433,8 +461,8 @@ var vue = new Vue({
 						var para = {"businessName":this.bsnsForm.bsnsName,"businessDesc":this.bsnsForm.bsnsDesc,"businessId":
 									sltBusiness.businessId,"steps":this.bsnsForm.steps};
 						var msg = [];
-						msg.push('更新项目信息成功');
-						msg.push('更新项目信息失败');
+						msg.push('更新业务信息成功');
+						msg.push('更新业务信息失败');
 						this.updateBsns(para,msg);
 						this.hideBsnsModal();
 					

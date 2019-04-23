@@ -21,6 +21,8 @@ public class UserQuery extends BaseQuery {
 	
 	private String password;
 	
+	private String verifyCode;
+	
 	private List<String> userIds;
 	
 	/* 其他表的查询条件*/

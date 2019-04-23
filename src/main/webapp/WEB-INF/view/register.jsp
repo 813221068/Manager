@@ -116,12 +116,11 @@ $(document).ready(function(){
 					if(valid){
 						$.ajax({
 							url:"register",
-							data:this.rgstForm,
+							data:para,
 							type:"post",
 							traditional: true,//传递数组  
 							success:function(data){ 
 								//0是发生异常或错误  1是用户名重复  2是邮箱重复  3是成功
-								console.log(data);
 								if(data == 3){
 									vue.$refs['rgstForm'].resetFields();
 									vue.$message({

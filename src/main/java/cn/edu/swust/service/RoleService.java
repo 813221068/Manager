@@ -1,6 +1,7 @@
 package cn.edu.swust.service;
 
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 
 import org.apache.ibatis.javassist.expr.NewArray;
@@ -104,32 +105,19 @@ public class RoleService {
 		
 		return id;
 	}
-	
+	/**
+	 * 删除角色
+	 * @param query
+	 * @return
+	 */
 	public int delete(RoleQuery query) {
 		int row = 0;
+		
 		try {
-			if(query.isNull()) {
-				return 0;
-			}
-			//删除role表
+			query.setUpdateTime(new Date());
 			row = roleDao.delete(query);
-			if(row!=0) {
-				if(query.getRoleIds()!=null && query.getRoleIds().length!=0) {
-					int[] ids = query.getRoleIds();
-					for(int id:ids) {
-						RolePermissionQuery rolePmsQuery = new RolePermissionQuery();
-						rolePmsQuery.setRoleId(id);
-						rolePmsDao.delete(rolePmsQuery);
-					}
-				}else {
-					//删除role-permission表
-					RolePermissionQuery rolePmsQuery = new RolePermissionQuery();
-					rolePmsQuery.setRoleId(query.getRoleId());
-					rolePmsDao.delete(rolePmsQuery);
-				}
-				//todo 更新删除角色逻辑  旧逻辑：只删除role和role_permission表数据 
-				//没有处理 角色下用户信息   
-			}
+			//删除逻辑isEnable = 0
+			//没有处理 角色下用户信息  查询时加上isEnable！=0  
 			return row;
 		} catch (Exception e) {
 			LogHelper.logError(e);

@@ -25,6 +25,14 @@ public class Role {
 	private String createUId;
 	
 	private String roleDesc;
+	/**
+	 * 可编辑  0是不可以编辑  1是可以编辑   
+	 */
+	private int editable;
+	/***
+	 * 是否可用  0是不可用   1是可用
+	 */
+	private int isEnable;
 	
 	/*****************************/
 	private List<User> owners;

@@ -70,13 +70,7 @@ public class RoleDaoImpl implements RoleDao {
 
 	@Override
 	public int delete(RoleQuery query) {
-		try {
-			int row = sqlSession.delete(getNameSpace()+".delete", query);
-			return row;
-		} catch (Exception e) {
-			LogHelper.logError(e.getMessage()+"\nsql为:"+getNameSpace()+".delete");
-		}
-		return 0;
+		return sqlSession.delete(getNameSpace()+".delete", query);
 	}
 
 	@Override

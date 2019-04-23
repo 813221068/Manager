@@ -53,46 +53,9 @@ public class BaseJunitTest {
 	
 	@Test
 	public void test() {
-//		Business business = new Business();
-//		business.setBusinessName("test");
-//		business.setCreateTime(new Date());
-//		business.setUpdateTime(new Date());
-//		Deal deal = new Deal();
-//		deal.setDealName("update");
-//		deal.setBusinessId(2);
-//		List<Deal> list = new ArrayList<>();
-//		list.add(deal);
-//		list.add(deal);
-////		System.out.println(businessService.insertBusiness(business, list));
-//		
-//		Business business = new Business();
-//		business.setBusinessId(2);
-//		business.setBusinessName("update");
-		
-//		BusinessQuery query = new BusinessQuery();
-//		query.setBusinessId(2);
-//		System.out.println(businessService.delete(query));
-		
-//		Business business = new Business();
-//		business.setBusinessId(2);
-//		business.setBusinessName("test");
-//		List<Step> steps = new ArrayList<>();
-//		Step step = new Step();
-//		step.setStepId(4);
-//		step.setBusinessId(2);
-//		step.setStepName("test");
-//		
-//		steps.add(step);
-//		business.setSteps(steps);
-		
-//		RoleQuery query = new RoleQuery();
-//		List<Role> list = roleService.queryList(query);
-//		for(Role role : list) {
-//			System.out.println(JSONObject.toJSONString(role,SerializerFeature.WriteMapNullValue));
-//		}
-		
-		userService.getPmsList(new PermissionQuery());
-		
-		
+		UserQuery query = new UserQuery();
+		query.setMail("1770983566@qq.com");
+		boolean ret = userService.forgetPsw(query);
+		System.out.println(ret);
 	}
 }

@@ -1,13 +1,18 @@
 package cn.edu.swust.controller;
 
+import java.util.ArrayList;
 import java.util.List;
+
+import javax.servlet.http.HttpSession;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
+import org.springframework.web.multipart.MultipartFile;
 
 import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONArray;
@@ -53,9 +58,27 @@ public class BusinessController {
 	@ResponseBody
 	@RequestMapping(value="/addBusiness",method=RequestMethod.POST)
 	public int addBusiness(@RequestBody Business business) {
+//		System.out.println(business);
 		return businessService.insertBusiness(business, business.getSteps());
 	}
-	
+	/***
+	 * 上传文件
+	 * @return
+	 */
+	@ResponseBody
+	@RequestMapping(value="/uploadFile",method=RequestMethod.POST)
+	public boolean uploadFile(MultipartFile file,Business bsns,HttpSession session) {
+		boolean ret = false;
+		//获取文件保存路径   ../WEB-INF/upload
+		String savePath = session.getServletContext().getRealPath("/WEB-INF/upload");
+//		System.out.println(bsns);
+		if(file!=null) {
+//			System.out.println(file.getOriginalFilename());
+			ret = businessService.uploadFile(file, savePath,bsns);
+		}
+		
+		return ret;
+	}
 	@ResponseBody
 	@RequestMapping(value="/deleteBusiness")
 	public int deleteBusiness(BusinessQuery query) {

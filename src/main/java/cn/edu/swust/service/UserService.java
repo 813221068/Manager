@@ -96,7 +96,7 @@ public class UserService {
     	boolean ret = false;
     	try {
     		User user = userDao.query(query);
-    		if(user.getActive() == 1) {
+    		if(user.getActive() == UserActiveEnum.activated) {
     			ret = EmailUtil.sendResetPswEmail(query.getMail(), user);
     		}
 		} catch (Exception e) {
@@ -263,5 +263,31 @@ public class UserService {
 			LogHelper.logError(e," getUserList");
 		}
 		return users;
+	}
+	/**
+	 * 发送验证码 4位
+	 * @param query
+	 * @return 0是账号未注册  1是未激活  2是发送失败   3是发送成功
+	 */
+	public int sendVerifyCode(UserQuery query) {
+		int ret = 0;
+		try {
+			User user = userDao.query(query);
+			if(user != null) {
+				if(user.getActive()==1) {
+					ret = 1;
+				}
+				else {
+					user.setVerifyCode(StringUtil.getNumStr(4));
+					userDao.updateByPrimaryKeySelective(user);
+					ret = EmailUtil.sendVerifyCodeEmail(user.getMail(), user)?3:2;
+				}
+				
+			}
+		} catch (Exception e) {
+			TransactionAspectSupport.currentTransactionStatus().setRollbackOnly();
+		}
+		
+		return ret;
 	}
 }

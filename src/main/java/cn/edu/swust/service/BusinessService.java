@@ -2,6 +2,8 @@ package cn.edu.swust.service;
 
 import static org.junit.Assert.assertNotNull;
 
+import java.io.File;
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
@@ -12,6 +14,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.transaction.interceptor.TransactionAspectSupport;
+import org.springframework.web.multipart.MultipartFile;
 
 import cn.edu.swust.dao.BusinessDao;
 import cn.edu.swust.dao.DeclareBusinessDao;
@@ -220,5 +223,26 @@ public class BusinessService {
 			result = 0;
 		}
 		return result==0?false:true;
+	}
+	
+	public boolean uploadFile(MultipartFile file,String savePath,Business bsns) {
+		boolean ret = true;
+		File saveFile = new File(savePath);
+		if(!saveFile.exists() || !saveFile.isDirectory()) {
+			saveFile.mkdir();
+		}
+		
+		try {
+			//todo 文件对应申报项目 文件名：业务id_原文件名
+			String fileName = bsns.getBusinessId() + "_" + file.getOriginalFilename();
+			String filePath = savePath + File.separator + fileName;
+			File tmpFile = new File(filePath);
+			file.transferTo(tmpFile);
+		} catch (IllegalStateException |IOException e) {
+			LogHelper.logError(e, "文件保存失败");
+			ret = false;
+		}
+		
+		return ret;
 	}
 }

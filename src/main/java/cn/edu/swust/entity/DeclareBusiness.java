@@ -28,7 +28,7 @@ public class DeclareBusiness {
 	 * 开始时间
 	 */
 //	@JSONField(format = "yyyy-MM-dd HH:mm:ss")
-	@DateTimeFormat(pattern="yyyy-MM-dd") 
+	@DateTimeFormat(pattern="yyyy-MM-dd HH:mm:ss") 
 	private Date startTime;
 //	private String startTime;
 	/***

@@ -68,18 +68,19 @@ input[type=file]{
     z-index: 1000;
 }
 .login-box{
-    height: 400px;
-    width: 350px;
-    margin: 150px auto;
-    padding: 50px;
+    max-width: 300px;
+    margin: 8% auto;
+    background-color: #f3f3f4;
+/*    padding: 50px;
     border: 1px solid #ffffff;
     z-index: 1;
-    background-color: #f3f3f4;   
+       */
 }
 .register-box{
 	height: 550px;
     width: 350px;
-    margin: 150px auto 50px auto;
+    /*margin: 150px auto 50px auto;*/
+    margin: 8% auto;
     padding: 50px;
     border: 1px solid #ffffff;
     z-index: 1;

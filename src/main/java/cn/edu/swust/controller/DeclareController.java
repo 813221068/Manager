@@ -43,7 +43,12 @@ public class DeclareController {
 	@ResponseBody
 	@RequestMapping(value="/doDeclare",method=RequestMethod.POST)
 	public boolean uploadData(MultipartFile[] files,DeclareBusiness declareBusiness) {
-		return declareService.uploadFile(files, declareBusiness);
+//		System.out.println(files);
+		for (MultipartFile multipartFile : files) {
+			System.out.println(multipartFile.getOriginalFilename());
+		}
+//		return declareService.uploadFile(files, declareBusiness);
+		return false;
 	} 
 	
 }

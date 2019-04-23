@@ -2,7 +2,6 @@ package cn.edu.swust.entity;
 
 import java.util.Date;
 
-import org.eclipse.jdt.internal.compiler.ast.ThisReference;
 
 import com.sun.org.apache.regexp.internal.recompile;
 

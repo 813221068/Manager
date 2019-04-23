@@ -20,6 +20,28 @@ public class EmailUtil {
 	private static final String PREFIX_URL = PropertiesUtil.getValue("project.host")+":"+PropertiesUtil.getValue("project.port")+
 			"/"+PropertiesUtil.getValue("project.name");
 	
+	public static boolean sendVerifyCodeEmail(String targetAddress,User user) {
+		Session session = getSession();
+		try {
+			MimeMessage message = new MimeMessage(session);
+			
+			message.setSubject("登录验证码邮件");
+			message.setSentDate(new Date());
+			message.setFrom(new InternetAddress(FROM));
+			message.setRecipient(MimeMessage.RecipientType.TO, new InternetAddress(targetAddress));
+			message.setContent("<p>验证码为："+user.getVerifyCode()+"<p>","text/html;charset=utf-8");
+			
+			Transport transport = session.getTransport();
+			transport.connect(FROM,PASSWORD);
+			transport.sendMessage(message, message.getAllRecipients());
+			return true;
+		}	
+		catch (Exception e) {
+			LogHelper.logError(e);
+		}
+		return false;
+	}
+	
 	public static boolean sendResetPswEmail(String targetAddress,User user) {
 		Session session = getSession();
 		try {
@@ -95,7 +117,9 @@ public class EmailUtil {
 		System.out.println("开始发送邮件......");
 		User user = new User();
 		user.setUserId("5");
-		boolean tmp = sendResetPswEmail("1770983566@qq.com",user);
+		user.setVerifyCode("0123");
+		user.setMail("1770983566@qq.com");
+		boolean tmp = sendVerifyCodeEmail(user.getMail(), user);
 		if(tmp) {
 			System.out.println("邮件发送成功........");
 		}else {

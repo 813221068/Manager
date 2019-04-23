@@ -3,6 +3,9 @@ package cn.edu.swust.entity;
 import java.util.Date;
 import java.util.List;
 
+import org.springframework.format.annotation.DateTimeFormat;
+import org.springframework.web.multipart.MultipartFile;
+
 import com.fasterxml.jackson.annotation.JsonFormat;
 
 import lombok.Data;
@@ -26,11 +29,13 @@ public class Business {
 	/**
 	 * 创建时间
 	 */
+	@DateTimeFormat(pattern="yyyy-MM-dd HH:mm:ss") 
 	@JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss") 
 	private Date createTime;
 	/**
 	 * 更新时间
 	 */
+	@DateTimeFormat(pattern="yyyy-MM-dd HH:mm:ss") 
 	@JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss") 
 	private Date updateTime;
 	/**
@@ -47,7 +52,11 @@ public class Business {
 	 * 是否可用  1表示可用   0表示删除
 	 */
 	private int isEnable;
-	
+	/**
+	 * 申报要求
+	 */
+	private MultipartFile file;
+//	
 	/*****************************/ //表外字段	
 	private User createUser;
 	

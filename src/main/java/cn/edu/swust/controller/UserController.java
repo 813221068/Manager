@@ -5,6 +5,7 @@ import java.util.List;
 import java.util.Timer;
 import java.util.TimerTask;
 
+import javax.jws.soap.SOAPBinding;
 import javax.management.Query;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpSession;
@@ -35,6 +36,7 @@ import cn.edu.swust.query.UserRoleQuery;
 import cn.edu.swust.service.UserService;
 import cn.edu.swust.util.EmailUtil;
 import cn.edu.swust.util.EncodeUtil;
+import cn.edu.swust.util.PropertiesUtil;
 import sun.print.resources.serviceui;
 
 @Controller
@@ -78,19 +80,31 @@ public class UserController {
 	@ResponseBody
 	@RequestMapping(value = "/login",method=RequestMethod.POST)
 	public int login(UserQuery query,RedirectAttributes attr,HttpSession session) {
+		int ret = 0;
+		if(query.getPassword()!=null&&query.getPassword()!="") {
+			String psw = EncodeUtil.decode64Base(query.getPassword());
+			query.setPassword(EncodeUtil.encodeByMD5(psw));
+		}
 		
-		String psw = EncodeUtil.decode64Base(query.getPassword());
-		query.setPassword(EncodeUtil.encodeByMD5(psw));
 		User user = userService.queryUser(query);
 		if(user==null) {
-			return 0;
+			ret =  0;
 		}
-		if(user.getActive()==UserActiveEnum.inactivated) {
-			return 1;
+		else if(user.getActive()==UserActiveEnum.inactivated) {
+			ret =  1;
 		}
-		session.setAttribute("user", user);
+		else {
+			ret = 2;
+			session.setAttribute("user", user);
+		}
 		
-		return 2;
+		return ret;
+	}
+	@ResponseBody
+	@RequestMapping(value="/sendVerifyCode")
+	public int sendVerifyCode(UserQuery query) {
+		
+		return userService.sendVerifyCode(query);
 	}
 	/**
 	 * 用户注册    30分钟内邮箱未激活 则删除记录
@@ -124,7 +138,7 @@ public class UserController {
 	@ResponseBody
 	@RequestMapping(value="/nologin/resetPsw")
 	public String resetPsw(UserQuery query){
-		String ret = "重置密码成功";
+		String ret = "重置密码成功，默认密码为："+PropertiesUtil.getValue("defaultPassword");
 		if(!userService.resetPsw(query)) {
 			ret = "重置密码失败";
 		}

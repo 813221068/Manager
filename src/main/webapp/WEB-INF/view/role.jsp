@@ -80,13 +80,13 @@
                     <el-table-column label="操作" align="center">
                         <template slot-scope="scope">
                             <el-button size="mini" @click="editRole(scope.$index,scope.row)">编辑</el-button>
-                            <el-popover placement="top" width="160" v-model="scope.row.cfmVisible" trigger="click">
+                            <el-popover  placement="top" width="160" v-model="scope.row.cfmVisible" trigger="click">
                                 <div class="text-center">
                                     <p>确定删除该角色吗</p>
                                     <el-button size="mini" type="text" @click="scope.row.cfmVisible = false">取消</el-button>
-                                    <el-button type="primary" size="mini" @click="deleteRole(scope.$index,scope.row)">确定</el-button>
+                                    <el-button type="primary" size="mini" @click="deleteOneRole(scope.$index,scope.row)">确定</el-button>
                                 </div>
-                                <el-button size="mini" type="danger" slot="reference" >删除</el-button>
+                                <el-button v-if="scope.row.editable==1" size="mini" type="danger" slot="reference" >删除</el-button>
                             </el-popover> 
                         </template>
                     </el-table-column>
@@ -102,13 +102,13 @@
             <el-form :model="roleForm" ref="roleForm" :rules="roleForm.rules" status-icon ref="roleForm" label-postion="right" 
             label-width="100px">
                 <el-form-item label="角色名：" prop="roleName"  >
-                    <el-input placeholder="请输入角色名" v-model="roleForm.roleName" style="width: 80%;" clearable >
+                    <el-input placeholder="角色名" v-model="roleForm.roleName" style="width: 80%;" clearable >
                 </el-form-item>
                 <el-form-item label="角色描述：" prop="roleDesc" >
-                    <el-input placeholder="请输入角色描述" v-model="roleForm.roleDesc" style="width: 80%;" clearable >
+                    <el-input placeholder="角色描述" v-model="roleForm.roleDesc" style="width: 80%;" clearable >
                 </el-form-item>
                 <el-form-item label="角色权限：" prop="sltPmsList">
-                    <el-select v-model="roleForm.sltPmsList" value-key="pms" placeholder="请选择角色权限" multiple   >
+                    <el-select v-model="roleForm.sltPmsList" value-key="pms" placeholder="角色权限" multiple   >
                         <el-option v-for="pms in pmsList" :value="pms.permissionId" :key="pms.permissionId" :label="pms.permissionName">
                         </el-option>
                     </el-select>
@@ -154,7 +154,7 @@ var vue = new Vue({
         };
     },
     mounted:function(){
-        loadTableData({});
+        this.loadTableData({});
         //加载权限list
         $.ajax({
         url: "getPmsList",
@@ -193,7 +193,7 @@ var vue = new Vue({
                 roleIds.push(role.roleId);
             }
             var para = {"roleIds":roleIds};
-            deleteRole(para);
+            this.deleteRole(para);
         },
         pageSizeChange:function(val){
             this.pageSize = val;
@@ -217,10 +217,10 @@ var vue = new Vue({
             modalOperating = 1;
             this.sltRole = row;
         },
-        deleteRole:function(index,row){
+        deleteOneRole:function(index,row){
             row.cfmVisible = false;
             var para = {"roleId":row.roleId};
-            deleteRole(para);
+            this.deleteRole(para);
         },
         submitModal:function(){
             this.$refs['roleForm'].validate((valid) =>{
@@ -245,7 +245,7 @@ var vue = new Vue({
                             {
                                 if(data!=0){
                                     toastr.success('添加成功');
-                                    loadTableData({});
+                                    this.loadTableData({});
                                     vue.roleModalVsb = false;
 
                                 }else{
@@ -292,7 +292,7 @@ var vue = new Vue({
                                 }else{
                                     toastr.error('更新失败');
                                 }
-                                loadTableData({});
+                                this.loadTableData({});
                                 vue.roleModalVsb = false;
                             },
                             error:function()
@@ -306,66 +306,67 @@ var vue = new Vue({
                 }
             });
         },
+        deleteRole:function(para){
+            $.ajax({
+                url:'deleteRole',
+                data:para,
+                traditional: true,//传递数组
+                success:function(data){
+                    if(data!=0){
+                        toastr.success('删除成功');
+                    }else{
+                        toastr.error('删除失败');
+                    }
+                    this.loadTableData({});
+                },
+                error:function(){
+                    toastr.error("请求失败");
+                },
+            });
+        },
+        loadTableData:function(para){
+            $.ajax({
+                url:"getRoleList",
+                data:JSON.stringify(para),
+                dataType:"json",  
+                type:"post",
+                contentType:"application/json;charset=UTF-8",
+                traditional: true,//传递数组
+                success:function(data){
+                    //todo 修改modal 替换成kong
+                    var list = [];
+                    for(var role of data){
+                        role.createTime = moment(role.createTime).format("YYYY-MM-DD  HH:mm:ss");
+                        role.updateTime = moment(role.updateTime).format("YYYY-MM-DD  HH:mm:ss");
+                        // role = nullConvert(role);
+                        list.push(role);
+                    }
+                    vue.roleList = list;
+                    vue.total = list.length;
+                },
+                error:function(){
+                    toastr.error("请求失败");
+                },
+            });
+        },
+        //空值转换
+        // nullConvert:function(datas){
+        //     var data = {};
+        //     for(var i in datas){
+        //         if(isnull(datas[i])){
+        //             data[i] = "暂无数据";
+        //         }
+        //         else if(datas[i]!=null && datas[i] instanceof Array){
+        //             data[i] = nullConvert(datas[i]);
+        //         }else {
+        //             data[i] = datas[i];
+        //         }
+        //     }
+        //     return data;
+        // },
     }
 });
-function deleteRole(para){
-    $.ajax({
-        url:'deleteRole',
-        data:para,
-        traditional: true,//传递数组
-        success:function(data){
-            if(data!=0){
-                toastr.success('删除成功');
-            }else{
-                toastr.error('删除失败');
-            }
-            loadTableData({});
-        },
-        error:function(){
-            toastr.error("请求失败");
-        },
-    });
-};
-function loadTableData(para){
-    $.ajax({
-        url:"getRoleList",
-        data:JSON.stringify(para),
-        dataType:"json",  
-        type:"post",
-        contentType:"application/json;charset=UTF-8",
-        traditional: true,//传递数组
-        success:function(data){
-            //todo 修改modal 替换成kong
-            var list = [];
-            for(var role of data){
-                role.createTime = moment(role.createTime).format("YYYY-MM-DD  HH:mm:ss");
-                role.updateTime = moment(role.updateTime).format("YYYY-MM-DD  HH:mm:ss");
-                // role = nullConvert(role);
-                list.push(role);
-            }
-            vue.roleList = list;
-            vue.total = list.length;
-        },
-        error:function(){
-            toastr.error("请求失败");
-        },
-    });
-};
-//空值转换
-function nullConvert(datas){
-    var data = {};
-    for(var i in datas){
-        if(isnull(datas[i])){
-            data[i] = "暂无数据";
-        }
-        else if(datas[i]!=null && datas[i] instanceof Array){
-            data[i] = nullConvert(datas[i]);
-        }else {
-            data[i] = datas[i];
-        }
-    }
-    return data;
-};
+
 });
 </script>
 </html>
