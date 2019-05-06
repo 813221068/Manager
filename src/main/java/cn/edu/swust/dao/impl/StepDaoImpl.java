@@ -6,8 +6,11 @@ import org.apache.ibatis.session.SqlSession;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Repository;
 
+import cn.edu.swust.RespEntity.AprvStepResp;
 import cn.edu.swust.dao.StepDao;
 import cn.edu.swust.entity.Step;
+import cn.edu.swust.query.AprvStepQuery;
+import cn.edu.swust.query.DeclareBusinessQuery;
 import cn.edu.swust.query.StepQuery;
 import cn.edu.swust.util.LogHelper;
 @Repository
@@ -53,6 +56,16 @@ public class StepDaoImpl implements StepDao {
 	@Override
 	public int updateByPrimaryKeySelective(Step step) {
 		return sqlSession.update(getNameSpace()+".updateByPrimaryKeySelective", step);
+	}
+
+	@Override
+	public List<Step> queryDclSteps(DeclareBusinessQuery query) {
+		return sqlSession.selectList(getNameSpace()+".queryDclSteps", query);
+	}
+
+	@Override
+	public List<AprvStepResp> queryAprvStepResps(AprvStepQuery query) {
+		return sqlSession.selectList(getNameSpace()+".queryAprvStepResps", query);
 	}
 
 

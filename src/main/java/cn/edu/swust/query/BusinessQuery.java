@@ -22,4 +22,7 @@ public class BusinessQuery extends BaseQuery {
 	 * 项目状态    1->草稿  2->正式
 	 */
 	private int status;
+	
+	/**表外查询字段 ****/
+	private String declareUserId;
 }

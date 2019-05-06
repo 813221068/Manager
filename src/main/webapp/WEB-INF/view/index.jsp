@@ -11,7 +11,7 @@
 	<jsp:include page="navbar.jsp"></jsp:include>
 	<jsp:include page="header.jsp"></jsp:include>
 	<div class="content" id="content">
-		用户id：${user.userId}
+		欢迎用户：${user.username}  使用业务申报审批系统
 	</div>
 	<jsp:include page="footer.jsp"></jsp:include>
 </body>
@@ -36,5 +36,35 @@
 // 		});
 		
 // 	};
+
+$(document).ready(function(){
+var vue = new Vue({
+	el: '#content',
+	data:function() {
+		return {
+		};
+	},
+	mounted:function(){
+		if(${pmsRoleMark}){
+			<% session.setAttribute("pmsRoleMark", false);%>
+			this.$message.error('没有角色管理权限 无法进入页面');
+		}
+		if(${pmsDeclareMark}){
+			<% session.setAttribute("pmsDeclareMark", false);%>
+			this.$message.error('没有业务申报权限 无法进入页面');
+		}
+		if(${pmsApprovalMark}){
+			<% session.setAttribute("pmsApprovalMark", false);%>
+			this.$message.error('没有业务审批权限 无法进入页面');
+		}
+		if(${pmsBusinessMark}){
+			<% session.setAttribute("pmsBusinessMark", false);%>
+			this.$message.error('没有业务管理权限 无法进入页面');
+		}
+	},
+	methods:{
+	}
+});
+});
 </script>
 </html>

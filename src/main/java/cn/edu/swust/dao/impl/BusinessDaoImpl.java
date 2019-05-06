@@ -22,13 +22,7 @@ public class BusinessDaoImpl implements BusinessDao{
 	
 	@Override
 	public List<Business> queryList(BusinessQuery query) {
-		List<Business> list = new ArrayList<>();
-		try {
-			list = sqlSession.selectList(getNameSpace()+".queryList", query);
-		} catch (Exception e) {
-			LogHelper.logError(e.getMessage()+"\nsql为："+getNameSpace()+".queryList");
-		}
-		return list;
+		return sqlSession.selectList(getNameSpace()+".queryList", query);
 	}
 
 	@Override

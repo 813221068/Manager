@@ -45,12 +45,13 @@
                         </el-table-column>
                         <el-table-column label="申报要求" align='center' prop="declareAsk" sortable>
                             <template slot-scope="scope">
-                                <span style="margin-left: 10px">{{ scope.row.declareAsk }}</span>
+                               <el-button @click="downloadFile(scope.$index, scope.row)" type="text">{{scope.row.fileName}}</el-button>
                             </template>
                         </el-table-column>
                         <el-table-column label="操作" align="center">
                             <template slot-scope="scope">
-                                <el-button size="mini" type="primary"  @click="declareBtnClick(scope.row)">申报</el-button>
+                                <el-button v-if="!scope.row.declare" size="mini" type="primary"  @click="declareBtnClick(scope.row)">申报</el-button>
+                                <el-button v-if="scope.row.declare" size="mini" type="success"  @click="progressBtnClick(scope.row)">审批进度</el-button>
                             </template>
                         </el-table-column>
                 </el-table>
@@ -63,14 +64,21 @@
         <el-dialog :visible.sync="declareVsb" title="上传申报资料" :append-to-body="true"  :modal-append-to-body='false' 
         width="20%" :close-on-click-modal="false">
             <el-upload ref="upload" action="doDeclare" :auto-upload="false"  :before-remove="beforeRemove" :data="declareBsns"
-            :limit="3" :on-exceed="handleExceed" :on-change="onChange" >
+            :limit="1" :on-exceed="handleExceed" :on-change="onChange" accept="text/plain">
                 <el-button slot="trigger" size="small" type="primary">选择申报资料</el-button>
+                <div slot="tip" class="el-upload__tip">只能上传txt文件，且不超过500kb</div>
             </el-upload>
             <span slot="footer">
                 <el-button @click="hideDialog()">取 消</el-button>
                 <el-button style="margin-left: 10px;" type="success" @click="submitUpload" plain>确认</el-button>
             </span>
             
+        </el-dialog>
+        <el-dialog :visible.sync="progressVsb" title="申报进度" :append-to-body="true"  :modal-append-to-body='false' 
+        width="20%" :close-on-click-modal="false">
+            <el-steps >
+                <el-step :status="step.status" :title="step.statusDesc" :description="step.stepName" v-for="step in steps" ></el-step>
+            </el-steps>
         </el-dialog>
 	</div>
 	<jsp:include page="footer.jsp"></jsp:include>
@@ -84,7 +92,9 @@ $(document).ready(function(){
                 total:100,//table总数
                 pageSize:5,//每页条数
                 currentPage:1,//当前页
-                declareVsb:false,
+                declareVsb:false,//是否展示申报页面
+                progressVsb:false,//是否显示申报进度页面
+                steps:null,//用户申报业务的审批流程
                 bsnsList:[],
                 search:{
                     bsnsName:null,
@@ -124,18 +134,42 @@ $(document).ready(function(){
                 
                 // this.hideDialog();
             },
+            //下载申报要求文件
+            downloadFile:function(index,row){
+                var form = $("<form>");
+                form.attr("style","display:none");
+                form.attr("target","");
+                form.attr("method","post");
+                form.attr("action",  "downloadFile");
+                var bsnsIDIpt = $("<input>");
+                bsnsIDIpt.attr("type","hidden");
+                bsnsIDIpt.attr("name","path");
+                bsnsIDIpt.attr("value","upload");
+                var realFileNameIpt = $("<input>");
+                realFileNameIpt.attr("type","hidden");
+                realFileNameIpt.attr("name","realFileName");
+                realFileNameIpt.attr("value",row.fileName);
+                var downloadFileNameIpt = $("<input>");
+                downloadFileNameIpt.attr("type","hidden");
+                downloadFileNameIpt.attr("name","fileName");
+                downloadFileNameIpt.attr("value",row.businessId);
+                $("body").append(form);
+                form.append(bsnsIDIpt);
+                form.append(downloadFileNameIpt);
+                form.append(realFileNameIpt);
+                form.submit();
+                form.remove();
+            },
             beforeRemove(file, fileList) {
                 return this.$confirm('确定移除 ${ file.name }？');
             },
             uploadFiles(){
-                var files = this.$refs.upload.uploadFiles;
+                var file = this.$refs.upload.uploadFiles[0];
                 var form = new FormData();
                 form.append("businessId",this.declareBsns.businessId);
                 form.append("declareUserId",this.declareBsns.declareUserId);
                 form.append("startTime",moment(new Date()).format("YYYY-MM-DD HH:mm:ss"));
-                for(var file of files){
-                    form.append("files",file.raw);
-                }
+                form.append("file",file.raw);
                 $.ajax({
                     processData:false,
                     contentType:false,
@@ -145,9 +179,11 @@ $(document).ready(function(){
                     success: function(data) {
                         if(data){
                             vue.$message.success('申报成功');
+                            vue.hideDialog();
+                            loadTableData({});
                         }
                         else{
-                            vue.$message.error('申报失败！');
+                            vue.$message.error('申报失败');
                         }
                     },
                     error: function(error) {
@@ -161,7 +197,7 @@ $(document).ready(function(){
             },
             //超出允许文件最大数
             handleExceed:function(files, fileList){
-                this.$message.warning('允许上传最大文件数为3，已超出！');
+                this.$message.warning('允许上传最大文件数为1，已超出！');
             },
             //上传文件状态改变触发
             onChange:function(currentFile, fileList){
@@ -182,13 +218,42 @@ $(document).ready(function(){
                 this.declareBsns.businessId = row.businessId;
                 this.declareBsns.declareUserId = ${user.userId}; 
             },
+            progressBtnClick:function(row){
+               
+                var para = {"businessId":row.businessId,"declareUserId":${user.userId}};
+                $.ajax({
+                    url:"getDclSteps",
+                    data:JSON.stringify(para),
+                    dataType:"json",  
+                    type:"post",
+                    contentType:"application/json;charset=UTF-8",
+                    traditional: true,//传递数组
+                    success:function(data){
+                        var list = [];
+                        var status = ["wait","process","error","success"];
+                        var statusDesc = ["等待中","审核中","不通过","审核通过"];
+                        for(var step of data){
+                            step.statusDesc = statusDesc[step.status];
+                            step.status = status[step.status];
+                            list.push(step);
+                        }
+
+                        vue.steps = list;
+                        // console.log(vue.steps);
+                        vue.progressVsb = true;
+                    },
+                    error:function(){
+                        toastr.error("请求失败");
+                    },
+                });
+            },
         },
     });
     function loadTableData(para){
         //状态为正式
         para.status = 2;
         $.ajax({
-            url:"businessList",
+            url:"getDclBsnsList",
             data:JSON.stringify(para),
             dataType:"json",  
             type:"post",

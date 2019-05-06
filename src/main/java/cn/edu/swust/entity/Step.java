@@ -39,6 +39,12 @@ public class Step {
 	 */
 	private int approvalRoleId;
 	
+	/**表外字段**/
+	/**
+	 * 流程状态    0是等待  1是审批中   2是审批失败   3是审批通过
+	 */
+	private int status;
+	
 	public boolean equals(Object obj) {
 		if(obj == this) {
 			return true;

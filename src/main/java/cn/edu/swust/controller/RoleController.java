@@ -6,6 +6,8 @@ import java.util.Date;
 import java.util.List;
 import java.util.Map;
 
+import javax.servlet.http.HttpSession;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.propertyeditors.CustomDateEditor;
 import org.springframework.stereotype.Controller;
@@ -23,18 +25,31 @@ import com.alibaba.fastjson.serializer.SerializerFeature;
 
 import cn.edu.swust.entity.Permission;
 import cn.edu.swust.entity.Role;
+import cn.edu.swust.entity.User;
+import cn.edu.swust.entity.enumEntity.PermissionEnum;
 import cn.edu.swust.query.RoleQuery;
 import cn.edu.swust.service.RoleService;
+import cn.edu.swust.service.UserService;
 
 @Controller
 public class RoleController {
 
 	@Autowired
 	private RoleService roleService;
+	@Autowired
+	private UserService userService;
 	
 	@RequestMapping(value="/role")
-	public String toIndexPage() {
-		return "role";
+	public String toIndexPage(HttpSession session) {
+		User user =  (User) session.getAttribute("user");
+		boolean canGoRolePage = userService.isUserHasPms(user, PermissionEnum.ROLE);
+		if(canGoRolePage) {
+			return "role";
+		}
+		else {
+			session.setAttribute("pmsRoleMark", 2);
+			return "index";
+		}
 	}
 	
 	@ResponseBody

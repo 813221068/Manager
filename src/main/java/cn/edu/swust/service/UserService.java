@@ -5,20 +5,25 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Timer;
 import java.util.TimerTask;
+import java.util.logging.Logger;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.interceptor.TransactionAspectSupport;
 
 import cn.edu.swust.dao.PermissionDao;
+import cn.edu.swust.dao.RoleDao;
 import cn.edu.swust.dao.UserDao;
 import cn.edu.swust.dao.UserRoleDao;
 import cn.edu.swust.entity.Permission;
+import cn.edu.swust.entity.Role;
 import cn.edu.swust.entity.User;
 import cn.edu.swust.entity.UserRole;
+import cn.edu.swust.entity.enumEntity.PermissionEnum;
 import cn.edu.swust.entity.enumEntity.UserActiveEnum;
 import cn.edu.swust.entity.enumEntity.UserRoleEnum;
 import cn.edu.swust.query.PermissionQuery;
+import cn.edu.swust.query.RoleQuery;
 import cn.edu.swust.query.UserQuery;
 import cn.edu.swust.query.UserRoleQuery;
 import cn.edu.swust.util.ArrayUtil;
@@ -39,6 +44,8 @@ public class UserService {
 	private UserRoleDao userRoleDao;
 	@Autowired
 	private PermissionDao pmsDao;
+	@Autowired
+	private RoleDao roleDao;
 	
 	private static final String DEFAULT_PSW = PropertiesUtil.getValue("defaultPassword");
 	
@@ -288,6 +295,43 @@ public class UserService {
 			TransactionAspectSupport.currentTransactionStatus().setRollbackOnly();
 		}
 		
+		return ret;
+	}
+	/**
+	 * 根据用户id查询角色
+	 * @param query
+	 * @return
+	 */
+	public Role getRoleByUserId(UserRoleQuery query) {
+		Role role = null;
+		try {
+			RoleQuery roleQuery = new RoleQuery();
+			roleQuery.setRoleId(userRoleDao.query(query).getRoleId());
+			role = roleDao.queryList(roleQuery).get(0);
+		} catch (Exception e) {
+			// TODO: handle exception
+			LogHelper.logError(e);
+		}
+		return role;
+	}
+	/**
+	 * 用户是否有该权限
+	 * @param user
+	 * @param pmsId  权限id  PermissionEnum
+	 * @return
+	 */
+	public boolean isUserHasPms(User user,int pmsId) {
+		boolean ret = false;
+		
+		PermissionQuery query = new PermissionQuery();
+		query.setUserId(user.getUserId());
+		List<Permission> list = pmsDao.queryPmsListByUser(query);
+		for (Permission permission : list) {
+			if(permission.getPermissionId()==pmsId) {
+				ret = true;
+				break;
+			}
+		}
 		return ret;
 	}
 }

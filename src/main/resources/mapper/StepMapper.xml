@@ -110,6 +110,7 @@
     	<include refid="defualt_fields"></include>
     	from step
     	<include refid="condition"></include>
+    	order by priority asc
     </select>
     
     <update id="updateByPrimaryKeySelective" parameterType="cn.edu.swust.entity.Step">
@@ -129,5 +130,40 @@
 		</set>
 		where step.stepId = #{stepId,jdbcType=INTEGER}
     </update>
-    
+    <!-- 查询审批流程 升序-->
+    <select id="queryDclSteps" parameterType="cn.edu.swust.query.DeclareBusinessQuery" resultMap="StepResultMap">
+select * from step  join 
+(select stepId,declare_step.status from declare_step where declareBusinessId = 
+(select connId from declare_business where businessId=#{businessId} and 
+declareUserId=#{declareUserId})) t
+on step.stepId = t.stepId order by priority asc
+    </select>
+    <!--加上status  -->
+	<resultMap id="StepResultMap" type="cn.edu.swust.entity.Step">
+		<result column="stepId" property="stepId" jdbcType="INTEGER" />
+		<result column="businessId" property="businessId" jdbcType="INTEGER" />
+		<result column="stepName" property="stepName" jdbcType="VARCHAR" />
+		<result column="stepDesc" property="stepDesc" jdbcType="VARCHAR" />
+		<result column="approvalUserId" property="approvalUserId" jdbcType="VARCHAR" />
+		<result column="approvalRoleId" property="approvalRoleId" jdbcType="INTEGER" />
+		<result column="priority" property="priority" jdbcType="INTEGER" />
+		<result column="status" property="status" jdbcType="INTEGER" />
+	</resultMap>
+	
+	<!--业务审批 查询流程  -->
+	<select id="queryAprvStepResps" parameterType="cn.edu.swust.query.AprvStepQuery" resultType="cn.edu.swust.RespEntity.AprvStepResp">
+select t.connId,declare_business.connId declareBusinessId,stepId,stepName,declareUserId,dclFileName,t.businessId from declare_business join 
+(select * from step inner join declare_step using(stepId) 
+<where>
+	<if test="status != null"> and status=#{status}</if>
+	and (
+	<trim prefixOverrides="or">
+	<if test="approvalUserId!=null">  approvalUserId=#{approvalUserId}</if>
+	<if test="approvalRoleId !=0"> or approvalRoleId=#{approvalRoleId}</if>
+	</trim>
+	
+	)
+</where>
+) t on t.declareBusinessId = declare_business.connId
+	</select>
 </mapper>

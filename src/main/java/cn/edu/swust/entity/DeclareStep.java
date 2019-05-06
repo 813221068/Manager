@@ -9,7 +9,7 @@ public class DeclareStep {
 	 */
 	private int connId;
 	/***
-	 * 申报项目id
+	 * declare_business主键
 	 */
 	private int declareBusinessId;
 	/***
@@ -20,4 +20,8 @@ public class DeclareStep {
 	 * 状态    1是审批中   2是审批失败   3是审批通过
 	 */
 	private int status;
+	/**
+	 * 评语
+	 */
+	private String comment;
 }

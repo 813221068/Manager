@@ -63,7 +63,8 @@
 						<el-table-column label="申报要求" align='center' prop="declareAsk" sortable>
 							<template slot-scope="scope">
 								<!-- <span style="margin-left: 10px">{{ scope.row.declareAsk }}</span> -->
-								 <a href="img/favicon.ico" download="test">点击下载</a>
+								<!-- <a href="downloadFile">testResponseEntity</a> -->
+								<el-button @click="downloadFile(scope.$index, scope.row)" type="text">{{scope.row.fileName}}</el-button>
 							</template>
 						</el-table-column>
  						<el-table-column label="创建人" align="center">
@@ -329,6 +330,43 @@ var vue = new Vue({
 			this.submitSearch();
 
 		},
+		//下载申报文件
+		downloadFile:function(index,row){
+			var para = {"businessId":row.businessId,"fileName":row.fileName};
+			console.log(row.fileName);
+			var form = $("<form>");
+			form.attr("style","display:none");
+			form.attr("target","");
+			form.attr("method","post");
+			form.attr("action",  "downloadFile");
+			var bsnsIDIpt = $("<input>");
+			bsnsIDIpt.attr("type","hidden");
+			bsnsIDIpt.attr("name","businessId");
+			bsnsIDIpt.attr("value",row.businessId);
+			var fileNameIpt = $("<input>");
+			fileNameIpt.attr("type","hidden");
+			fileNameIpt.attr("name","fileName");
+			fileNameIpt.attr("value",row.fileName);
+			$("body").append(form);
+			form.append(bsnsIDIpt);
+			form.append(fileNameIpt);
+			form.submit();
+			form.remove();
+
+			// $.ajax({
+			// 	url:"downloadFile",
+			// 	data:para,
+			// 	type:"post",
+			// 	dataType : "json",  
+			// 	traditional: true,//传递数组
+			// 	success:function(data){
+			// 		console.log("download file");
+			// 	},
+			// 	error:function(){
+			// 		vue.$message.error("下载失败");
+			// 	}
+			// });
+		},
 		deleteBsns:function(index,row){
 			row.cfmVisible = false;
 			var data = {"businessId":row.businessId};
@@ -417,6 +455,7 @@ var vue = new Vue({
 						var para = {"businessName":this.bsnsForm.bsnsName,"businessDesc":this.bsnsForm.bsnsDesc,
 							"steps":this.bsnsForm.steps,"createTime":moment(new Date()).format("YYYY-MM-DD HH:mm:ss"),
 							"createUserId":${user.userId},"updateTime":moment(new Date()).format("YYYY-MM-DD HH:mm:ss"),
+							"fileName":vue.$refs.upload.uploadFiles[0].name
 						};
 						
 						$.ajax(

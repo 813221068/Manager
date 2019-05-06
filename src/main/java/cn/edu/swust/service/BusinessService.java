@@ -2,20 +2,28 @@ package cn.edu.swust.service;
 
 import static org.junit.Assert.assertNotNull;
 
+import java.io.BufferedReader;
 import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileNotFoundException;
+import java.io.FileReader;
 import java.io.IOException;
+import java.io.InputStream;
+import java.io.InputStreamReader;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 import java.util.Set;
 
 import org.apache.ibatis.jdbc.SQL;
+import org.aspectj.apache.bcel.classfile.Field;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.transaction.interceptor.TransactionAspectSupport;
 import org.springframework.web.multipart.MultipartFile;
 
+import cn.edu.swust.ReqEntity.DownloadFileReq;
 import cn.edu.swust.dao.BusinessDao;
 import cn.edu.swust.dao.DeclareBusinessDao;
 import cn.edu.swust.dao.DeclareStepDao;
@@ -47,23 +55,6 @@ public class BusinessService {
 	private DeclareStepDao declareStepDao;
 	
 	public List<Business> getBusinessList(BusinessQuery query){
-//		if(query!=null) {
-//			List<Business> list = businessDao.queryList(query);
-//			List<Business> businesses = new ArrayList<>();
-//			try {
-//				for(Business bsn : list) {
-//					UserQuery userQuery = new UserQuery();
-//					userQuery.setUserId(bsn.getCreateUserId());
-//					bsn.setCreateUser(userDao.query(userQuery));
-//					businesses.add(bsn);
-//				}
-//				
-//				return businesses;
-//			} catch (Exception e) {
-//				LogHelper.logError(e);
-//			}
-//			
-//		}
 		List<Business> businesses = new ArrayList<>();
 		try {
 			List<Business> list = businessDao.queryList(query);
@@ -233,8 +224,9 @@ public class BusinessService {
 		}
 		
 		try {
-			//todo 文件对应申报项目 文件名：业务id_原文件名
-			String fileName = bsns.getBusinessId() + "_" + file.getOriginalFilename();
+			// 文件对应申报项目 文件名：业务id
+			String fileName = bsns.getBusinessId()+"_"+ file.getOriginalFilename();
+//			String suffix = fileName.substring(fileName.lastIndexOf(".")+1);
 			String filePath = savePath + File.separator + fileName;
 			File tmpFile = new File(filePath);
 			file.transferTo(tmpFile);
@@ -244,5 +236,32 @@ public class BusinessService {
 		}
 		
 		return ret;
+	}
+	/**
+	 * 获取txt文件
+	 * @param filePath
+	 * @param bsns
+	 * @return
+	 */
+	public File getFile(String filePath,DownloadFileReq req) {
+//		System.out.println("fileName:"+bsns.getFileName());
+		File rootPath = new File(filePath);
+		File retFile = null;
+		
+		if(rootPath.exists()) {
+			File[]  files = rootPath.listFiles();
+			for (File file : files) {
+				String fileName =  file.getName();
+				String prefix = fileName.substring(0,fileName.lastIndexOf("_"));
+				String suffix = fileName.substring(fileName.lastIndexOf("_")+1);
+				if(prefix.equals(req.getFileName())) {
+					retFile = file;
+					req.setRealFileName(suffix);
+					break;
+				}
+			}
+		}
+		
+		return retFile;
 	}
 }

@@ -292,7 +292,7 @@ var vue = new Vue({
                                 }else{
                                     toastr.error('更新失败');
                                 }
-                                this.loadTableData({});
+                                vue.loadTableData({});
                                 vue.roleModalVsb = false;
                             },
                             error:function()

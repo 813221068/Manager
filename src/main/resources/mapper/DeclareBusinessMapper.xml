@@ -9,6 +9,7 @@
 		<result column="startTime" property="startTime" jdbcType="TIMESTAMP" />
 		<result column="endTime" property="endTime" jdbcType="TIMESTAMP" />
 		<result column="status" property="status" jdbcType="INTEGER" />
+		<result column="dclFileName" property="dclFileName" jdbcType="VARCHAR" />
 	</resultMap>
 	<!-- 查询字段集 -->
     <sql id="defualt_fields">
@@ -19,6 +20,7 @@
         startTime,
         endTime,
         status,
+        dclFileName,
         </trim>
     </sql>
     <!-- 查询条件 -->
@@ -29,6 +31,7 @@
 				<foreach collection="businessIds" item="item" open="(" separator="," close=")">#{item}</foreach>
 			</if>
 			<if test="businessId !=0"> and businessId=#{businessId} </if>
+			<if test="declareUserId != null"> and declareUserId=#{declareUserId} </if>
 		</where>
 	</sql>
 	<!-- orderby sql-->
@@ -37,6 +40,7 @@
     <!-- 分页 sql-->
     <sql id="page">
     </sql>
+    
     <!-- 查询多条 -->
     <select id="queryList" parameterType="cn.edu.swust.query.DeclareBusinessQuery" resultMap="BaseResultMap">
     	select
@@ -67,6 +71,7 @@
       		<if test="startTime != null"> startTime,</if>
 			<if test="endTime != null"> endTime,</if>
 			<if test="status != 0"> status,</if>
+			<if test="dclFileName != null"> dclFileName,</if>
    		</trim>
    		<trim prefix="values (" suffix=")" suffixOverrides="," >
    			<if test="businessId != 0 " >#{businessId},</if>
@@ -74,6 +79,7 @@
       		<if test="startTime != null"> #{startTime},</if>
 			<if test="endTime != null"> #{endTime},</if>
 			<if test="status != null"> #{status},</if>
+			<if test="dclFileName != null"> #{dclFileName},</if>
     	</trim>
     </insert>
     

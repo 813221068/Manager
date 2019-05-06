@@ -6,13 +6,13 @@ import java.util.List;
 import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.web.multipart.MultipartFile;
 
+import com.alibaba.fastjson.annotation.JSONField;
 import com.fasterxml.jackson.annotation.JsonFormat;
 
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
 @Data
-@NoArgsConstructor
 public class Business {
 	/**
 	 * 业务id
@@ -56,11 +56,17 @@ public class Business {
 	 * 申报要求
 	 */
 	private MultipartFile file;
+	
+	private String fileName;
 //	
 	/*****************************/ //表外字段	
 	private User createUser;
 	
 	private List<Step> steps;
+	/**
+	 * 当前用户是否申报该项目
+	 */
+	private boolean declare;
 	
 	/****************************/
 }

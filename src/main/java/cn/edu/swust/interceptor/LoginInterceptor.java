@@ -27,9 +27,9 @@ public class LoginInterceptor implements HandlerInterceptor{
 	public boolean preHandle(HttpServletRequest request, HttpServletResponse response, Object handler)
 			throws Exception {
 		//debug 正式删掉
-		if(PropertiesUtil.getValue("debug").equals("true")) {
-			return true;
-		}
+//		if(PropertiesUtil.getValue("debug").equals("true")) {
+//			return true;
+//		}
 		
 		String reqUrl = request.getRequestURL().toString();
 		for(String url : exceptUrls) {

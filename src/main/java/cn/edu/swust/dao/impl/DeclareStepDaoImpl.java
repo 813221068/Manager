@@ -36,5 +36,13 @@ public class DeclareStepDaoImpl implements DeclareStepDao {
 	public void setPrimaryValue(int value) {
 		sqlSession.selectOne(getNameSpace()+".setPrimaryValue", value);
 	}
+	@Override
+	public int updateByPrimaryKeySelective(DeclareStep declareStep) {
+		return sqlSession.update(getNameSpace()+".updateByPrimaryKeySelective", declareStep);
+	}
+	@Override
+	public List<DeclareStep> queryList(DeclareStepQuery query) {
+		return sqlSession.selectList(getNameSpace()+".query", query);
+	}
 
 }

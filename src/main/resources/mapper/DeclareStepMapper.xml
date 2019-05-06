@@ -7,6 +7,7 @@
 		<result column="declareBusinessId" property="declareBusinessId" jdbcType="INTEGER" />
 		<result column="stepId" property="stepId" jdbcType="INTEGER" />
 		<result column="status" property="status" jdbcType="INTEGER" />
+		<result column="comment" property="comment" jdbcType="VARCHAR" />
 	</resultMap>
 	<!-- 查询字段集 -->
     <sql id="defualt_fields">
@@ -15,6 +16,7 @@
         declareBusinessId,
         stepId,
         status,
+        comment,
         </trim>
     </sql>
     <!-- 查询条件 -->
@@ -24,6 +26,7 @@
 				and declare_step.declareBusinessId in
 				<foreach collection="declareBusinessId" item="item" open="(" separator="," close=")">#{item}</foreach>
 			</if>
+			<if test="connId!=0"> and connId=#{connId}</if>
 			<if test="declareBusinessId != 0"> and declareBusinessId=#{declareBusinessId} </if>
 		</where>
 	</sql>
@@ -33,6 +36,13 @@
     <!-- 分页 sql-->
     <sql id="page">
     </sql>
+    <!-- 查询 -->
+    <select id="query" parameterType="cn.edu.swust.query.DeclareStepQuery" resultMap="BaseResultMap">
+    	select
+    	<include refid="defualt_fields"></include>
+    	from declare_step
+    	<include refid="condition"></include>
+    </select>
     <!-- 删除 -->
     <delete id="delete" parameterType="cn.edu.swust.query.DeclareStepQuery">
     	delete from declare_step
@@ -63,5 +73,14 @@
     <select id="setPrimaryValue" parameterType="java.lang.Integer">
     	alter table declare_step  AUTO_INCREMENT=#{num}; 
     </select>
+    
+     <update id="updateByPrimaryKeySelective" parameterType="cn.edu.swust.entity.DeclareStep">
+		update declare_step
+		<set>
+			<if test="status != null"> status = #{status},</if>
+			<if test="comment != null"> comment = #{comment},</if>
+		</set>
+		where connId = #{connId}
+	</update>
     
 </mapper>

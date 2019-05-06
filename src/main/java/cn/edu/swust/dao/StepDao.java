@@ -2,7 +2,10 @@ package cn.edu.swust.dao;
 
 import java.util.List;
 
+import cn.edu.swust.RespEntity.AprvStepResp;
 import cn.edu.swust.entity.Step;
+import cn.edu.swust.query.AprvStepQuery;
+import cn.edu.swust.query.DeclareBusinessQuery;
 import cn.edu.swust.query.StepQuery;
 
 
@@ -39,5 +42,16 @@ public interface StepDao {
 	public List<Step> queryList(StepQuery query);
 	
 	public int updateByPrimaryKeySelective(Step step);
-	
+	/**
+	 * 查询 用户申报业务的申报流程
+	 * @param query
+	 * @return
+	 */
+	public List<Step> queryDclSteps(DeclareBusinessQuery query);
+	/***
+	 * 业务审批    审批流程
+	 * @param query
+	 * @return
+	 */
+	public List<AprvStepResp> queryAprvStepResps(AprvStepQuery query);
 }

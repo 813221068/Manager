@@ -40,4 +40,8 @@ public class DeclareBusiness {
 	 * 申报状态   1是进行中  2是申报失败 3是申报完成
 	 */
 	private int status;
+	/**
+	 * 申报资料文件名
+	 */
+	private String dclFileName;
 }

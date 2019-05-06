@@ -15,18 +15,24 @@ import com.alibaba.fastjson.JSONObject;
 import com.alibaba.fastjson.serializer.SerializerFeature;
 import com.sun.xml.internal.messaging.saaj.packaging.mime.util.QDecoderStream;
 
+import cn.edu.swust.RespEntity.AprvStepResp;
 import cn.edu.swust.dao.BusinessDao;
 import cn.edu.swust.dao.PermissionDao;
 import cn.edu.swust.dao.RoleDao;
 import cn.edu.swust.dao.StepDao;
 import cn.edu.swust.entity.Business;
+import cn.edu.swust.entity.DeclareStep;
 import cn.edu.swust.entity.Role;
 import cn.edu.swust.entity.Step;
 import cn.edu.swust.entity.User;
+import cn.edu.swust.query.AprvStepQuery;
 import cn.edu.swust.query.BusinessQuery;
+import cn.edu.swust.query.DeclareBusinessQuery;
 import cn.edu.swust.query.PermissionQuery;
 import cn.edu.swust.query.RoleQuery;
+import cn.edu.swust.query.StepQuery;
 import cn.edu.swust.query.UserQuery;
+import cn.edu.swust.service.ApprovalService;
 import cn.edu.swust.service.BusinessService;
 import cn.edu.swust.service.RoleService;
 import cn.edu.swust.service.UserService;
@@ -49,13 +55,16 @@ public class BaseJunitTest {
 	BusinessDao businessDao;
 	@Autowired
 	UserService userService;
-	
+	@Autowired
+	ApprovalService approvalService;
 	
 	@Test
 	public void test() {
-		UserQuery query = new UserQuery();
-		query.setMail("1770983566@qq.com");
-		boolean ret = userService.forgetPsw(query);
-		System.out.println(ret);
+		
+		AprvStepQuery query = new AprvStepQuery();
+		query.setStatus(1);
+		query.setApprovalRoleId(2);
+		List<AprvStepResp> list = stepDao.queryAprvStepResps(query);
+		System.out.println(list.size());
 	}
 }

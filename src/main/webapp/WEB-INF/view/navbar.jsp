@@ -16,19 +16,19 @@
 			<li><a href="declare"> <i class="fa fa fa-bar-chart-o"></i> <span
 					>业务申报</span>
 			</a></li>
-			<li>
-				<a href=""> <i class="fa fa-edit"></i> 
-					<span>业务管理</span>
-					<i class="fa arrow" aria-hidden="true"></i>
-				</a>
-				<ul class="nav nav-second-level">
-					<li><a href="business" data-index="0">项目管理</a></li>
-					<li><a href="declare">申报状态</a></li>
-				</ul>
-			</li>
-			<li><a href="user"> <i class="fa fa-table"></i> <span
-					>用户管理</span>
+			<li><a href="approval"> <i class="fa fa-paint-brush"></i> <span
+					>业务审批</span>
 			</a></li>
+			<li>
+				<a href="business"> <i class="fa fa-edit"></i> 
+					<span>业务管理</span>
+				
+				</a>
+
+			</li>
+			<!-- <li><a href="user"> <i class="fa fa-table"></i> <span
+					>用户管理</span>
+			</a></li> -->
 			<li id="roleManager">
 				<a href="role" >
 					<i class="fa fa-desktop"></i>

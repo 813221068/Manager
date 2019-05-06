@@ -29,6 +29,7 @@
     <script src="js/underscore.js"></script>
     <script src="js/toastr.js"></script>
  	<script src="js/bootstrap-select.js"></script>
+ 	<script src="js/jquery.session.js"></script>
     <script src="js/hplus.js"></script>
 
 	<!-- element -->

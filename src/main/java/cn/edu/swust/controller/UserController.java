@@ -25,14 +25,17 @@ import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONArray;
 
+import cn.edu.swust.dao.UserRoleDao;
 import cn.edu.swust.entity.Permission;
 import cn.edu.swust.entity.Role;
 import cn.edu.swust.entity.User;
 import cn.edu.swust.entity.UserRole;
 import cn.edu.swust.entity.enumEntity.UserActiveEnum;
 import cn.edu.swust.query.PermissionQuery;
+import cn.edu.swust.query.RoleQuery;
 import cn.edu.swust.query.UserQuery;
 import cn.edu.swust.query.UserRoleQuery;
+import cn.edu.swust.service.RoleService;
 import cn.edu.swust.service.UserService;
 import cn.edu.swust.util.EmailUtil;
 import cn.edu.swust.util.EncodeUtil;
@@ -44,6 +47,10 @@ public class UserController {
 
 	@Autowired
 	UserService userService;
+	@Autowired
+	RoleService roleService;
+	@Autowired
+	private UserRoleDao userRoleDao;
 	
 	/** 跳转页 **/
 	@RequestMapping("/login")
@@ -55,11 +62,15 @@ public class UserController {
 	@RequestMapping("/index")
 	public String toIndexPage(HttpSession session) {
 //		//测试代码 
-		UserQuery query = new UserQuery();
-		query.setUsername("admin");
-//		
-		User user = userService.queryUser(query);
-		session.setAttribute("user", user);
+//		UserQuery query = new UserQuery();
+//		query.setUsername("admin");
+////		
+//		User user = userService.queryUser(query);
+//		session.setAttribute("user", user);
+//		UserRoleQuery userRoleQuery = new UserRoleQuery();
+//		userRoleQuery.setUserId(user.getUserId());
+//		Role role = userService.getRoleByUserId(userRoleQuery);
+//		session.setAttribute("role", role);
 		return "index";
 	}
 	
@@ -96,6 +107,15 @@ public class UserController {
 		else {
 			ret = 2;
 			session.setAttribute("user", user);
+			UserRoleQuery userRoleQuery = new UserRoleQuery();
+			userRoleQuery.setUserId(user.getUserId());
+			Role role = userService.getRoleByUserId(userRoleQuery);
+			session.setAttribute("role", role);
+			//权限标记  用来没有权限 前端提示
+			session.setAttribute("pmsRoleMark", false);
+			session.setAttribute("pmsDeclareMark", false);
+			session.setAttribute("pmsApprovalMark", false);
+			session.setAttribute("pmsBusinessMark", false);
 		}
 		
 		return ret;

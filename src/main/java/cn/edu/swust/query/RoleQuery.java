@@ -20,4 +20,5 @@ public class RoleQuery extends BaseQuery{
 	private int[] roleIds;
 	
 	private Date updateTime;
+	
 }

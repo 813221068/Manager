@@ -42,7 +42,7 @@ public class DeclareBusinessDaoImpl implements DeclareBusinessDao {
 	}
 	@Override
 	public DeclareBusiness query(DeclareBusinessQuery query) {
-		return sqlSession.selectOne(getNameSpace()+".query", query);
+		return sqlSession.selectOne(getNameSpace()+".queryList", query);
 	}
 	@Override
 	public int getMaxPrimaryKey() {

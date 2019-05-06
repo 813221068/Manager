@@ -19,6 +19,7 @@ import cn.edu.swust.entity.Permission;
 import cn.edu.swust.entity.Role;
 import cn.edu.swust.entity.RolePermission;
 import cn.edu.swust.entity.User;
+import cn.edu.swust.entity.enumEntity.PermissionEnum;
 import cn.edu.swust.query.PermissionQuery;
 import cn.edu.swust.query.RolePermissionQuery;
 import cn.edu.swust.query.RoleQuery;

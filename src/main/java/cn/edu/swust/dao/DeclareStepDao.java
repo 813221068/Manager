@@ -22,4 +22,8 @@ public interface DeclareStepDao {
 	public int insertBatch(List<DeclareStep> list);
 	
 	public void setPrimaryValue(int value);
+	
+	public int updateByPrimaryKeySelective(DeclareStep declareStep);
+	
+	public List<DeclareStep> queryList(DeclareStepQuery query);
 }
