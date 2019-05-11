@@ -23,15 +23,14 @@
             <div id="toolbar" class="btn-group table-tool">
                 <el-button type="primary" icon="el-icon-plus" size="medium"  @click="roleModalVsb = true">添加</el-button>
                 <span class="display" id="batchBtn">
-                    <el-popover placement="top" width="160" v-model="batchCfmVsb" trigger="click">
-                        <div class="text-center">
-                            <p>确定删除该项目吗</p>
-                            <el-button size="mini" type="text" @click="batchCfmVsb = false">取消</el-button>
-                            <el-button type="primary" size="mini" @click="atchDelete()">确定</el-button>
-                        </div>
-                        <el-button icon="el-icon-delete" size="medium"  @click="batchCfmVsb = true">批量删除</el-button>
-                    </el-popover> 
+					<el-button icon="el-icon-delete" size="medium"  @click="batchDelete()">批量删除</el-button>
                 </span>
+            </div>
+            <div class="table-search">
+            	<el-input  placeholder="请输入角色名" clearable suffix-icon="el-icon-search" v-model="search.roleName" style="width: 20%;">
+            	</el-input> 
+            	<el-button type="primary" plain style="margin-left: 20px;" @click="submitSearch()">查找</el-button>
+            	<el-button type="info" plain style="margin-left: 20px;" @click="resetSearch()">重置</el-button>
             </div>
             <div class="table">
                 <el-table :data="roleList.slice((currentPage-1)*pageSize,currentPage*pageSize)" @selection-change="checkBoxChange"
@@ -99,7 +98,7 @@
             </div>
 		</div>
         <el-dialog :visible.sync="roleModalVsb" title="角色信息" :append-to-body="true"  :modal-append-to-body='false' width="20%" :close-on-click-modal="false" >
-            <el-form :model="roleForm" ref="roleForm" :rules="roleForm.rules" status-icon ref="roleForm" label-postion="right" 
+            <el-form :model="roleForm" ref="roleForm" :rules="rules" status-icon ref="roleForm" label-postion="right" 
             label-width="100px">
                 <el-form-item label="角色名：" prop="roleName"  >
                     <el-input placeholder="角色名" v-model="roleForm.roleName" style="width: 80%;" clearable >
@@ -138,14 +137,18 @@ var vue = new Vue({
             roleList:[],
             roleModalVsb:false,
             pmsList:[],
+            rules:{
+            	roleName:[{required: true, message: '用户名不能为空'}]
+            },
+            search:{
+            	roleName:null,
+            },
             roleForm:{
                 roleName:null,
                 roleDesc:null,
                 
                 sltPmsList:'', //选中的权限ids
-                rules:{
-                    roleName:[{required: true, message: '用户名不能为空'}]
-                }
+              
             },
             sltRole:null,//选中行
             bacthBtnVsb:false,
@@ -179,14 +182,22 @@ var vue = new Vue({
     methods:{
         checkBoxChange:function(val){
             //todo bug 用v-if和v-show时，为true自动清空val
-            this.multipleSelection = val;
-            var batchBtn = document.getElementById('batchBtn');
-            if(val.length>0){
-                batchBtn.style.display = "inline";
-            }else{
-                batchBtn.style.display = "none";
-            }
+        	this.multipleSelection = val;
+			var batchBtn = document.getElementById('batchBtn');
+			if(val.length>0){
+				batchBtn.style.display = "inline";
+			}else{
+				batchBtn.style.display = "none";
+			}
         },
+        submitSearch:function(){
+			var para = {"roleName":this.search.roleName};
+			this.loadTableData(para);
+		},
+		resetSearch:function(){
+			this.search = cleanParams(this.search);
+			this.loadTableData({});
+		},
         batchDelete:function(){
             var roleIds = [];
             for(var role of this.multipleSelection){
@@ -244,12 +255,12 @@ var vue = new Vue({
                             success:function(data)
                             {
                                 if(data!=0){
-                                    toastr.success('添加成功');
-                                    this.loadTableData({});
+                                    toastr.success('添加角色成功');
+                                    vue.loadTableData({});
                                     vue.roleModalVsb = false;
 
                                 }else{
-                                    toastr.error('添加失败');
+                                    toastr.error('添加角色失败');
                                 }
                             },
                             error:function()
@@ -276,7 +287,7 @@ var vue = new Vue({
                                 newPmsList.push(pms);
                             }
                         }
-                        var para = {"roleName":this.roleForm.roleName,"roleDesc":this.roleForm.roleDesc,"roleId":this.sltRole.roleId,
+                        var para = {"roleName":this.roleForm.roleName,"roleDesc":this.roleForm.roleDesc,"roleId":this.sltRole.roleId,"isEnable":1,
                                     "pmsList":oldPmsList,"updateTime":moment(new Date()).format("YYYY-MM-DD HH:mm:ss")};
                         var data = {"role":para,"addPmsList":newPmsList};
                         $.ajax({
@@ -288,9 +299,9 @@ var vue = new Vue({
                             success:function(data)
                             {
                                 if(data!=0){
-                                    toastr.success('更新成功');
+                                    toastr.success('更新角色信息成功');
                                 }else{
-                                    toastr.error('更新失败');
+                                    toastr.error('更新角色信息失败');
                                 }
                                 vue.loadTableData({});
                                 vue.roleModalVsb = false;
@@ -317,7 +328,7 @@ var vue = new Vue({
                     }else{
                         toastr.error('删除失败');
                     }
-                    this.loadTableData({});
+                    vue.loadTableData({});
                 },
                 error:function(){
                     toastr.error("请求失败");
@@ -325,6 +336,7 @@ var vue = new Vue({
             });
         },
         loadTableData:function(para){
+        	para["isEnable"] = 1;
             $.ajax({
                 url:"getRoleList",
                 data:JSON.stringify(para),

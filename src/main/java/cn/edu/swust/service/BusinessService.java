@@ -167,13 +167,12 @@ public class BusinessService {
 	 * 更新项目信息   状态为草稿的项目
 	 * @param business
 	 * @param steps 
-	 * @return 
+	 * @return id
 	 */
-	public boolean update(Business business,List<Step> steps) {
+	public int update(Business business,List<Step> steps) {
 		int result = 0;
 		try {
 			result = businessDao.updateByPrimaryKeySelective(business);
-			
 			if(steps!=null && steps.size()>0) {
 				StepQuery query = new StepQuery();
 				query.setBusinessId(business.getBusinessId());
@@ -206,6 +205,7 @@ public class BusinessService {
 
 					stepDao.delete(query);
 				}
+				result = business.getBusinessId();
 			}
 			
 		}catch (Exception e) {
@@ -213,7 +213,7 @@ public class BusinessService {
 			TransactionAspectSupport.currentTransactionStatus().setRollbackOnly();
 			result = 0;
 		}
-		return result==0?false:true;
+		return result;
 	}
 	
 	public boolean uploadFile(MultipartFile file,String savePath,Business bsns) {

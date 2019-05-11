@@ -106,7 +106,8 @@ public class BusinessController {
 		//获取文件保存路径   ../WEB-INF/upload
 		String filePath = session.getServletContext().getRealPath("/WEB-INF/"+req.getPath());
 		File file = businessService.getFile(filePath, req);
-		
+		System.out.println(req);
+		System.out.println("file:"+file);
 		HttpHeaders headers = new HttpHeaders();
 		headers.setContentType(MediaType.APPLICATION_OCTET_STREAM);
 		headers.setContentDispositionFormData("attachment",new String(req.getRealFileName().getBytes("UTF-8"), "ISO-8859-1"));
@@ -128,7 +129,7 @@ public class BusinessController {
 	
 	@ResponseBody
 	@RequestMapping(value="/updateBusiness",method=RequestMethod.POST)
-	public boolean updateBusiness(@RequestBody Business business) {
+	public int updateBusiness(@RequestBody Business business) {
 //		System.out.println(business);
 		return businessService.update(business,business.getSteps());
 	}

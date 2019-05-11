@@ -75,14 +75,14 @@ public class RoleService {
 	 * @param role
 	 * @return id 0是失败
 	 */
-	@Transactional
 	public int addRole(Role role) {
 		int id = 0;
 		//todo  事务回滚有bug  调用多个dao.method 只回滚最后一个
 		try {
+			role.setIsEnable(1);
+			role.setEditable(1);
 			roleDao.setPrimaryValue(1);
 			id = roleDao.insertOne(role);
-			
 			//添加角色-权限表
 			if(id != 0 && role.getPmsList()!=null && role.getPmsList().size()>0) {
 				

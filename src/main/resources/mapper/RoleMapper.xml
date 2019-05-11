@@ -35,8 +35,9 @@
                 #{item}
                 </foreach>
             </if>
+            <if test="isEnable!=0"> and role.isEnable=#{isEnable}</if>
 			<if test="roleId != null and roleId != 0"> and role.roleId = #{roleId} </if>
-			<if test="roleName != null"> and role.rolename liek concat('%,#{roleName}','%') </if>
+			<if test="roleName != null"> and role.rolename like concat('%',#{roleName},'%') </if>
 		</where>
 	</sql>
 	<!-- orderby sql-->
@@ -82,7 +83,7 @@
 			<if test="createUId != null"> createUId,</if>
 			<if test="roleDesc != null"> roleDesc,</if>
 			<if test="editable != null"> editable,</if>
-			<if test="isEnable != null"> isEnabel,</if>
+			<if test="isEnable != 0"> isEnable,</if>
    		</trim>
    		<trim prefix="values (" suffix=")" suffixOverrides="," >
    			<if test="roleId != null and roleId != 0 " >#{roleId},</if>
@@ -92,7 +93,7 @@
 			<if test="createUId != null"> #{createUId},</if>
 			<if test="roleDesc != null"> #{roleDesc},</if>
 			<if test="editable != null"> #{editable},</if>
-			<if test="isEnable != null"> #{isEnabel},</if>
+			<if test="isEnable != 0"> #{isEnable},</if>
     	</trim>
 	</insert>
 
@@ -125,7 +126,7 @@
 			<if test="updateTime != null"> updateTime = #{updateTime,jdbcType=TIMESTAMP},
 			</if>
 			<if test="editable != null"> editable = #{editable},</if>
-			<if test="isEnable != null"> isEnabel = #{isEnabel},</if>
+			<if test="isEnable != null"> isEnable = #{isEnable},</if>
 		</set>
 		where roleId = #{roleId,jdbcType=INTEGER}
 	</update>

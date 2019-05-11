@@ -21,4 +21,12 @@ public class RoleQuery extends BaseQuery{
 	
 	private Date updateTime;
 	
+	private int isEnable;
+	
+	/***表外字段**/
+	/**
+	 * 角色是否有该权限  id
+	 */
+	private int permissionId;
+	
 }

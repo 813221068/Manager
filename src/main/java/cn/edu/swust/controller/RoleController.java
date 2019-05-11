@@ -55,6 +55,7 @@ public class RoleController {
 	@ResponseBody
 	@RequestMapping(value="/getRoleList",method=RequestMethod.POST)
 	public JSONArray getRoleList(@RequestBody RoleQuery query) {
+//		System.out.println(query);
 		List<Role> list = roleService.queryList(query);
 		//消除循环引用
 		String json = JSONObject.toJSONString(list,SerializerFeature.WriteMapNullValue

@@ -151,8 +151,9 @@ public class UserController {
 	 * @param query
 	 */
 	@ResponseBody
-	@RequestMapping(value="/nologin/forgetPsw")
+	@RequestMapping(value="/nologin/forgetPsw",method=RequestMethod.POST)
 	public boolean forgetPsw(UserQuery query) {
+		System.out.println(query);
 		return userService.forgetPsw(query);
 	}
 	@ResponseBody

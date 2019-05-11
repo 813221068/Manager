@@ -60,11 +60,12 @@ public class BaseJunitTest {
 	
 	@Test
 	public void test() {
+		RoleQuery query = new RoleQuery();
+		query.setRoleName("1");
+		List<Role> list =  roleService.queryList(query);
 		
-		AprvStepQuery query = new AprvStepQuery();
-		query.setStatus(1);
-		query.setApprovalRoleId(2);
-		List<AprvStepResp> list = stepDao.queryAprvStepResps(query);
-		System.out.println(list.size());
+		for (Role role : list) {
+			System.out.println(role);
+		}
 	}
 }

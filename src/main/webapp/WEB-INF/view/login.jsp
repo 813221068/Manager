@@ -158,7 +158,7 @@ $(document).ready(function(){
                                     window.location.href='index';
                                 }else if(data==0){
                                     vue.$message({
-                                        message:'用户名或密码不正确',
+                                        message:'验证码不正确',
                                         type:'error'
                                     });
                                 }else if(data==1){
@@ -275,10 +275,11 @@ $(document).ready(function(){
                 this.$refs['forgetForm'].validate((valid)=>{
                     if(valid){
                         $.ajax({
-                            url:'	/forgetPsw',
+                            url:'nologin/forgetPsw',
                             data:this.forgetForm,
-                            type:'get',
+                            type:'post',
                             success:function(data){
+                            	// console.log(data);
                                 if(data){
                                     vue.$message({
                                         message:'请前往邮箱重置密码',

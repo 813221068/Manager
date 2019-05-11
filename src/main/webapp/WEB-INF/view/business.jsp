@@ -253,6 +253,7 @@ var vue = new Vue({
 	},
 	mounted:function(){
 		this.loadTableData({});
+		// var para = {""};
 		$.ajax({
 			url:"getRoleList",
 			data:JSON.stringify({}),
@@ -260,8 +261,19 @@ var vue = new Vue({
 			traditional: true,//传递数组
 			contentType:"application/json;charset=UTF-8",
 			success:function(data){
+				// console.log(data);
 				if(data!=null && data.length!=0){
-					vue.roles = data;
+					var list = [];
+					for(var role of data){
+						for(var pms of role.pmsList){
+							//业务审批权限id：3
+							if(pms.permissionId==3){
+								list.push(role);
+								break;
+							}
+						}
+					}
+					vue.roles = list;
 				}else{
 					vue.$message.error("查询失败");
 				}
@@ -301,10 +313,12 @@ var vue = new Vue({
 			
 		},
 		editBsns:function(index,row){
+			// console.log(row);
 			this.bsnsForm.bsnsName = row.businessName;
 			this.bsnsForm.bsnsDesc = row.businessDesc;
 			this.bsnsForm.steps = row.steps;
 			this.bsnsModalVsb = true;
+			// this.$refs.upload.uploadFiles[0].name
 			modalOperating = 1;
 			sltBusiness = row;
 		},
@@ -339,33 +353,26 @@ var vue = new Vue({
 			form.attr("target","");
 			form.attr("method","post");
 			form.attr("action",  "downloadFile");
-			var bsnsIDIpt = $("<input>");
-			bsnsIDIpt.attr("type","hidden");
-			bsnsIDIpt.attr("name","businessId");
-			bsnsIDIpt.attr("value",row.businessId);
 			var fileNameIpt = $("<input>");
+			//文件保存名  ：业务id
 			fileNameIpt.attr("type","hidden");
 			fileNameIpt.attr("name","fileName");
-			fileNameIpt.attr("value",row.fileName);
+			fileNameIpt.attr("value",row.businessId);
+			var realFileIpt = $("<input>");
+			realFileIpt.attr("type","hidden");
+			realFileIpt.attr("name","realFileName");
+			realFileIpt.attr("value",row.fileName);
+			var pathIpt = $("<input>");
+            pathIpt.attr("type","hidden");
+            pathIpt.attr("name","path")
+            pathIpt.attr("value","upload");
 			$("body").append(form);
-			form.append(bsnsIDIpt);
+			form.append(realFileIpt);
 			form.append(fileNameIpt);
+			form.append(pathIpt);
 			form.submit();
 			form.remove();
 
-			// $.ajax({
-			// 	url:"downloadFile",
-			// 	data:para,
-			// 	type:"post",
-			// 	dataType : "json",  
-			// 	traditional: true,//传递数组
-			// 	success:function(data){
-			// 		console.log("download file");
-			// 	},
-			// 	error:function(){
-			// 		vue.$message.error("下载失败");
-			// 	}
-			// });
 		},
 		deleteBsns:function(index,row){
 			row.cfmVisible = false;
@@ -470,6 +477,7 @@ var vue = new Vue({
 									//添加项目成功后，上传文件
 									var form = new FormData();
 									var file = vue.$refs.upload.uploadFiles[0];
+
 									form.append("businessId",data);
 									form.append("file",file.raw);
 									$.ajax({
@@ -498,12 +506,52 @@ var vue = new Vue({
 					}else{  //修改项目信息
 						modalOperating = 0;
 						var para = {"businessName":this.bsnsForm.bsnsName,"businessDesc":this.bsnsForm.bsnsDesc,"businessId":
-									sltBusiness.businessId,"steps":this.bsnsForm.steps};
-						var msg = [];
-						msg.push('更新业务信息成功');
-						msg.push('更新业务信息失败');
-						this.updateBsns(para,msg);
-						this.hideBsnsModal();
+									sltBusiness.businessId,"steps":this.bsnsForm.steps,
+									"fileName":vue.$refs.upload.uploadFiles[0].name};
+						// var msg = [];
+						// msg.push('更新业务信息成功');
+						// msg.push('更新业务信息失败');
+						$.ajax(
+						{
+							url: "updateBusiness",
+							data:JSON.stringify(para),
+							dataType:"json",  
+							type: "post",
+							contentType:"application/json;charset=UTF-8",
+							success:function(data)
+							{
+								if(data>0){
+									//添加项目成功后，上传文件
+									var form = new FormData();
+									var file = vue.$refs.upload.uploadFiles[0];
+									// console.log(file);
+									form.append("businessId",data);
+									form.append("file",file.raw);
+									$.ajax({
+										url:"uploadFile",
+										data:form,
+										type:"post",
+										processData:false,
+										contentType:false,
+										success:function(data){
+											//上传文件结果
+											console.log(data);
+										}
+									});
+									vue.$message.success("修改业务信息成功");
+									vue.hideBsnsModal();
+									vue.loadTableData({});
+								}else{
+									vue.$message.error("添加业务失败");
+								}
+							},
+							error:function()
+							{
+								vue.$message.error("请求失败");
+							},
+						});
+						// this.updateBsns(para,msg);
+						// this.hideBsnsModal();
 					
 					}
 				}else{
@@ -570,6 +618,7 @@ var vue = new Vue({
 				contentType:"application/json;charset=UTF-8",
 	        	traditional: true,//传递数组
 	        	success:function(data){
+	        		// console.log(data);
 	        		//todo 修改modal 替换成kong
 	        		var list = [];
 	        		for(var bsns of data){
